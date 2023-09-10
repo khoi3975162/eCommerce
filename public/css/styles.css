@@ -1,0 +1,270 @@
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css");
+
+body {
+    font-family: system, -apple-system, ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;
+    background-color: #e6e6e6;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+}
+
+/* animation */
+@keyframes flyin {
+    0% {
+        transform: translateY(25%);
+    }
+
+    100% {
+        transform: translateY(0%);
+    }
+}
+
+/*  navigation bar */
+.navigation,
+.input-group-text {
+    background-color: #3b71ca;
+}
+
+.navigation li a {
+    color: #ce6e7d;
+    font-weight: bold;
+    transition: all 0.25s;
+}
+
+.navigation li a:hover {
+    color: #232582;
+}
+
+.navigation form button {
+    background-color: #ce6e7d;
+}
+
+.navigation form i {
+    color: #e6e6e6;
+}
+
+.navigation .nav-item {
+    padding-right: 10px;
+}
+
+.navigation .active {
+    background-color: #ce6e7d !important;
+}
+
+/* login & register page */
+.login-box {
+    background-color: #8fa2d2;
+    width: 25%;
+    margin-top: 8vw;
+    margin-bottom: 8vw;
+    animation: flyin 0.75s;
+}
+
+@media (max-width: 768px) {
+    .login-box {
+        width: 70%;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 992px) {
+    .login-box {
+        width: 47.5%;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1450px) {
+    .login-box {
+        width: 40%;
+    }
+}
+
+.login-box form,
+.register-box {
+    padding: 30px;
+    padding-bottom: 15px;
+    white-space: nowrap;
+}
+
+.login-box {
+    .signin-btn:hover span:after {
+        opacity: 1;
+        right: 0;
+    }
+
+    .signin-btn span:after {
+        content: '↓';
+        right: -20px;
+    }
+
+    .signin-btn:hover span {
+        padding-right: 20px;
+    }
+}
+
+.login-box a,
+.register-box a {
+    text-decoration: none;
+    color: #3b71ca;
+    transition: all 0.25s;
+}
+
+.login-box a:hover,
+.register-box a:hover {
+    color: #ce6e7d;
+}
+
+.login-box h1,
+.register-box h1 {
+    padding-bottom: 20px;
+    font-weight: bold;
+    color: #ce6e7d;
+    text-shadow: 2.5px 2.5px #232582;
+    pointer-events: none;
+}
+
+.login-box button,
+.register-box button {
+    background-color: #3b71ca;
+    border-color: #3b71ca;
+    transition: all 0.25s;
+}
+
+.login-box button:hover,
+.register-box button:hover {
+    background-color: #ce6e7d;
+    border-color: #ce6e7d;
+}
+
+.login-box input,
+.register-box input {
+    transition: all 0.25s;
+
+}
+
+.login-box input:hover,
+.register-box input:hover {
+    box-shadow: 2.5px 2.5px #ce6e7d;
+}
+
+/* register page */
+.register-page {
+    /* overflow: hidden; */
+    position: relative;
+    transition: all .5s;
+}
+
+.register-box {
+    background-color: #8fa2d2;
+    width: 25%;
+    animation: flyin 0.75s;
+}
+
+@media (max-width: 768px) {
+    .register-box {
+        width: 70%;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 992px) {
+    .register-box {
+        width: 47.5%;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1450px) {
+    .register-box {
+        width: 40%;
+    }
+}
+
+.register-box img {
+    width: 200px;
+    border-radius: 50%;
+}
+
+.register-1,
+.register-2 {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(12.5vh - (100px / 2));
+    transition: all 1s;
+}
+
+.anm-btn span {
+    cursor: pointer;
+    position: relative;
+    transition: 0.5s;
+}
+
+.anm-btn span:after {
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    transition: 0.5s;
+}
+
+.register-1 {
+    .next-btn:hover span:after {
+        opacity: 1;
+        right: 0;
+    }
+
+    .next-btn span:after {
+        content: '❯';
+        right: -20px;
+    }
+
+    .next-btn:hover span {
+        padding-right: 20px;
+    }
+}
+
+.register-2 {
+    position: absolute;
+    left: 100vw;
+    top: calc(25vh - (100px / 2));
+
+    .back-btn:hover span:after {
+        opacity: 1;
+        left: 0;
+    }
+
+    .back-btn span:after {
+        content: '❮';
+        left: -20px;
+    }
+
+    .back-btn:hover span {
+        padding-left: 20px;
+    }
+
+    .signup-btn:hover span:after {
+        opacity: 1;
+        right: 0;
+    }
+
+    .signup-btn span:after {
+        content: "↑";
+        vertical-align: -.125em;
+        background-image: url("data:image/svg+xml,<svg viewBox='0 0 16 16' fill='%23333' xmlns='http://www.w3.org/2000/svg'><path fill-rule='evenodd' d='M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z' clip-rule='evenodd'/></svg>");
+        background-repeat: no-repeat;
+        background-size: 1rem 1rem;
+        right: -20px;
+    }
+
+    .signup-btn:hover span {
+        padding-right: 20px;
+    }
+
+    .vendor-form {
+        display: none;
+    }
+
+    .customer-form {
+        display: none;
+    }
+
+    .shipper-form {
+        display: none;
+    }
+}
