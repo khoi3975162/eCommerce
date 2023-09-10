@@ -13,6 +13,12 @@ function clearImage() {
     frame.src = "./images/profiles/default.jpg";
 }
 
+function massDisplayEdit(queries, display) {
+    for (i = 0; i < queries.length; i++) {
+        queries[i].style.display = display;
+    }
+}
+
 function nextRegisterForm() {
     const username = document.querySelector('.username');
     const password = document.querySelector('.password');
@@ -37,23 +43,23 @@ function nextRegisterForm() {
     }
 
     // change content of next form based on account type
-    var vendorForm = document.querySelector('.vendor-form');
-    var customerForm = document.querySelector('.customer-form');
-    var shipperForm = document.querySelector('.shipper-form');
+    var vendorForms = document.querySelectorAll('.vendor-form');
+    var customerForms = document.querySelectorAll('.customer-form');
+    var shipperForms = document.querySelectorAll('.shipper-form');
     if (accountType.value == "vendor") {
-        vendorForm.style.display = 'block';
-        customerForm.style.display = 'none';
-        shipperForm.style.display = 'none';
+        massDisplayEdit(vendorForms, 'block');
+        massDisplayEdit(customerForms, 'none');
+        massDisplayEdit(shipperForms, 'none');
     }
     if (accountType.value == "customer") {
-        vendorForm.style.display = 'none';
-        customerForm.style.display = 'block';
-        shipperForm.style.display = 'none';
+        massDisplayEdit(vendorForms, 'none');
+        massDisplayEdit(customerForms, 'block');
+        massDisplayEdit(shipperForms, 'none');
     }
     if (accountType.value == "shipper") {
-        vendorForm.style.display = 'none';
-        customerForm.style.display = 'none';
-        shipperForm.style.display = 'block';
+        massDisplayEdit(vendorForms, 'none');
+        massDisplayEdit(customerForms, 'none');
+        massDisplayEdit(shipperForms, 'block');
     }
 
     // validation
@@ -79,7 +85,8 @@ function nextRegisterForm() {
                 register1.style.left = -(window.innerWidth + register1.offsetWidth) + "px";
 
                 var register2 = document.querySelector('.register-2');
-                register2.style.left = 0;
+                register2.style.display = 'block';
+                setTimeout(function () { register2.style.left = 0; }, 100);
             }
         });
 
@@ -88,7 +95,8 @@ function nextRegisterForm() {
 function backRegisterForm() {
     var register2 = document.querySelector('.register-2');
     register2.style.left = "100vw";
+    setTimeout(function () { register2.style.display = 'none'; }, 1000);
 
     var register1 = document.querySelector('.register-1');
-    register1.style.left = "0px";
+    register1.style.left = 0;
 }

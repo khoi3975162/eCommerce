@@ -2,8 +2,8 @@
 
     <!--==========Navigation Section==========-->
     <header>
-        <nav class="container-fluid navigation d-flex py-3 mb-4">
-            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto">
+        <nav class="container-fluid navigation d-flex py-3 mb-4 justify-content-between">
+            <a href="/" class="d-flex align-items-center">
                 <span><img class="logo" src="assets/images/rmit-store-logo.png" alt="logo"></span>
             </a>
 
@@ -24,40 +24,49 @@
     </header>
     <!--==========Navigation Section==========-->
 
-    <div class="container login-box rounded">
-
-        <form method="POST" action="/signin">
-            <h1>SIGN IN</h1>
-            <div class="form-outline mb-4">
-                <input type="text" id="username" name="username" class="form-control" placeholder="Username" />
+    <div class="container">
+        <div class="row g-0 form-row justify-content-center">
+            <div class="col-md-6 col-lg-6 col-xl-4 shadow-sm login-img">
+                <img src="images/pexels-cup-of-couple.jpg" alt="login-page-img" class="img-fluid h-100">
             </div>
 
-            <div class="form-outline mb-4">
-                <input type="password" id="password" name="password" class="form-control" placeholder="Password" />
-            </div>
-
-            <div class="row mb-4">
-                <div class="col d-flex justify-content-center">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="rememberme" checked />
-                        <label class="form-check-label" for="rememberme">Remember me</label>
+            <div
+                class="col-10 col-sm-8 col-md-6 col-lg-6 col-xl-4 shadow-sm d-flex align-items-center form-box login-col">
+                <form class="w-100" method="POST" action="/signin">
+                    <h1 class="mb-4">SIGN IN</h1>
+                    <div class="form-outline mb-4">
+                        <input type="text" id="username" name="username" class="form-control" placeholder="Username" />
                     </div>
-                </div>
 
-                <div class="col">
-                    <a href="">Forgot password?</a>
-                </div>
+                    <div class="form-outline mb-4">
+                        <input type="password" id="password" name="password" class="form-control"
+                            placeholder="Password" />
+                    </div>
+
+                    <div class="row mb-2">
+                        <div class="col d-flex justify-content-center mb-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="rememberme" checked />
+                                <label class="form-check-label" for="rememberme">Remember me</label>
+                            </div>
+                        </div>
+
+                        <div class="col d-flex justify-content-center mb-2">
+                            <a href="">Forgot password?</a>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mb-4">
+                        <button type="submit" class="btn btn-primary anm-btn signin-btn"><span>Sign
+                                in</span></button>
+                    </div>
+
+                    <div class="text-center">
+                        <p>Not a member? <a href="/signup">Sign up</a></p>
+                    </div>
+                </form>
             </div>
-
-            <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-primary mb-4 anm-btn signin-btn"><span>Sign in</span></button>
-            </div>
-
-            <div class="text-center">
-                <p>Not a member? <a href="/signup">Sign up</a></p>
-            </div>
-        </form>
-
+        </div>
     </div>
 
     <%- include('./partials/footer.ejs') %>

@@ -2,8 +2,8 @@
 
     <!--==========Navigation Section==========-->
     <header>
-        <nav class="container-fluid navigation d-flex py-3 mb-4">
-            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto">
+        <nav class="container-fluid navigation d-flex py-3 mb-4 justify-content-between">
+            <a href="/" class="d-flex align-items-center">
                 <span><img class="logo" src="assets/images/rmit-store-logo.png" alt="logo"></span>
             </a>
 
@@ -28,111 +28,146 @@
 
         <form method="POST" action="/signup" enctype="multipart/form-data">
 
+            <div class="container register-1">
+                <div class="row g-0 form-row justify-content-center">
+                    <div
+                        class="col-10 col-sm-10 col-md-8 col-lg-6 col-xl-5 shadow-sm form-box register-col-1 d-flex align-items-center">
+                        <div class="w-100">
+                            <h1 class="mb-4">SIGN UP</h1>
+                            <div class="form-outline mb-4">
+                                <input type="text" id="username" name="username" class="form-control username"
+                                    placeholder="Username" />
+                            </div>
 
-            <div class="container register-box register-1 rounded">
-                <h1>SIGN UP</h1>
-                <div class="form-outline mb-4">
-                    <input type="text" id="username" name="username" class="form-control username"
-                        placeholder="Username" />
-                </div>
+                            <div class="form-outline mb-4">
+                                <input type="password" id="password" name="password" class="form-control password"
+                                    placeholder="Password" />
+                            </div>
 
-                <div class="form-outline mb-4">
-                    <input type="password" id="password" name="password" class="form-control password"
-                        placeholder="Password" />
-                </div>
+                            <hr>
 
-                <hr>
+                            <div class="mb-4">
+                                <input class="form-control profile" type="file" id="formFile" name="profile"
+                                    onchange="preview()">
+                                <div class="d-grid">
+                                    <button type="button" onclick="clearImage()" class="btn btn-primary mt-3">Remove
+                                        avatar</button>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-center">
+                                <img id="frame" class="col-12 img-fuild" alt="profile"
+                                    src="./images/profiles/default.jpg" />
+                            </div>
 
-                <div class="row align-items-center">
-                    <div class="col mb-3">
-                        <input class="form-control profile" type="file" id="formFile" name="profile"
-                            onchange="preview()">
-                        <div class="d-grid">
-                            <button type="button" onclick="clearImage()" class="btn btn-primary mt-3">Remove
-                                avatar</button>
+                            <hr>
+
+                            <div class="container row check-boxes align-items-center">
+                                <div class="col form-check d-flex justify-content-center gap-2">
+                                    <input class="form-check-input" type="radio" value="vendor" name="accounttype"
+                                        id="vendorflexCheckDefault">
+                                    <label class="form-check-label" for="vendorflexCheckDefault">
+                                        Vendor
+                                    </label>
+                                </div>
+                                <div class="col form-check d-flex justify-content-center gap-2">
+                                    <input class="form-check-input" type="radio" value="customer" name="accounttype"
+                                        id="customerflexCheckChecked">
+                                    <label class="form-check-label" for="customerflexCheckChecked">
+                                        Customer
+                                    </label>
+                                </div>
+                                <div class="col form-check d-flex justify-content-center gap-2">
+                                    <input class="form-check-input" type="radio" value="shipper" name="accounttype"
+                                        id="shipperflexCheckChecked">
+                                    <label class="form-check-label" for="shipperflexCheckChecked">
+                                        Shipper
+                                    </label>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <div class="d-grid">
+                                <button type="button" onclick="nextRegisterForm()"
+                                    class="btn btn-primary mb-3 anm-btn next-btn">
+                                    <span>Next</span></button>
+                            </div>
                         </div>
                     </div>
-                    <img id="frame" class="col img-fuild" alt="profile" src="./images/profiles/default.jpg" />
-                </div>
 
-                <hr>
-
-                <div class="container row check-boxes align-items-center">
-                    <div class="col form-check d-flex justify-content-center gap-2">
-                        <input class="form-check-input" type="radio" value="vendor" name="accounttype"
-                            id="vendorflexCheckDefault">
-                        <label class="form-check-label" for="vendorflexCheckDefault">
-                            Vendor
-                        </label>
-                    </div>
-                    <div class="col form-check d-flex justify-content-center gap-2">
-                        <input class="form-check-input" type="radio" value="customer" name="accounttype"
-                            id="customerflexCheckChecked">
-                        <label class="form-check-label" for="customerflexCheckChecked">
-                            Customer
-                        </label>
-                    </div>
-                    <div class="col form-check d-flex justify-content-center gap-2">
-                        <input class="form-check-input" type="radio" value="shipper" name="accounttype"
-                            id="shipperflexCheckChecked">
-                        <label class="form-check-label" for="shipperflexCheckChecked">
-                            Shipper
-                        </label>
+                    <div class="col-lg-6 col-xl-5 shadow-sm signup-img-1">
+                        <img src="images/pexels-anna-shvets.jpg" alt="signup-page-img-1" class="img-fluid h-100">
                     </div>
                 </div>
-
-                <hr>
-
-                <div class="d-grid">
-                    <button type="button" onclick="nextRegisterForm()" class="btn btn-primary mb-3 anm-btn next-btn">
-                        <span>Next</span></button>
-                </div>
-
             </div>
 
 
-            <div class="container register-box register-2 rounded">
+            <div class="container register-2">
 
-                <form method="POST" action="/register">
-                    <h1>SIGN UP</h1>
-
-                    <div class="vendor-form">
-                        <div class="form-outline mb-4">
-                            <input type="text" id="vendorname" name="vendorname" class="form-control"
-                                placeholder="Business Name" />
+                <div class="row g-0 form-row justify-content-center">
+                    <div class="col-10 col-sm-10 col-md-8 col-lg-6 col-xl-5 shadow-sm">
+                        <div class="shadow-sm signup-img-2 vendor-form">
+                            <img src="images/pexels-karolina-grabowska.jpg" alt="signup-page-img-2"
+                                class="img-fluid w-100">
                         </div>
 
-                        <div class="form-outline mb-4">
-                            <input type="text" id="vendoraddress" name="vendoraddress" class="form-control"
-                                placeholder="Business Address" />
+                        <div class="shadow-sm signup-img-2 customer-form">
+                            <img src="images/pexels-cottonbro-studio.jpg" alt="signup-page-img-2"
+                                class="img-fluid w-100">
+                        </div>
+
+                        <div class="shadow-sm signup-img-2 shipper-form">
+                            <img src="images/pexels-karolina-grabowska-cart.jpg" alt="signup-page-img-2"
+                                class="img-fluid w-100">
+                        </div>
+
+                        <div class="form-box register-col-2">
+                            <div class="vendor-form">
+                                <h1 class="mb-4">START SELLING</h1>
+
+                                <div class="form-outline mb-4">
+                                    <input type="text" id="vendorname" name="vendorname" class="form-control"
+                                        placeholder="Business Name" />
+                                </div>
+
+                                <div class="form-outline mb-4">
+                                    <input type="text" id="vendoraddress" name="vendoraddress" class="form-control"
+                                        placeholder="Business Address" />
+                                </div>
+                            </div>
+
+                            <div class="customer-form">
+                                <h1 class="mb-4">START BUYING</h1>
+
+                                <div class="form-outline mb-4">
+                                    <input type="text" id="name" name="name" class="form-control" placeholder="Name" />
+                                </div>
+
+                                <div class="form-outline mb-4">
+                                    <input type="text" id="address" name="address" class="form-control"
+                                        placeholder="Address" />
+                                </div>
+                            </div>
+
+                            <div class="shipper-form">
+                                <h1 class="mb-4">START DELIVERY</h1>
+
+                                <div class="form-outline mb-4">
+                                    <input type="text" id="hub" name="hub" class="form-control" placeholder="Hub" />
+                                </div>
+                            </div>
+
+                            <div class="container mb-3">
+                                <div class="row gap-2">
+                                    <button type="button" onclick="backRegisterForm()"
+                                        class="col btn btn-primary anm-btn back-btn"><span>Back</span></button>
+                                    <button type="submit" class="col btn btn-primary anm-btn signup-btn"><span>Sign
+                                            up</span></button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="customer-form">
-                        <div class="form-outline mb-4">
-                            <input type="text" id="name" name="name" class="form-control" placeholder="Name" />
-                        </div>
-
-                        <div class="form-outline mb-4">
-                            <input type="text" id="address" name="address" class="form-control" placeholder="Address" />
-                        </div>
-                    </div>
-
-                    <div class="form-outline mb-4 shipper-form">
-                        <input type="text" id="hub" name="hub" class="form-control" placeholder="Hub" />
-                    </div>
-
-                    <div class="container mb-3">
-                        <div class="row gap-2">
-                            <button type="button" onclick="backRegisterForm()"
-                                class="col btn btn-primary anm-btn back-btn"><span>Back</span></button>
-                            <button type="submit" class="col btn btn-primary anm-btn signup-btn"><span>Sign
-                                    up</span></button>
-                        </div>
-                    </div>
-
-                </form>
-
+                </div>
             </div>
 
         </form>
@@ -143,4 +178,4 @@
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
         crossorigin="anonymous"></script>
     <script src="./js/script.js"></script>
-    </body>
+    </bod
