@@ -100,3 +100,11 @@ function backRegisterForm() {
     var register1 = document.querySelector('.register-1');
     register1.style.left = 0;
 }
+
+document.addEventListener("DOMContentLoaded", function setDummyDiv() {
+    if (window.location.pathname == "/signup") {
+        var absoluteDivHeight = document.querySelector('.register-1').offsetHeight;
+        var blankDiv = document.querySelector('.dummy');
+        blankDiv.style.height = absoluteDivHeight + 'px';
+    }
+})
