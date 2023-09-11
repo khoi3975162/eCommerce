@@ -120,6 +120,21 @@ userSchema.statics.ifVendorExist = async (info, value) => {
     }
 }
 
+userSchema.statics.getAccountType = async (user) => {
+    const vendor = await User.findOne({ username: user.username, "vendor.accountType": true });
+    if (vendor) {
+        return "vendor";
+    }
+    const customer = await User.findOne({ username: user.username, "customer.accountType": true });
+    if (customer) {
+        return "customer";
+    }
+    const shipper = await User.findOne({ username: user.username, "shipper.accountType": true });
+    if (shipper) {
+        return "shipper";
+    }
+}
+
 // Define models based on the schema
 const User = mongoose.model('User', userSchema);
 

@@ -141,6 +141,22 @@ document.addEventListener("DOMContentLoaded", function displayNav() {
         if (user != "Guest") {
             document.querySelector('.nav-signin').style.display = "none";
             document.querySelector('.nav-signup').style.display = "none";
+            const accountType = document.querySelector('.account-type').innerHTML.trim();
+            if (accountType == 'vendor') {
+                var customerNav = document.querySelectorAll('.nav-customer');
+                massDisplayEdit(customerNav, 'none');
+            }
+            else if (accountType == 'customer') {
+                var vendorNav = document.querySelectorAll('.nav-vendor');
+                massDisplayEdit(vendorNav, 'none');
+            }
+            else if (accountType == 'shipper') {
+                var customerNav = document.querySelectorAll('.nav-customer');
+                massDisplayEdit(customerNav, 'none');
+                var vendorNav = document.querySelectorAll('.nav-vendor');
+                massDisplayEdit(vendorNav, 'none');
+                document.querySelector('.nav-shipper').style.display = 'block';
+            }
         }
         else {
             document.querySelector('.nav-cart').style.display = "none";

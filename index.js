@@ -6,7 +6,8 @@ const upload = multer({ dest: 'public/images/profiles/' });
 
 
 require('./modules/database');
-const User = require('./models/user');
+const User = require('./models/User');
+const Cart = require('./models/Cart');
 const auth = require('./modules/auth');
 
 // Create instances of the express application
@@ -20,12 +21,21 @@ app.use(cookieParser());
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
-app.get('/', auth, (req, res) => {
+app.get('/', auth, async (req, res) => {
     if (req.guest) {
-        return res.render('index', { user: "Guest", cart: 0 });
+        return res.render('index', {
+            accountType: "none",
+            username: "Guest",
+            cartCount: 0
+        });
     }
     else {
-        return res.render('index', { user: req.user.username, cart: 5 });
+        const cart = await Cart.findOne({ 'owner': req.user })
+        return res.render('index', {
+            accountType: await User.getAccountType(req.user),
+            username: req.user.username,
+            cartCount: cart['products'].length
+        });
     }
 })
 
@@ -73,13 +83,34 @@ app.post('/signup', upload.single('profile'), async (req, res, next) => {
         const user = await new User(userData);
         await user.save();
         const token = await user.generateAuthToken();
-        return res
-            .cookie("access_token", token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-            })
-            .status(200)
-            .redirect('/')
+        await Cart.createCart(user);
+        if (req.body['accounttype'] == 'vendor') {
+            return res
+                .cookie("access_token", token, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === "production",
+                })
+                .status(200)
+                .redirect('/dashboard');
+        }
+        else if (req.body['accounttype'] == 'customer') {
+            return res
+                .cookie("access_token", token, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === "production",
+                })
+                .status(200)
+                .redirect('/');
+        }
+        else if (req.body['accounttype'] == 'shipper') {
+            return res
+                .cookie("access_token", token, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === "production",
+                })
+                .status(200)
+                .redirect('/orders');
+        }
     } catch (error) {
         console.log(error);
     }
@@ -102,13 +133,38 @@ app.post('/signin', auth, async (req, res) => {
             return res.status(401).send('Login failed! Please check your credentials');
         }
         const token = await user.generateAuthToken();
-        return res
-            .cookie("access_token", token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-            })
-            .status(200)
-            .redirect('/');
+        const cart = await Cart.findOne({ 'owner': user });
+        if (!cart) {
+            await Cart.createCart(user);
+        }
+        const accountType = await User.getAccountType(req.user);
+        if (accountType == 'vendor') {
+            return res
+                .cookie("access_token", token, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === "production",
+                })
+                .status(200)
+                .redirect('/dashboard');
+        }
+        else if (accountType == 'customer') {
+            return res
+                .cookie("access_token", token, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === "production",
+                })
+                .status(200)
+                .redirect('/');
+        }
+        else if (accountType == 'shipper') {
+            return res
+                .cookie("access_token", token, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === "production",
+                })
+                .status(200)
+                .redirect('/orders');
+        }
     } catch (error) {
         console.log(error);
     }
@@ -121,7 +177,7 @@ app.get('/me', auth, (req, res) => {
             .redirect('/signin');
     }
     else {
-        return res.render('me', { user: req.user })
+        return res.render('me', { user: req.user });
     }
 })
 
@@ -177,25 +233,104 @@ app.get('/check/vendoraddress/:vendoraddress', async (req, res) => {
     }
 })
 
-app.get('/cart', auth, (req, res) => {
+app.get('/products', auth, async (req, res) => {
     if (req.guest) {
         return res
             .status(401)
             .redirect('/signin');
     }
+    else if (await User.getAccountType(req.user) == 'vendor') {
+        return res.render('vendor/products');
+    }
     else {
-        return res.render('cart');
+        return res
+            .status(403)
+            .send("The account you are logged in is not a vendor account.");
     }
 })
 
-app.get('/orders', auth, (req, res) => {
+app.get('/product/new', auth, async (req, res) => {
     if (req.guest) {
         return res
             .status(401)
             .redirect('/signin');
     }
+    else if (await User.getAccountType(req.user) == 'vendor') {
+        return res.render('vendor/product-new');
+    }
     else {
-        return res.render('orders');
+        return res
+            .status(403)
+            .send("The account you are logged in is not a vendor account.");
+    }
+})
+
+app.get('/cart', auth, async (req, res) => {
+    if (req.guest) {
+        return res
+            .status(401)
+            .redirect('/signin');
+    }
+    else if (await User.getAccountType(req.user) == 'customer') {
+        return res.render('customer/cart');
+    }
+    else {
+        return res
+            .status(403)
+            .send("The account you are logged in is not a customer account.");
+    }
+})
+
+app.get('/orders', auth, async (req, res) => {
+    const accountType = await User.getAccountType(req.user);
+    if (req.guest) {
+        return res
+            .status(401)
+            .redirect('/signin');
+    }
+    else if (accountType == 'customer') {
+        return res.render('customer/orders');
+    }
+    else if (accountType == 'shipper') {
+        return res.render('shipper/orders');
+    }
+    else {
+        return res
+            .status(403)
+            .send("The account you are logged in is not a customer or shipper account.");
+    }
+})
+
+app.get('/:vendorname', auth, async (req, res) => {
+    if (await User.getAccountType(req.user) == 'customer') {
+        return res.render('customer/orders');
+    }
+    else if (await User.getAccountType(req.user) == 'shipper') {
+        return res.render('shipper/orders');
+    }
+    else {
+        return res
+            .status(403)
+            .send("The account you are logged in is not a customer or shipper account.");
+    }
+})
+
+app.get('/:vendorname/products', auth, async (req, res) => {
+    if (req.guest) {
+        return res
+            .status(401)
+            .redirect('/signin');
+    }
+    else if (await User.getAccountType(req.user) == 'customer') {
+        return res.render('customer/orders');
+    }
+    else if (await User.getAccountType(req.user) == 'shipper') {
+        return res.render('shipper/orders');
+    }
+    else {
+        return res
+            .status(403)
+            .send("The account you are logged in is not a customer or shipper account.");
     }
 })
 
