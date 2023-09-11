@@ -48,22 +48,21 @@
                     </a>
                 </li>
                 <li class="nav-item nav-user-menu">
-                    <a href="#open-user-menu" class="nav-link">
-                        <span class="user">
-                            <%= user %>
-                        </span>
-                        <i class="bi bi-chevron-down"></i>
-                    </a>
-                </li>
+                    <div class="dropdown">
+                        <a class="btn dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            <span class="user">
+                                <%= user %>
+                            </span>
+                        </a>
 
-                <!-- <div id="open-user-menu" class="mobile-nav">
-                    <a href="#" class="modal-close"></a>
-                    <a href="./index.html">Home</a>
-                    <a href="./books/fiction/fiction.html">Fiction</a>
-                    <a href="./books/non-fiction/non-fiction.html">Non-Fiction</a>
-                    <a href="./footer.html">About Us</a>
-                    <a href="./contact.html">Contact Us</a>
-                </div> -->
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/orders">Orders</a></li>
+                            <li><a class="dropdown-item" href="/me">Profile</a></li>
+                            <li><a class="dropdown-item" href="/signout">Sign out</a></li>
+                        </ul>
+                    </div>
+                </li>
 
             </ul>
         </nav>

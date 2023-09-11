@@ -76,8 +76,7 @@ app.post('/signup', upload.single('profile'), async (req, res, next) => {
             .status(200)
             .redirect('/')
     } catch (error) {
-        console.log(error)
-        return res.render('signup')
+        res.render('signup')
     }
 })
 
@@ -101,7 +100,7 @@ app.post('/signin', async (req, res) => {
             .status(200)
             .redirect('/')
     } catch (error) {
-        return res.render('signin')
+        res.render('signin')
     }
 })
 
@@ -109,7 +108,7 @@ app.get('/me', (req, res) => {
     res.render('me', { user: req.user })
 })
 
-app.post('/logout', auth, async (req, res) => {
+app.post('/signout', auth, async (req, res) => {
     // Log user out of the application
     try {
         req.user.tokens = req.user.tokens.filter((token) => {
@@ -136,6 +135,27 @@ app.get('/usernamecheck/:username', async (req, res) => {
             }
         })
         .catch((error) => console.log(error));
+})
+
+app.get('/vendornamecheck/:vendorname', async (req, res) => {
+    User.find({ vendor: req.params.vendorname })
+        .then((vendorname) => {
+            if (vendorname.length != 0) {
+                res.send('true')
+            }
+            else {
+                res.send('false')
+            }
+        })
+        .catch((error) => console.log(error));
+})
+
+app.get('/cart', (req, res) => {
+    res.render('cart')
+})
+
+app.get('/orders', (req, res) => {
+    res.render('orders')
 })
 
 

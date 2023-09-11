@@ -100,6 +100,20 @@ function backRegisterForm() {
     register1.style.left = 0;
 }
 
+function vendorNameCheck() {
+    fetch('/vendornamecheck/' + username.value)
+        .then(response => response.text())
+        .then(data => {
+            if (data == "true") {
+                alert("Username exists in database, please try another username");
+                return;
+            }
+            else {
+                next()
+            }
+        });
+}
+
 document.addEventListener("DOMContentLoaded", function setDummyDiv() {
     if (window.location.pathname == "/signup") {
         var absoluteDivHeight = document.querySelector('.register-1').offsetHeight;
