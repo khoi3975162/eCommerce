@@ -3,10 +3,7 @@ if (window.history.replaceState) {
 }
 
 function preview() {
-    console.log(URL.createObjectURL(event.target.files[0]));
     frame.src = URL.createObjectURL(event.target.files[0]);
-    var profilePic = document.querySelector('.profile_path');
-    // profilePic.value = URL.createObjectURL(event.target.files[0]);
 }
 function clearImage() {
     document.getElementById('formFile').value = "";
@@ -42,6 +39,33 @@ function nextRegisterForm() {
         return;
     }
 
+    // validation
+    if (username.value.length < 8 || username.value.length > 15 || ! /^[a-zA-Z0-9]+$/.test(username.value)) {
+        alert("Username must contain only letters and digits, and and be 8-15 characters long.");
+        return;
+    }
+    if (password.value.length < 8 || password.value.length > 20 || ! /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,20}$/.test(password.value)) {
+        alert("Password must contain at least one uppercase letter, one lowercase letter, one digit, one special character (!@#$%^&*), and be 8-20 characters long.");
+        return;
+    }
+
+    // check username exists on database
+    fetch('/check/username/' + username.value)
+        .then(response => response.text())
+        .then(data => {
+            if (data == "true") {
+                alert("Username exists in database, please try another username");
+            }
+            else {
+                var register1 = document.querySelector('.register-1');
+                register1.style.left = -(window.innerWidth + register1.offsetWidth) + "px";
+
+                var register2 = document.querySelector('.register-2');
+                register2.style.display = 'block';
+                setTimeout(function () { register2.style.left = 0; }, 100);
+            }
+        });
+
     // change content of next form based on account type
     var vendorForms = document.querySelectorAll('.vendor-form');
     var customerForms = document.querySelectorAll('.customer-form');
@@ -61,34 +85,6 @@ function nextRegisterForm() {
         massDisplayEdit(customerForms, 'none');
         massDisplayEdit(shipperForms, 'block');
     }
-
-    // validation
-    if (username.value.length < 8 || username.value.length > 15 || ! /^[a-zA-Z0-9]+$/.test(username.value)) {
-        alert("Username must contain only letters and digits, and and be 8-15 characters long.");
-        return;
-    }
-    if (password.value.length < 8 || password.value.length > 20 || ! /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,20}$/.test(password.value)) {
-        alert("Password must contain at least one uppercase letter, one lowercase letter, one digit, one special character (!@#$%^&*), and be 8-20 characters long.");
-        return;
-    }
-
-    // check username exists on database
-    fetch('/usernamecheck/' + username.value)
-        .then(response => response.text())
-        .then(data => {
-            if (data == "true") {
-                alert("Username exists in database, please try another username");
-                return;
-            }
-            else {
-                var register1 = document.querySelector('.register-1');
-                register1.style.left = -(window.innerWidth + register1.offsetWidth) + "px";
-
-                var register2 = document.querySelector('.register-2');
-                register2.style.display = 'block';
-                setTimeout(function () { register2.style.left = 0; }, 100);
-            }
-        });
 }
 
 function backRegisterForm() {
@@ -100,18 +96,35 @@ function backRegisterForm() {
     register1.style.left = 0;
 }
 
-function vendorNameCheck() {
-    fetch('/vendornamecheck/' + username.value)
-        .then(response => response.text())
-        .then(data => {
-            if (data == "true") {
-                alert("Username exists in database, please try another username");
-                return;
-            }
-            else {
-                next()
-            }
-        });
+function vendorCheck() {
+    const vendorForms = document.querySelectorAll('.vendor-form');
+    if (vendorForms[0].style.display == 'block') {
+        fetch('/check/vendorname/' + document.querySelector('.vendorname').value)
+            .then(response => response.text())
+            .then(data => {
+                console.log(data)
+                if (data == "true") {
+                    console.log('1')
+                    alert("Vendor name exists in database, please try another name");
+                }
+                else {
+                    fetch('/check/vendoraddress/' + document.querySelector('.vendoraddress').value)
+                        .then(response => response.text())
+                        .then(data => {
+                            console.log('1')
+                            if (data == "true") {
+                                alert("Vendor address exists in database, please use another address");
+                            }
+                            else {
+                                document.querySelector(".signup-form").submit();
+                            }
+                        });
+                }
+            });
+    }
+    else {
+        document.querySelector(".signup-form").submit();
+    }
 }
 
 document.addEventListener("DOMContentLoaded", function setDummyDiv() {
@@ -122,8 +135,8 @@ document.addEventListener("DOMContentLoaded", function setDummyDiv() {
     }
 })
 
-document.addEventListener("DOMContentLoaded", function setDummyDiv() {
-    if (window.location.pathname != "/signup" || window.location.pathname != "/login") {
+document.addEventListener("DOMContentLoaded", function displayNav() {
+    if (window.location.pathname != "/signup" & window.location.pathname != "/signin") {
         const user = document.querySelector('.user').innerHTML.trim();
         if (user != "Guest") {
             document.querySelector('.nav-signin').style.display = "none";

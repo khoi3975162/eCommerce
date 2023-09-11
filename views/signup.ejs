@@ -9,7 +9,7 @@
 
     <div class="register-page">
 
-        <form method="POST" action="/signup" enctype="multipart/form-data">
+        <form method="POST" action="/signup" enctype="multipart/form-data" class="signup-form">
 
             <div class="container register-1">
                 <div class="row g-0 form-row justify-content-center">
@@ -109,13 +109,13 @@
                                 <h1 class="mb-4">START SELLING</h1>
 
                                 <div class="form-outline mb-4">
-                                    <input type="text" id="vendorname" name="vendorname" class="form-control"
+                                    <input type="text" id="vendorname" name="vendorname" class="form-control vendorname"
                                         placeholder="Business Name" />
                                 </div>
 
                                 <div class="form-outline mb-4">
-                                    <input type="text" id="vendoraddress" name="vendoraddress" class="form-control"
-                                        placeholder="Business Address" />
+                                    <input type="text" id="vendoraddress" name="vendoraddress"
+                                        class="form-control vendoraddress" placeholder="Business Address" />
                                 </div>
                             </div>
 
@@ -143,11 +143,16 @@
                             <div class="container mb-3">
                                 <div class="row gap-2">
                                     <button type="button" onclick="backRegisterForm()"
-                                        class="col btn btn-primary anm-btn back-btn"><span>Back</span></button>
-                                    <button type="submit" class="col btn btn-primary anm-btn signup-btn"><span>Sign
-                                            up</span></button>
+                                        class="col btn btn-primary anm-btn back-btn">
+                                        <span>Back</span>
+                                    </button>
+                                    <button type="button" class="col btn btn-primary anm-btn signup-btn"
+                                        onclick="vendorCheck()">
+                                        <span>Sign up</span>
+                                    </button>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>

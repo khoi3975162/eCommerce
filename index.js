@@ -1,36 +1,41 @@
 // Import libraries
-const express = require('express')
-const cookieParser = require("cookie-parser")
-const multer = require('multer')
-const upload = multer({ dest: 'public/images/profiles/' })
+const express = require('express');
+const cookieParser = require("cookie-parser");
+const multer = require('multer');
+const upload = multer({ dest: 'public/images/profiles/' });
 
 
-require('./modules/database')
-const User = require('./models/user')
-const auth = require('./modules/auth')
+require('./modules/database');
+const User = require('./models/user');
+const auth = require('./modules/auth');
 
 // Create instances of the express application
-const app = express()
+const app = express();
 
 // Middleware to parse POST data
-app.use(express.urlencoded({ extended: true }))
-app.use(cookieParser())
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Use folder assets and views
-app.use(express.static('public'))
-app.set('view engine', 'ejs')
+app.use(express.static('public'));
+app.set('view engine', 'ejs');
 
 app.get('/', auth, (req, res) => {
-    if (req.guest == true) {
-        res.render('index', { user: "Guest", cart: 0 })
+    if (req.guest) {
+        return res.render('index', { user: "Guest", cart: 0 });
     }
     else {
-        res.render('index', { user: req.user.username, cart: 5 })
+        return res.render('index', { user: req.user.username, cart: 5 });
     }
 })
 
-app.get('/signup', (req, res) => {
-    res.render('signup')
+app.get('/signup', auth, (req, res) => {
+    if (req.guest) {
+        return res.render('signup');
+    }
+    else {
+        return res.status(403).send("You have already signed in, please sign out first.")
+    }
 })
 
 app.post('/signup', upload.single('profile'), async (req, res, next) => {
@@ -65,9 +70,9 @@ app.post('/signup', upload.single('profile'), async (req, res, next) => {
             userData['shipper']['hub'] = req.body['hub']
         }
 
-        const user = new User(userData)
-        await user.save()
-        const token = await user.generateAuthToken()
+        const user = await new User(userData);
+        await user.save();
+        const token = await user.generateAuthToken();
         return res
             .cookie("access_token", token, {
                 httpOnly: true,
@@ -76,86 +81,122 @@ app.post('/signup', upload.single('profile'), async (req, res, next) => {
             .status(200)
             .redirect('/')
     } catch (error) {
-        res.render('signup')
+        console.log(error);
     }
 })
 
-app.get('/signin', (req, res) => {
-    res.render('signin')
+app.get('/signin', auth, (req, res) => {
+    if (req.guest) {
+        return res.render('signin');
+    }
+    else {
+        return res.status(403).send("You have already signed in, please sign out first.")
+    }
 })
 
-app.post('/signin', async (req, res) => {
+app.post('/signin', auth, async (req, res) => {
     try {
-        const { username, password } = req.body
-        const user = await User.findByCredentials(username, password)
+        const { username, password } = req.body;
+        const user = await User.findByCredentials(username, password);
         if (!user) {
-            return res.status(401).send({ error: 'Login failed! Check authentication credentials' })
+            return res.status(401).send('Login failed! Please check your credentials');
         }
-        const token = await user.generateAuthToken()
+        const token = await user.generateAuthToken();
         return res
             .cookie("access_token", token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
             })
             .status(200)
-            .redirect('/')
+            .redirect('/');
     } catch (error) {
-        res.render('signin')
+        console.log(error);
     }
 })
 
-app.get('/me', (req, res) => {
-    res.render('me', { user: req.user })
-})
-
-app.post('/signout', auth, async (req, res) => {
-    // Log user out of the application
-    try {
-        req.user.tokens = req.user.tokens.filter((token) => {
-            return token.token != req.token
-        })
-        await req.user.save()
+app.get('/me', auth, (req, res) => {
+    if (req.guest) {
         return res
-            .clearCookie("access_token")
-            .status(200)
-            .redirect('/')
-    } catch (error) {
-        return res.status(500).send(error)
+            .status(401)
+            .redirect('/signin');
+    }
+    else {
+        return res.render('me', { user: req.user })
     }
 })
 
-app.get('/usernamecheck/:username', async (req, res) => {
-    User.find({ username: req.params.username })
-        .then((usernames) => {
-            if (usernames.length != 0) {
-                res.send('true')
-            }
-            else {
-                res.send('false')
-            }
-        })
-        .catch((error) => console.log(error));
+app.get('/signout', auth, (req, res) => {
+    if (req.guest) {
+        return res
+            .status(401)
+            .redirect('/');
+    }
+    else {
+        try {
+            req.user.tokens = req.user.tokens.filter((token) => {
+                return token.token != req.token;
+            })
+            req.user.save();
+            return res
+                .clearCookie("access_token")
+                .status(200)
+                .redirect('/');
+        } catch (error) {
+            console.log(error);
+        }
+    }
 })
 
-app.get('/vendornamecheck/:vendorname', async (req, res) => {
-    User.find({ vendor: req.params.vendorname })
-        .then((vendorname) => {
-            if (vendorname.length != 0) {
-                res.send('true')
-            }
-            else {
-                res.send('false')
-            }
-        })
-        .catch((error) => console.log(error));
+app.get('/check/username/:username', async (req, res) => {
+    const exist = await User.ifUserExist(req.params.username);
+    if (exist) {
+        return res.send('true');
+    }
+    else {
+        return res.send('false');
+    }
 })
 
-app.get('/cart', (req, res) => {
-    res.render('cart')
+app.get('/check/vendorname/:vendorname', async (req, res) => {
+    const exist = await User.ifVendorExist('vendor.vendorName', req.params.vendorname);
+    if (exist) {
+        return res.send('true');
+    }
+    else {
+        return res.send('false');
+    }
 })
 
-app.get('/orders', (req, res) => {
-    res.render('orders')
+app.get('/check/vendoraddress/:vendoraddress', async (req, res) => {
+    const exist = await User.ifVendorExist('vendor.vendorAddress', req.params.vendoraddress);
+    if (exist) {
+        return res.send('true');
+    }
+    else {
+        return res.send('false');
+    }
+})
+
+app.get('/cart', auth, (req, res) => {
+    if (req.guest) {
+        return res
+            .status(401)
+            .redirect('/signin');
+    }
+    else {
+        return res.render('cart');
+    }
+})
+
+app.get('/orders', auth, (req, res) => {
+    if (req.guest) {
+        return res
+            .status(401)
+            .redirect('/signin');
+    }
+    else {
+        return res.render('orders');
+    }
 })
 
 
