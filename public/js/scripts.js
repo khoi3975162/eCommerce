@@ -2,20 +2,39 @@ if (window.history.replaceState) {
     window.history.replaceState(null, null, window.location.href);
 }
 
+/** The function "preview" sets the source of a frame element to the URL of the selected file. */
 function preview() {
     frame.src = URL.createObjectURL(event.target.files[0]);
 }
+
+/**
+ * The clearImage function clears the value of a file input element and sets the source of an image
+ * element to a default image.
+ */
 function clearImage() {
     document.getElementById('formFile').value = "";
     frame.src = "./images/profiles/default.jpg";
 }
 
+/**
+ * The function `massDisplayEdit` is used to change the display property of multiple elements specified
+ * by an array of queries.
+ * @param queries - The "queries" parameter is an array of HTML elements that you want to modify the
+ * display property of.
+ * @param display - The "display" parameter is a string that specifies how the elements should be
+ * displayed. It can have the following values:
+ */
 function massDisplayEdit(queries, display) {
     for (i = 0; i < queries.length; i++) {
         queries[i].style.display = display;
     }
 }
 
+/**
+ * The function `nextRegisterForm()` is used to validate user input for a registration form and
+ * navigate to the next step of the registration process.
+ * @returns The function return when there is a failed validation with alert message.
+ */
 function nextRegisterForm() {
     const username = document.querySelector('.username');
     const password = document.querySelector('.password');
@@ -39,7 +58,7 @@ function nextRegisterForm() {
         return;
     }
 
-    // validation
+    // username and password validation
     if (username.value.length < 8 || username.value.length > 15 || ! /^[a-zA-Z0-9]+$/.test(username.value)) {
         alert("Username must contain only letters and digits, and and be 8-15 characters long.");
         return;
@@ -87,6 +106,10 @@ function nextRegisterForm() {
     }
 }
 
+/**
+ * The function backRegisterForm is used to transition from the second step of a registration form to
+ * the first step by animating the movement of the form elements.
+ */
 function backRegisterForm() {
     var register2 = document.querySelector('.register-2');
     register2.style.left = "100vw";
@@ -96,26 +119,31 @@ function backRegisterForm() {
     register1.style.left = 0;
 }
 
+/**
+ * The function `vendorCheck` checks if a vendor name and address already exist in a database before
+ * submitting a signup form.
+ */
 function vendorCheck() {
     const vendorForms = document.querySelectorAll('.vendor-form');
     if (vendorForms[0].style.display == 'block') {
+        // check if vendor name exist
         fetch('/check/vendorname/' + document.querySelector('.vendorname').value)
             .then(response => response.text())
             .then(data => {
                 console.log(data)
                 if (data == "true") {
-                    console.log('1')
                     alert("Vendor name exists in database, please try another name");
                 }
                 else {
+                    // check if vendor address exist
                     fetch('/check/vendoraddress/' + document.querySelector('.vendoraddress').value)
                         .then(response => response.text())
                         .then(data => {
-                            console.log('1')
                             if (data == "true") {
                                 alert("Vendor address exists in database, please use another address");
                             }
                             else {
+                                // submit form if all is passed
                                 document.querySelector(".signup-form").submit();
                             }
                         });
@@ -123,10 +151,15 @@ function vendorCheck() {
             });
     }
     else {
+        // submit form if form is not vendor registration
         document.querySelector(".signup-form").submit();
     }
 }
 
+/**
+ * The code is adding an event listener to the `DOMContentLoaded` event to set the height of the
+ * dummy div for pushing the footer down because there are absolute divs on the page
+ */
 document.addEventListener("DOMContentLoaded", function setDummyDiv() {
     if (window.location.pathname == "/signup") {
         var absoluteDivHeight = document.querySelector('.register-1').offsetHeight;
@@ -135,22 +168,29 @@ document.addEventListener("DOMContentLoaded", function setDummyDiv() {
     }
 })
 
+/* The code is adding an event listener to the "DOMContentLoaded" event to set appropriate content
+ * on the navigation bar for each account type.
+ */
 document.addEventListener("DOMContentLoaded", function displayNav() {
     if (window.location.pathname != "/signup" & window.location.pathname != "/signin") {
         const user = document.querySelector('.user').innerHTML.trim();
         if (user != "Guest") {
+            // hide signin and signup button
             document.querySelector('.nav-signin').style.display = "none";
             document.querySelector('.nav-signup').style.display = "none";
             const accountType = document.querySelector('.account-type').innerHTML.trim();
             if (accountType == 'vendor') {
+                // hide customer and shipper page button
                 var customerNav = document.querySelectorAll('.nav-customer');
                 massDisplayEdit(customerNav, 'none');
             }
             else if (accountType == 'customer') {
+                // hide vendor and shipper page button
                 var vendorNav = document.querySelectorAll('.nav-vendor');
                 massDisplayEdit(vendorNav, 'none');
             }
             else if (accountType == 'shipper') {
+                // hide customer and vendor page button
                 var customerNav = document.querySelectorAll('.nav-customer');
                 massDisplayEdit(customerNav, 'none');
                 var vendorNav = document.querySelectorAll('.nav-vendor');
@@ -159,6 +199,7 @@ document.addEventListener("DOMContentLoaded", function displayNav() {
             }
         }
         else {
+            // hide cart and user menu
             document.querySelector('.nav-cart').style.display = "none";
             document.querySelector('.nav-user-menu').style.display = "none";
         }

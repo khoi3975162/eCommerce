@@ -67,6 +67,8 @@ const userSchema = mongoose.Schema({
     }
 })
 
+/* The `userSchema.pre('save', async function (next) { ... })` is a pre-save middleware function in
+Mongoose. It is executed before saving a user document to the database. */
 userSchema.pre('save', async function (next) {
     const user = this;
     if (user.isModified('password')) {
@@ -80,6 +82,8 @@ userSchema.pre('save', async function (next) {
     next();
 })
 
+/* The `generateAuthToken` method is a custom method defined on the `userSchema` object. It is used to
+generate an authentication token for a user. */
 userSchema.methods.generateAuthToken = async function () {
     const user = this;
     const token = jwt.sign({ _id: user._id }, "1convitxoera2caicanh");
@@ -88,6 +92,8 @@ userSchema.methods.generateAuthToken = async function () {
     return token;
 }
 
+/* The `userSchema.statics.findByCredentials` method is a static method defined on the `userSchema`
+object. It is used to find a user in the database based on their username and password. */
 userSchema.statics.findByCredentials = async (username, password) => {
     const user = await User.findOne({ username });
     if (!user) {
@@ -100,6 +106,8 @@ userSchema.statics.findByCredentials = async (username, password) => {
     return user;
 }
 
+/* The `userSchema.statics.ifUserExist` method is a static method defined on the `userSchema` object.
+It is used to check if a user with a specific username exists in the database. */
 userSchema.statics.ifUserExist = async (username) => {
     const user = await User.findOne({ username });
     if (user) {
@@ -110,6 +118,8 @@ userSchema.statics.ifUserExist = async (username) => {
     }
 }
 
+/* The `ifVendorExist` method is a static method defined on the `userSchema` object. It is used to
+check if a vendor with a specific information exists in the database. */
 userSchema.statics.ifVendorExist = async (info, value) => {
     const users = await User.find({ [info]: value.trim() });
     if (users.length != 0) {
@@ -120,6 +130,8 @@ userSchema.statics.ifVendorExist = async (info, value) => {
     }
 }
 
+/* The `getAccountType` method is a static method defined on the `userSchema` object. It is used to
+determine the account type of a user based on their username. */
 userSchema.statics.getAccountType = async (user) => {
     const vendor = await User.findOne({ username: user.username, "vendor.accountType": true });
     if (vendor) {

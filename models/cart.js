@@ -24,6 +24,8 @@ const cartSchema = mongoose.Schema({
     }]
 })
 
+/* The `cartSchema.statics.createCart` function is a static method defined on the `cartSchema` object.
+It is used to create a new cart for a user. */
 cartSchema.statics.createCart = async (user) => {
     // const owner = await User.findOne({ 'username': username });
     const data = {

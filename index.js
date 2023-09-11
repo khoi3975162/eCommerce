@@ -50,6 +50,7 @@ app.get('/signup', auth, (req, res) => {
 
 app.post('/signup', upload.single('profile'), async (req, res, next) => {
     try {
+        // parse userData
         var userData = {
             username: req.body['username'],
             password: req.body['password'],
@@ -80,10 +81,13 @@ app.post('/signup', upload.single('profile'), async (req, res, next) => {
             userData['shipper']['hub'] = req.body['hub']
         }
 
+        // create new user and cart in db then generate token for login session
         const user = await new User(userData);
         await user.save();
-        const token = await user.generateAuthToken();
         await Cart.createCart(user);
+        const token = await user.generateAuthToken();
+
+        // save token in cookie on client redirect user based on account type
         if (req.body['accounttype'] == 'vendor') {
             return res
                 .cookie("access_token", token, {
@@ -127,16 +131,21 @@ app.get('/signin', auth, (req, res) => {
 
 app.post('/signin', auth, async (req, res) => {
     try {
+        // find user then generate token for login session
         const { username, password } = req.body;
         const user = await User.findByCredentials(username, password);
         if (!user) {
             return res.status(401).send('Login failed! Please check your credentials');
         }
         const token = await user.generateAuthToken();
+
+        // create cart for user if not exists by somehow
         const cart = await Cart.findOne({ 'owner': user });
         if (!cart) {
             await Cart.createCart(user);
         }
+
+        // save token in cookie on client redirect user based on account type
         const accountType = await User.getAccountType(req.user);
         if (accountType == 'vendor') {
             return res
@@ -189,6 +198,7 @@ app.get('/signout', auth, (req, res) => {
     }
     else {
         try {
+            // remove token from db then clear token on client
             req.user.tokens = req.user.tokens.filter((token) => {
                 return token.token != req.token;
             })
