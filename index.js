@@ -22,10 +22,10 @@ app.set('view engine', 'ejs')
 
 app.get('/', auth, (req, res) => {
     if (req.guest == true) {
-        res.render('index', { name: "Guest" })
+        res.render('index', { user: "Guest", cart: 0 })
     }
     else {
-        res.render('index', { name: req.user.username })
+        res.render('index', { user: req.user.username, cart: 5 })
     }
 })
 

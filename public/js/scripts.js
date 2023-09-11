@@ -89,7 +89,6 @@ function nextRegisterForm() {
                 setTimeout(function () { register2.style.left = 0; }, 100);
             }
         });
-
 }
 
 function backRegisterForm() {
@@ -106,5 +105,19 @@ document.addEventListener("DOMContentLoaded", function setDummyDiv() {
         var absoluteDivHeight = document.querySelector('.register-1').offsetHeight;
         var blankDiv = document.querySelector('.dummy');
         blankDiv.style.height = absoluteDivHeight + 'px';
+    }
+})
+
+document.addEventListener("DOMContentLoaded", function setDummyDiv() {
+    if (window.location.pathname != "/signup" || window.location.pathname != "/login") {
+        const user = document.querySelector('.user').innerHTML.trim();
+        if (user != "Guest") {
+            document.querySelector('.nav-signin').style.display = "none";
+            document.querySelector('.nav-signup').style.display = "none";
+        }
+        else {
+            document.querySelector('.nav-cart').style.display = "none";
+            document.querySelector('.nav-user-menu').style.display = "none";
+        }
     }
 })

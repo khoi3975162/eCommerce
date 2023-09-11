@@ -40,8 +40,8 @@ body {
     color: #e6e6e6;
 }
 
-.navigation .nav-item {
-    padding-right: 10px;
+.navigation .search-box {
+    margin-right: 20px;
 }
 
 .navigation .active {
@@ -233,5 +233,32 @@ body {
     .customer-form,
     .shipper-form {
         display: none;
+    }
+}
+
+.cart {
+    position: relative;
+    /* right: -14px; */
+    width: 28px;
+    height: 24px;
+
+    .cart-icon {
+        position: relative;
+        top: -8px;
+        font-size: 24px;
+    }
+
+    .cart-count {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        font-size: 11px;
+        border-radius: 50%;
+        background: #ce6e7d;
+        width: 16px;
+        height: 16px;
+        line-height: 16px;
+        text-align: center;
+        color: white;
     }
 }
