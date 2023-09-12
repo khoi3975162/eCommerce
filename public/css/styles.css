@@ -56,6 +56,14 @@ body {
     background-color: #ce6e7d !important;
 }
 
+.alert-container {
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 999;
+}
+
 /* login & register page */
 .form-row {
     animation: flyin 0.75s;

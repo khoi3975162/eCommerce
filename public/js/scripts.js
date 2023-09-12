@@ -17,6 +17,23 @@ function clearImage() {
 }
 
 /**
+ * The customAlert function displays a message in an alert container for 5 seconds.
+ * @param message - The `message` parameter is a string that represents the message you want to display
+ * in the alert.
+ */
+function customAlert(message) {
+    var alertContainer = document.querySelector('.alert-container');
+    var alertMsg = document.querySelector('.alert-msg');
+    alertMsg.innerHTML = message;
+    alertContainer.style.display = 'block';
+
+    setTimeout(function () {
+        alertContainer.style.display = 'none';
+        alertMsg.innerHTML = "";
+    }, 5000);
+}
+
+/**
  * The function `massDisplayEdit` is used to change the display property of multiple elements specified
  * by an array of queries.
  * @param queries - The "queries" parameter is an array of HTML elements that you want to modify the
@@ -42,7 +59,7 @@ function nextRegisterForm() {
 
     // check not entered
     if (username.value == "" || password.value == "") {
-        alert('Please enter required information.');
+        customAlert('Please enter required information.');
         return;
     }
     var accountTypeCheck = false;
@@ -54,17 +71,17 @@ function nextRegisterForm() {
         }
     }
     if (accountTypeCheck == false) {
-        alert('Please enter required information.');
+        customAlert('Please enter required information.');
         return;
     }
 
     // username and password validation
     if (username.value.length < 8 || username.value.length > 15 || ! /^[a-zA-Z0-9]+$/.test(username.value)) {
-        alert("Username must contain only letters and digits, and and be 8-15 characters long.");
+        customAlert("Username must contain only letters and digits, and and be 8-15 characters long.");
         return;
     }
     if (password.value.length < 8 || password.value.length > 20 || ! /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,20}$/.test(password.value)) {
-        alert("Password must contain at least one uppercase letter, one lowercase letter, one digit, one special character (!@#$%^&*), and be 8-20 characters long.");
+        customAlert("Password must contain at least one uppercase letter, one lowercase letter, one digit, one special character (!@#$%^&*), and be 8-20 characters long.");
         return;
     }
 
@@ -73,7 +90,7 @@ function nextRegisterForm() {
         .then(response => response.text())
         .then(data => {
             if (data == "true") {
-                alert("Username exists in database, please try another username");
+                customAlert("Username exists in database, please try another username");
             }
             else {
                 var register1 = document.querySelector('.register-1');
@@ -129,7 +146,7 @@ function vendorCheck() {
         const vendorname = document.querySelector('.vendorname').value;
         const vendoraddress = document.querySelector('.vendoraddress').value;
         if (vendorname == "" || vendoraddress == "") {
-            alert('Please enter required information.');
+            customAlert('Please enter required information.');
         }
         else {
             // check if vendor name exist
@@ -137,7 +154,7 @@ function vendorCheck() {
                 .then(response => response.text())
                 .then(data => {
                     if (data == "true") {
-                        alert("Vendor name exists in database, please try another name");
+                        customAlert("Vendor name exists in database, please try another name");
                     }
                     else {
                         // check if vendor address exist
@@ -145,7 +162,7 @@ function vendorCheck() {
                             .then(response => response.text())
                             .then(data => {
                                 if (data == "true") {
-                                    alert("Vendor address exists in database, please use another address");
+                                    customAlert("Vendor address exists in database, please use another address");
                                 }
                                 else {
                                     // submit form if all is passed
@@ -161,7 +178,7 @@ function vendorCheck() {
         const name = document.querySelector('.name').value;
         const address = document.querySelector('.address').value;
         if (name == "" || address == "") {
-            alert('Please enter required information.');
+            customAlert('Please enter required information.');
         }
         else {
             document.querySelector(".signup-form").submit();
@@ -171,7 +188,7 @@ function vendorCheck() {
         // check if shipper hub is not selected
         const hub = document.querySelector('.hub').value;
         if (hub == "Select Hub") {
-            alert('Please enter required information.');
+            customAlert('Please enter required information.');
         }
         else {
             document.querySelector(".signup-form").submit();
