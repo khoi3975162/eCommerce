@@ -126,32 +126,43 @@ function backRegisterForm() {
 function vendorCheck() {
     const vendorForms = document.querySelectorAll('.vendor-form');
     if (vendorForms[0].style.display == 'block') {
-        // check if vendor name exist
-        fetch('/check/vendorname/' + document.querySelector('.vendorname').value)
-            .then(response => response.text())
-            .then(data => {
-                console.log(data)
-                if (data == "true") {
-                    alert("Vendor name exists in database, please try another name");
-                }
-                else {
-                    // check if vendor address exist
-                    fetch('/check/vendoraddress/' + document.querySelector('.vendoraddress').value)
-                        .then(response => response.text())
-                        .then(data => {
-                            if (data == "true") {
-                                alert("Vendor address exists in database, please use another address");
-                            }
-                            else {
-                                // submit form if all is passed
-                                document.querySelector(".signup-form").submit();
-                            }
-                        });
-                }
-            });
+        const vendorname = document.querySelector('.vendorname').value;
+        const vendoraddress = document.querySelector('.vendoraddress').value;
+        if (vendorname == "" || vendoraddress == "") {
+            alert('Please enter required information.');
+        }
+        else {
+            // check if vendor name exist
+            fetch('/check/vendorname/' + vendorname)
+                .then(response => response.text())
+                .then(data => {
+                    if (data == "true") {
+                        alert("Vendor name exists in database, please try another name");
+                    }
+                    else {
+                        // check if vendor address exist
+                        fetch('/check/vendoraddress/' + vendoraddress)
+                            .then(response => response.text())
+                            .then(data => {
+                                if (data == "true") {
+                                    alert("Vendor address exists in database, please use another address");
+                                }
+                                else {
+                                    // submit form if all is passed
+                                    document.querySelector(".signup-form").submit();
+                                }
+                            });
+                    }
+                });
+        }
     }
     else {
         // submit form if form is not vendor registration
+        const name = document.querySelector('.name').value;
+        const address = document.querySelector('.address').value;
+        if (name == "" || address == "") {
+            alert('Please enter required information.');
+        }
         document.querySelector(".signup-form").submit();
     }
 }

@@ -81,7 +81,7 @@ app.post('/signup', upload.single('profile'), async (req, res, next) => {
             userData['shipper']['hub'] = req.body['hub']
         }
 
-        // create new user and cart in db then generate token for login session
+        // create new user and their cart in db then generate token for login session
         const user = await new User(userData);
         await user.save();
         await Cart.createCart(user);
@@ -129,7 +129,7 @@ app.get('/signin', auth, (req, res) => {
     }
 })
 
-app.post('/signin', auth, async (req, res) => {
+app.post('/signin', async (req, res) => {
     try {
         // find user then generate token for login session
         const { username, password } = req.body;
@@ -146,7 +146,7 @@ app.post('/signin', auth, async (req, res) => {
         }
 
         // save token in cookie on client redirect user based on account type
-        const accountType = await User.getAccountType(req.user);
+        const accountType = await User.getAccountType(user);
         if (accountType == 'vendor') {
             return res
                 .cookie("access_token", token, {
@@ -213,6 +213,166 @@ app.get('/signout', auth, (req, res) => {
     }
 })
 
+/* products viewport for vendor only */
+app.get('/products', auth, async (req, res) => {
+    if (req.guest) {
+        return res
+            .status(401)
+            .redirect('/signin');
+    }
+    else if (await User.getAccountType(req.user) == 'vendor') {
+        return res.render('vendor/products');
+    }
+    else {
+        return res
+            .status(403)
+            .send("The account you are logged in is not a vendor account.");
+    }
+})
+
+/* view products of a vendor, available for all user */
+app.get('/products/:vendorname', auth, async (req, res) => {
+    if (req.guest) {
+        return res
+            .status(401)
+            .redirect('/signin');
+    }
+    else {
+        return res.render('products');
+    }
+})
+
+/* add new product page for vendor only */
+app.get('/product/new', auth, async (req, res) => {
+    if (req.guest) {
+        return res
+            .status(401)
+            .redirect('/signin');
+    }
+    else if (await User.getAccountType(req.user) == 'vendor') {
+        return res.render('vendor/create-product');
+    }
+    else {
+        return res
+            .status(403)
+            .send("The account you are logged in is not a vendor account.");
+    }
+})
+
+app.post('/product/new', auth, async (req, res) => {
+    try {
+
+    }
+    catch (error) {
+        console.log(error);
+    }
+})
+
+/* specific product page, available for all user */
+app.get('/product/:id', auth, async (req, res) => {
+    if (req.guest) {
+        return res
+            .status(401)
+            .redirect('/signin');
+    }
+    else {
+        return res.render('product');
+    }
+})
+
+
+/* update specific product page for vendor only */
+app.get('/product/:id/update', auth, async (req, res) => {
+    if (req.guest) {
+        return res
+            .status(401)
+            .redirect('/signin');
+    }
+    else if (await User.getAccountType(req.user) == 'vendor') {
+        return res.render('vendor/update-product');
+    }
+    else {
+        return res
+            .status(403)
+            .send("The account you are logged in is not a vendor account.");
+    }
+})
+
+app.post('/product/:id/update', auth, async (req, res) => {
+    try {
+
+    }
+    catch (error) {
+        console.log(error);
+    }
+})
+
+
+/* delete specific product page for vendor only */
+app.get('/product/:id/delete', auth, async (req, res) => {
+    if (req.guest) {
+        return res
+            .status(401)
+            .redirect('/signin');
+    }
+    else if (await User.getAccountType(req.user) == 'vendor') {
+        return res.render('vendor/delete-product');
+    }
+    else {
+        return res
+            .status(403)
+            .send("The account you are logged in is not a vendor account.");
+    }
+})
+
+app.post('/product/:id/delete', auth, async (req, res) => {
+    try {
+
+    }
+    catch (error) {
+        console.log(error);
+    }
+})
+
+
+/* cart page for customer only */
+app.get('/cart', auth, async (req, res) => {
+    if (req.guest) {
+        return res
+            .status(401)
+            .redirect('/signin');
+    }
+    else if (await User.getAccountType(req.user) == 'customer') {
+        return res.render('customer/cart');
+    }
+    else {
+        return res
+            .status(403)
+            .send("The account you are logged in is not a customer account.");
+    }
+})
+
+/* orders page for customer and shipper only */
+app.get('/orders', auth, async (req, res) => {
+    const accountType = await User.getAccountType(req.user);
+    if (req.guest) {
+        return res
+            .status(401)
+            .redirect('/signin');
+    }
+    else if (accountType == 'customer') {
+        return res.render('customer/orders');
+    }
+    else if (accountType == 'shipper') {
+        return res.render('shipper/orders');
+    }
+    else {
+        return res
+            .status(403)
+            .send("The account you are logged in is not a customer or shipper account.");
+    }
+})
+
 app.get('/check/username/:username', async (req, res) => {
     const exist = await User.ifUserExist(req.params.username);
     if (exist) {
@@ -243,109 +403,9 @@ app.get('/check/vendoraddress/:vendoraddress', async (req, res) => {
     }
 })
 
-app.get('/products', auth, async (req, res) => {
-    if (req.guest) {
-        return res
-            .status(401)
-            .redirect('/signin');
-    }
-    else if (await User.getAccountType(req.user) == 'vendor') {
-        return res.render('vendor/products');
-    }
-    else {
-        return res
-            .status(403)
-            .send("The account you are logged in is not a vendor account.");
-    }
-})
-
-app.get('/product/new', auth, async (req, res) => {
-    if (req.guest) {
-        return res
-            .status(401)
-            .redirect('/signin');
-    }
-    else if (await User.getAccountType(req.user) == 'vendor') {
-        return res.render('vendor/product-new');
-    }
-    else {
-        return res
-            .status(403)
-            .send("The account you are logged in is not a vendor account.");
-    }
-})
-
-app.get('/cart', auth, async (req, res) => {
-    if (req.guest) {
-        return res
-            .status(401)
-            .redirect('/signin');
-    }
-    else if (await User.getAccountType(req.user) == 'customer') {
-        return res.render('customer/cart');
-    }
-    else {
-        return res
-            .status(403)
-            .send("The account you are logged in is not a customer account.");
-    }
-})
-
-app.get('/orders', auth, async (req, res) => {
-    const accountType = await User.getAccountType(req.user);
-    if (req.guest) {
-        return res
-            .status(401)
-            .redirect('/signin');
-    }
-    else if (accountType == 'customer') {
-        return res.render('customer/orders');
-    }
-    else if (accountType == 'shipper') {
-        return res.render('shipper/orders');
-    }
-    else {
-        return res
-            .status(403)
-            .send("The account you are logged in is not a customer or shipper account.");
-    }
-})
-
-app.get('/:vendorname', auth, async (req, res) => {
-    if (await User.getAccountType(req.user) == 'customer') {
-        return res.render('customer/orders');
-    }
-    else if (await User.getAccountType(req.user) == 'shipper') {
-        return res.render('shipper/orders');
-    }
-    else {
-        return res
-            .status(403)
-            .send("The account you are logged in is not a customer or shipper account.");
-    }
-})
-
-app.get('/:vendorname/products', auth, async (req, res) => {
-    if (req.guest) {
-        return res
-            .status(401)
-            .redirect('/signin');
-    }
-    else if (await User.getAccountType(req.user) == 'customer') {
-        return res.render('customer/orders');
-    }
-    else if (await User.getAccountType(req.user) == 'shipper') {
-        return res.render('shipper/orders');
-    }
-    else {
-        return res
-            .status(403)
-            .send("The account you are logged in is not a customer or shipper account.");
-    }
-})
-
-
 // Start the server and listen on port 3000
 app.listen(3000, () => {
     console.log('Server is running on http://localhost:3000')
 })
+
+// app.listen(3000, ('0.0.0.0'))
