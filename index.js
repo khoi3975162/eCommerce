@@ -407,6 +407,17 @@ app.get('/check/vendoraddress/:vendoraddress', async (req, res) => {
     }
 })
 
+app.post('/check/signin', async (req, res) => {
+    const { username, password } = req.body;
+    const user = await User.findByCredentials(username, password);
+    if (user) {
+        return res.send('true');
+    }
+    else {
+        return res.send('false');
+    }
+})
+
 // Start the server and listen on port 3000
 app.listen(3000, () => {
     console.log('Server is running on http://localhost:3000')

@@ -97,11 +97,11 @@ object. It is used to find a user in the database based on their username and pa
 userSchema.statics.findByCredentials = async (username, password) => {
     const user = await User.findOne({ username });
     if (!user) {
-        throw new Error({ error: 'Invalid login credentials' });
+        return false;
     }
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
-        throw new Error({ error: 'Invalid login credentials' });
+        return false;
     }
     return user;
 }

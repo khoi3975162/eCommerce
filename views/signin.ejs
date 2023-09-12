@@ -21,16 +21,16 @@
 
             <div
                 class="col-10 col-sm-8 col-md-6 col-lg-6 col-xl-4 shadow-sm d-flex align-items-center form-box login-col">
-                <form class="w-100" method="POST" action="/signin">
+                <form class="signin-form" method="POST" action="/signin">
                     <h1 class="mb-4">SIGN IN</h1>
                     <div class="form-outline mb-4">
-                        <input type="text" id="username" name="username" class="form-control" placeholder="Username"
-                            required />
+                        <input type="text" id="username" name="username" class="form-control username"
+                            placeholder="Username" required />
                     </div>
 
                     <div class="form-outline mb-4">
-                        <input type="password" id="password" name="password" class="form-control" placeholder="Password"
-                            required />
+                        <input type="password" id="password" name="password" class="form-control password"
+                            placeholder="Password" required />
                     </div>
 
                     <div class="row mb-2">
@@ -46,8 +46,8 @@
                         </div>
                     </div>
 
-                    <div class="d-grid gap-2 mb-4">
-                        <button type="submit" class="btn btn-primary anm-btn signin-btn"><span>Sign
+                    <div class="d-grid mb-4">
+                        <button type="button" class="btn btn-primary anm-btn signin-btn" onclick="signIn()"><span>Sign
                                 in</span></button>
                     </div>
 

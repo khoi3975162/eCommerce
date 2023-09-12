@@ -90,7 +90,7 @@ function nextRegisterForm() {
         .then(response => response.text())
         .then(data => {
             if (data == "true") {
-                customAlert("Username exists in database, please try another username");
+                customAlert("Username exists in database, please try another username.");
             }
             else {
                 var register1 = document.querySelector('.register-1');
@@ -154,15 +154,17 @@ function vendorCheck() {
                 .then(response => response.text())
                 .then(data => {
                     if (data == "true") {
-                        customAlert("Vendor name exists in database, please try another name");
+                        customAlert("Vendor name exists in database, please try another name.");
                     }
                     else {
                         // check if vendor address exist
+                        /* The code is making a fetch request to the server to check if a vendor
+                        address already exists in the database. */
                         fetch('/check/vendoraddress/' + vendoraddress)
                             .then(response => response.text())
                             .then(data => {
                                 if (data == "true") {
-                                    customAlert("Vendor address exists in database, please use another address");
+                                    customAlert("Vendor address exists in database, please use another address.");
                                 }
                                 else {
                                     // submit form if all is passed
@@ -194,6 +196,31 @@ function vendorCheck() {
             document.querySelector(".signup-form").submit();
         }
     }
+}
+
+function signIn() {
+    const username = document.querySelector('.username').value;
+    const password = document.querySelector('.password').value;
+    fetch('/check/signin', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+            'username': username,
+            'password': password
+        })
+    })
+        .then(response => response.text())
+        .then(data => {
+            if (data == "false") {
+                customAlert("Login failed! Please check your credentials.");
+            }
+            else {
+                // submit form if all is passed
+                document.querySelector('.signin-form').submit();
+            }
+        });
 }
 
 /**
