@@ -133,15 +133,15 @@ userSchema.statics.ifVendorExist = async (info, value) => {
 /* The `getAccountType` method is a static method defined on the `userSchema` object. It is used to
 determine the account type of a user based on their username. */
 userSchema.statics.getAccountType = async (user) => {
-    const vendor = await User.findOne({ username: user.username, "vendor.accountType": true });
+    const vendor = await User.findOne({ _id: user._id, "vendor.accountType": true });
     if (vendor) {
         return "vendor";
     }
-    const customer = await User.findOne({ username: user.username, "customer.accountType": true });
+    const customer = await User.findOne({ _id: user._id, "customer.accountType": true });
     if (customer) {
         return "customer";
     }
-    const shipper = await User.findOne({ username: user.username, "shipper.accountType": true });
+    const shipper = await User.findOne({ _id: user._id, "shipper.accountType": true });
     if (shipper) {
         return "shipper";
     }

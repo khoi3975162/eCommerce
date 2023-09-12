@@ -124,8 +124,8 @@ function backRegisterForm() {
  * submitting a signup form.
  */
 function vendorCheck() {
-    const vendorForms = document.querySelectorAll('.vendor-form');
-    if (vendorForms[0].style.display == 'block') {
+    if (document.querySelectorAll('.vendor-form')[0].style.display == 'block') {
+        // check if vendor name and address is not entered
         const vendorname = document.querySelector('.vendorname').value;
         const vendoraddress = document.querySelector('.vendoraddress').value;
         if (vendorname == "" || vendoraddress == "") {
@@ -156,14 +156,26 @@ function vendorCheck() {
                 });
         }
     }
-    else {
-        // submit form if form is not vendor registration
+    else if (document.querySelectorAll('.customer-form')[0].style.display == 'block') {
+        // check if customer name and address is not entered
         const name = document.querySelector('.name').value;
         const address = document.querySelector('.address').value;
         if (name == "" || address == "") {
             alert('Please enter required information.');
         }
-        document.querySelector(".signup-form").submit();
+        else {
+            document.querySelector(".signup-form").submit();
+        }
+    }
+    else if (document.querySelectorAll('.shipper-form')[0].style.display == 'block') {
+        // check if shipper hub is not selected
+        const hub = document.querySelector('.hub').value;
+        if (hub == "Select Hub") {
+            alert('Please enter required information.');
+        }
+        else {
+            document.querySelector(".signup-form").submit();
+        }
     }
 }
 
