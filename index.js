@@ -21,22 +21,26 @@ app.use(cookieParser());
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
-app.get('/', auth, async (req, res) => {
+async function getData(req) {
     if (req.guest) {
-        return res.render('index', {
+        return {
             accountType: "none",
             username: "Guest",
             cartCount: 0
-        });
+        };
     }
     else {
-        const cart = await Cart.findOne({ 'owner': req.user })
-        return res.render('index', {
+        const cart = await Cart.findOne({ 'owner': req.user });
+        return {
             accountType: await User.getAccountType(req.user),
             username: req.user.username,
             cartCount: cart['products'].length
-        });
+        }
     }
+}
+
+app.get('/', auth, async (req, res) => {
+    return res.render('index', { data: await getData(req) });
 })
 
 app.get('/signup', auth, (req, res) => {
@@ -250,7 +254,7 @@ app.get('/product/new', auth, async (req, res) => {
             .redirect('/signin');
     }
     else if (await User.getAccountType(req.user) == 'vendor') {
-        return res.render('vendor/create-product');
+        return res.render('vendor/create-product', { data: await getData(req) });
     }
     else {
         return res

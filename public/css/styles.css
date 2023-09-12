@@ -22,6 +22,14 @@ body {
     background-color: #3b71ca;
 }
 
+.navigation {
+    max-height: 73px;
+}
+
+.navigation .logo {
+    max-width: 44px;
+}
+
 .navigation li a {
     color: #ce6e7d;
     font-weight: bold;
@@ -260,4 +268,8 @@ body {
         text-align: center;
         color: white;
     }
+}
+
+.product-add {
+    background-color: white;
 }
