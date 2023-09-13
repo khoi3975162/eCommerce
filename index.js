@@ -2,12 +2,13 @@
 const express = require('express');
 const cookieParser = require("cookie-parser");
 const multer = require('multer');
-const upload = multer({ dest: 'public/images/profiles/' });
-
+const profile_upload = multer({ dest: 'public/images/profiles/' });
+const product_upload = multer({ dest: 'public/images/products/' });
 
 require('./modules/database');
 const User = require('./models/User');
 const Cart = require('./models/Cart');
+const Product = require('./models/Product');
 const auth = require('./modules/auth');
 
 // Create instances of the express application
@@ -52,7 +53,7 @@ app.get('/signup', auth, (req, res) => {
     }
 })
 
-app.post('/signup', upload.single('profile'), async (req, res, next) => {
+app.post('/signup', profile_upload.single('profile'), async (req, res, next) => {
     try {
         // parse userData
         var userData = {
@@ -263,24 +264,51 @@ app.get('/product/new', auth, async (req, res) => {
     }
 })
 
-app.post('/product/new', auth, async (req, res) => {
-    try {
-
+app.post('/product/new', product_upload.array('product-imgs', 4), auth, async (req, res) => {
+    owner = await Product.getVendor(req.user);
+    var images = [];
+    for (i = 0; i < req.files.length; i++) {
+        images.push(req.files[i]['filename'])
     }
-    catch (error) {
-        console.log(error);
+    if (owner) {
+        try {
+            const productData = {
+                owner: owner,
+                name: req.body['product-name'],
+                price: req.body['product-price'],
+                images: images,
+                description: req.body['product-desciption']
+            }
+            const product = await new Product(productData).save();
+            return res.redirect('/product/' + product._id);
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+    else {
+        return res
+            .status(403)
+            .send("The account you are logged in is not a vendor account.");
     }
 })
 
 /* specific product page, available for all user */
 app.get('/product/:id', auth, async (req, res) => {
-    if (req.guest) {
-        return res
-            .status(401)
-            .redirect('/signin');
+    const productData = await Product.getProduct(req.params.id);
+    if (productData) {
+        return res.render('product', {
+            data: {
+                ...await getData(req),
+                ...productData.toObject(),
+                owner: (await Product.getVendor(productData.owner)).username
+            }
+        });
     }
     else {
-        return res.render('product');
+        return res
+            .status(404)
+            .send("The product is not exist.");
     }
 })
 
@@ -423,4 +451,4 @@ app.listen(3000, () => {
     console.log('Server is running on http://localhost:3000')
 })
 
-// app.listen(3000, ('0.0.0.0'))
+// app.listen(3000, ('0.0.0.0')) 

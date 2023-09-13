@@ -315,4 +315,16 @@ body {
     .add-pd-btn:hover span {
         padding-right: 20px;
     }
+
+    .rm-imgs {
+        background-color: #3b71ca;
+        border-color: #3b71ca;
+        color: white;
+        transition: all 0.25s;
+    }
+
+    .rm-imgs:hover {
+        background-color: #ce6e7d;
+        border-color: #ce6e7d;
+    }
 }
