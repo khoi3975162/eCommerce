@@ -1,31 +1,39 @@
 <%- include('../partials/header.ejs') %>
 
     <div class="container product-add rounded">
-        <div class="row">
-            <div class="col product-img">
-                <img class="img-fluid h-100" src="/images/products/default.png" alt="">
+        <div class="product-box">
+            <div class="row">
+                <div class="col product-img mb-4">
+                    <div class="row">
+                        <img class="col-6 img-fluid h-100" src="/images/products/default.png" alt="">
+                        <img class="col-6 img-fluid h-100" src="/images/products/default.png" alt="">
+                    </div>
+                    <div class="row">
+                        <img class="col-6 img-fluid h-100" src="/images/products/default.png" alt="">
+                        <img class="col-6 img-fluid h-100" src="/images/products/default.png" alt="">
+                    </div>
+                    <div class="row">
+                        <div>
+                            <label for="formFileMultiple" class="form-label">Upload images</label>
+                            <input class="form-control" type="file" id="formFileMultiple" multiple>
+                        </div>
+                    </div>
+                </div>
+                <div class="col product-info mb-4 d-flex flex-column justify-content-center">
+                    <input type="text" id="product-name" name="product-name" class="form-control mb-4"
+                        placeholder="Product Name" required />
+                    <input type="text" id="product-price" name="product-price" class="form-control mb-4"
+                        placeholder="Product Price" required />
+                    <button type="button" class="btn anm-btn add-pd-btn"><span>Add product</span></button>
+                </div>
             </div>
-            <div class="col product-info">
-                <div class="row">
-                    <div class="col product-name">
-
+            <div class="row">
+                <div class="col product-desciption">
+                    <div>
+                        <label for="exampleFormControlTextarea1" class="form-label">Product's description</label>
+                        <textarea class="form-control" id="exampleFormControlTextarea1" rows="5"></textarea>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col product-price">
-
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col product-add-cart">
-
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col product-desciption">
-
             </div>
         </div>
     </div>

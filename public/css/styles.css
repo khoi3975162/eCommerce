@@ -185,8 +185,9 @@ body {
     }
 
     .signin-btn span:after {
-        content: '↓';
+        content: '\F282';
         right: -20px;
+        font-family: "bootstrap-icons";
     }
 
     .signin-btn:hover span {
@@ -238,8 +239,9 @@ body {
     }
 
     .signup-btn span:after {
-        content: "↑";
+        content: "\F286";
         right: -20px;
+        font-family: "bootstrap-icons";
     }
 
     .signup-btn:hover span {
@@ -281,4 +283,36 @@ body {
 
 .product-add {
     background-color: white;
+    animation: flyin 0.75s;
+
+    .product-box {
+        padding: 30px;
+    }
+
+    .add-pd-btn {
+        background-color: #3b71ca;
+        border-color: #3b71ca;
+        color: white;
+        transition: all 0.25s;
+    }
+
+    .add-pd-btn:hover {
+        background-color: #ce6e7d;
+        border-color: #ce6e7d;
+    }
+
+    .add-pd-btn:hover span:after {
+        opacity: 1;
+        right: 0;
+    }
+
+    .add-pd-btn span:after {
+        content: '\F4FA';
+        right: -20px;
+        font-family: "bootstrap-icons";
+    }
+
+    .add-pd-btn:hover span {
+        padding-right: 20px;
+    }
 }
