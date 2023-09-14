@@ -28,6 +28,8 @@ const productSchema = mongoose.Schema({
     }
 })
 
+/* The `productSchema.statics.getVendor` function is a static method defined on the `productSchema`
+schema. It is used to retrieve the vendor associated with a product. */
 productSchema.statics.getVendor = async (user) => {
     const vendor = await User.findOne({ _id: user._id, "vendor.accountType": true });
     if (vendor) {
@@ -38,6 +40,8 @@ productSchema.statics.getVendor = async (user) => {
     }
 }
 
+/* The `productSchema.statics.getProduct` function is a static method defined on the `productSchema`
+schema. It is used to retrieve a product based on its ID. */
 productSchema.statics.getProduct = async (id) => {
     const product = await Product.findOne({ _id: id });
     if (product) {
@@ -51,4 +55,4 @@ productSchema.statics.getProduct = async (id) => {
 // Define models based on the schema
 const Product = mongoose.model('Product', productSchema);
 
-module.exports = Product;
+module.exports = Product;
