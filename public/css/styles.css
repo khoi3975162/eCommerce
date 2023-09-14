@@ -364,3 +364,21 @@ body {
         border-color: #3b71ca;
     }
 }
+
+.order-page {
+    background-color: white;
+
+    .order-container {
+        padding: 20px;
+    }
+
+    .heading {
+        font-size: auto;
+    }
+
+    .no-order {
+        font-size: 25px;
+        padding-top: 100px;
+        padding-bottom: 100px;
+    }
+}

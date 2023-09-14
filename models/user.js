@@ -72,7 +72,7 @@ Mongoose. It is executed before saving a user document to the database. */
 userSchema.pre('save', async function (next) {
     const user = this;
     if (user.isModified('password')) {
-        if (user.password < 8 || user.password > 20 || ! /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,20}$/.test(user.password)) {
+        if (! /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,20}$/.test(user.password)) {
             throw new Error({ error: `${user.password} is not a valid password. It should contain at least one uppercase letter, one lowercase letter, one digit, one special character (!@#$%^&*), and be 8-20 characters long.` });
         }
         else {

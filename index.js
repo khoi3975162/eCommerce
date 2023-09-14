@@ -6,10 +6,11 @@ const profile_upload = multer({ dest: 'public/images/profiles/' });
 const product_upload = multer({ dest: 'public/images/products/' });
 
 require('./modules/database');
-const User = require('./models/User');
-const Cart = require('./models/Cart');
-const Product = require('./models/Product');
 const auth = require('./modules/auth');
+const User = require('./models/User');
+const Product = require('./models/Product');
+const Cart = require('./models/Cart');
+const Order = require('./models/Order');
 
 // Create instances of the express application
 const app = express();
@@ -437,10 +438,28 @@ app.get('/orders', auth, async (req, res) => {
             .redirect('/signin');
     }
     else if (accountType == 'customer') {
-        return res.render('customer/orders');
+        const orders = await Order.getOrdersfromCustomer(req.user);
+        return res.render('orders', {
+            data: {
+                ...await getData(req),
+                ...orders,
+                accountType: accountType,
+                hub: "none",
+                orderCount: orders.length
+            }
+        });
     }
     else if (accountType == 'shipper') {
-        return res.render('shipper/orders');
+        const orders = await Order.getOrdersfromHub(req.user.shipper.hub);
+        return res.render('orders', {
+            data: {
+                ...await getData(req),
+                ...orders,
+                accountType: accountType,
+                hub: req.user.shipper.hub,
+                orderCount: orders.length
+            }
+        });
     }
     else {
         return res
@@ -495,4 +514,4 @@ app.listen(3000, () => {
     console.log('Server is running on http://localhost:3000')
 })
 
-// app.listen(3000, ('0.0.0.0')) 
+// app.listen(3000, ('0.0.0.0'))

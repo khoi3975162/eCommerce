@@ -80,7 +80,7 @@ function nextRegisterForm() {
         customAlert("Username must contain only letters and digits, and and be 8-15 characters long.");
         return;
     }
-    if (password.value.length < 8 || password.value.length > 20 || ! /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,20}$/.test(password.value)) {
+    if (! /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,20}$/.test(password.value)) {
         customAlert("Password must contain at least one uppercase letter, one lowercase letter, one digit, one special character (!@#$%^&*), and be 8-20 characters long.");
         return;
     }
@@ -223,6 +223,74 @@ function signIn() {
         });
 }
 
+/** The function "preview" sets the source of a frame element to the URL of the selected file. */
+function previewImgs() {
+    var addProductImgs = document.querySelectorAll('.add-pd-img');
+    uploadedImgs = 0;
+    for (i = 0; i < addProductImgs.length; i++) {
+        if (!addProductImgs[i].src.includes("/images/products/default.png")) {
+            uploadedImgs++;
+        }
+    }
+    if (uploadedImgs == 4) {
+        customAlert('The maximum amount of images for a product is 4.');
+    }
+    else {
+        for (i = 0; i < addProductImgs.length; i++) {
+            if (addProductImgs[i].src.includes("/images/products/default.png")) {
+                addProductImgs[i].src = URL.createObjectURL(event.target.files[0]);
+                break;
+            }
+        }
+    }
+}
+
+/**
+ * The clearImages function clears the value of a file input element and sets the source of an image
+ * element to a default image.
+ */
+function clearImages() {
+    document.getElementById('formFile').value = "";
+    var addProductImgs = document.querySelectorAll('.add-pd-img');
+    for (i = 0; i < addProductImgs.length; i++) {
+        addProductImgs[i].src = "/images/products/default.png";
+    }
+}
+
+/**
+ * The function `addProductCheck()` checks if the required information for adding a product is entered
+ * correctly and displays an alert message if any validation fails.
+ */
+function addProductCheck() {
+    const productName = document.querySelector('.product-name').value;
+    const productPrice = document.querySelector('.product-price').value;
+    const productImages = document.querySelectorAll('.add-pd-img');
+
+    // check if not entered
+    if (productName == "" | productPrice == "") {
+        customAlert('Please enter required information.');
+    }
+
+    // validation
+    else if (productName.length < 10 | productName.length > 20) {
+        customAlert('Product name has to be in length from 10 to 20.');
+    }
+    else if (productPrice < 0) {
+        customAlert('Product price has to be larger than 0.');
+    }
+    else if (productImages[0].src.includes("/images/products/default.png")) {
+        customAlert('There has to be atleast 1 image.');
+    }
+    else {
+        if (document.querySelector('.product-desciption').value == "") {
+            document.querySelector('.product-desciption').value = "No description provided.";
+        }
+        document.querySelector(".add-pd-form").submit();
+    }
+}
+
+// ========== Listener ==========
+
 /**
  * The code is adding an event listener to the `DOMContentLoaded` event to set the height of the
  * dummy div for pushing the footer down because there are absolute divs on the page
@@ -273,53 +341,24 @@ document.addEventListener("DOMContentLoaded", function displayNav() {
     }
 })
 
-/** The function "preview" sets the source of a frame element to the URL of the selected file. */
-function previewImgs() {
-    var addProductImgs = document.querySelectorAll('.add-pd-img');
-    for (i = 0; i < addProductImgs.length; i++) {
-        if (addProductImgs[i].src.includes("/images/products/default.png")) {
-            addProductImgs[i].src = URL.createObjectURL(event.target.files[0]);
-            break;
+document.addEventListener("DOMContentLoaded", function setDummyDiv() {
+    if (window.location.pathname == "/orders") {
+        const accountType = document.querySelector('.account-type').innerHTML.trim();
+        if (accountType == "customer") {
+            var displayShipper = document.querySelectorAll('.display-shipper');
+            massDisplayEdit(displayShipper, 'none');
+        }
+        else if (accountType == "shipper") {
+            var displayCustomer = document.querySelectorAll('.display-customer');
+            massDisplayEdit(displayCustomer, 'none');
+        }
+
+        const orderCount = document.querySelector('.order-count').innerHTML.trim();
+        if (orderCount != "0") {
+            document.querySelector('.no-order').style.display = "none";
+        }
+        else {
+            document.querySelector('.display-orders').style.display = "none";
         }
     }
-}
-
-/**
- * The clearImages function clears the value of a file input element and sets the source of an image
- * element to a default image.
- */
-function clearImages() {
-    document.getElementById('formFile').value = "";
-    var addProductImgs = document.querySelectorAll('.add-pd-img');
-    for (i = 0; i < addProductImgs.length; i++) {
-        addProductImgs[i].src = "/images/products/default.png";
-    }
-}
-
-function addProductCheck() {
-    const productName = document.querySelector('.product-name').value;
-    const productPrice = document.querySelector('.product-price').value;
-    const productImages = document.querySelectorAll('.add-pd-img');
-
-    // check if not entered
-    if (productName == "" | productPrice == "") {
-        customAlert('Please enter required information.');
-    }
-
-    // validation
-    else if (productName.length < 10 | productName.length > 20) {
-        customAlert('Product name has to be in length from 10 to 20.');
-    }
-    else if (productPrice < 0) {
-        customAlert('Product price has to be larger than 0.');
-    }
-    else if (productImages[0].src.includes("/images/products/default.png")) {
-        customAlert('There has to be atleast 1 image.');
-    }
-    else {
-        if (document.querySelector('.product-desciption').value == "") {
-            document.querySelector('.product-desciption').value = "No description provided.";
-        }
-        document.querySelector(".add-pd-form").submit();
-    }
-}
+})

@@ -1,0 +1,71 @@
+<%- include('./partials/header.ejs') %>
+
+    <div class="container orders rounded shadow-sm order-page">
+        <div class="order-container">
+            <div class="row display-for d-flex justify-content-between heading">
+                <div class="col">
+                    <span class="display-customer">My orders</span>
+                    <span class="display-shipper">Orders at hub: <%= data.hub %></span>
+                </div>
+                <div class="col order-total d-flex justify-content-end">
+                    <span>
+                        Total:
+                        <span class="order-count">
+                            <%= data.orderCount %>
+                        </span>
+                    </span>
+                </div>
+            </div>
+            <hr>
+            <div class="row no-order text-center">
+                <span>There is no order to display.</span>
+            </div>
+            <div class="row display-orders">
+                <% if (data.orderCount !=0) {(data.orders).forEach(function(order) { %>
+                    <div class="row">
+                        <div class="col order-img-col">
+                            <img class="img-fluid" scr="<%= order.products[0].product.images[0] %>" alt="pd-img">
+                        </div>
+                        <div class="col order-info-col">
+                            <span class="pd-name">
+                                <%= order.products[0].product.name %>
+                            </span>
+                            <span>
+                                <i>from </i>
+                                <%= order.products[0].product.owner %>
+                            </span>
+                            <span>
+                                x<%= order.products[0].quantity %>
+                            </span>
+                        </div>
+                        <div class="col order-price-col d-flex justify-content-end">
+                            <%= order.products[0].product.price %>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col order-status">
+                            Status: <%= order.status %>
+                        </div>
+                        <div class="col set-order-status">
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    Set status
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" onclick="editOrderStatus('Delivered')">Delivered</a>
+                                    </li>
+                                    <li><a class="dropdown-item" onclick="editOrderStatus('Canceled')">Canceled</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col d-flex justify-content-end">
+                            Total price: <%= order.totalPrice %>
+                        </div>
+                    </div>
+                    <% })}; %>
+            </div>
+        </div>
+    </div>
+
+    <%- include('./partials/footer.ejs') %>

@@ -22,6 +22,10 @@ const orderSchema = mongoose.Schema({
             }
         }
     }],
+    hub: {
+        type: String,
+        required: true,
+    },
     totalPrice: {
         type: Number,
         required: true,
@@ -33,6 +37,14 @@ const orderSchema = mongoose.Schema({
         maxLength: 9
     }
 })
+
+orderSchema.statics.getOrdersfromCustomer = async (user) => {
+    return await Order.find({ owner: user });
+}
+
+orderSchema.statics.getOrdersfromHub = async (hub) => {
+    return await Order.find({ hub: hub, status: 'Active' });
+}
 
 // Define models based on the schema
 const Order = mongoose.model('Order', orderSchema);
