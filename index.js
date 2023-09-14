@@ -22,6 +22,16 @@ app.use(cookieParser());
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
+/**
+ * The function `getData` returns an object with account information based on the request, including
+ * account type, username, and cart count.
+ * @param req - The `req` parameter is an object that represents the request made to the server. It
+ * typically contains information about the user making the request, such as their authentication
+ * status and user details.
+ * @returns an object with the properties `accountType`, `username`, and `cartCount`. If `req.guest` is
+ * true, the `accountType` will be set to "none", `username` will be set to "Guest", and `cartCount`
+ * will be set to 0. If `req.guest` is false, the `accountType` will be
+ */
 async function getData(req) {
     if (req.guest) {
         return {
@@ -40,10 +50,17 @@ async function getData(req) {
     }
 }
 
+/* The below code is defining a route handler for the root URL ("/") using the Express.js framework. It
+is using the `app.get()` method to handle GET requests to the root URL. The `auth` middleware
+function is being used to authenticate the request before executing the route handler. */
 app.get('/', auth, async (req, res) => {
     return res.render('index', { data: await getData(req) });
 })
 
+/* The below code is defining a route for the "/signup" endpoint. It uses the "auth" middleware to
+check if the user is a guest or not. If the user is a guest, it renders the "signup" view. If the
+user is not a guest (i.e., already signed in), it sends a 403 Forbidden status code with a message
+indicating that the user needs to sign out first. */
 app.get('/signup', auth, (req, res) => {
     if (req.guest) {
         return res.render('signup');
@@ -53,6 +70,8 @@ app.get('/signup', auth, (req, res) => {
     }
 })
 
+/* The below code is handling a POST request to the '/signup' endpoint. It is used for user
+registration and account creation. */
 app.post('/signup', profile_upload.single('profile'), async (req, res, next) => {
     try {
         // parse userData
@@ -125,6 +144,10 @@ app.post('/signup', profile_upload.single('profile'), async (req, res, next) => 
     }
 })
 
+/* The below code is defining a route for the "/signin" endpoint. It uses the "auth" middleware
+function to check if the user is a guest or not. If the user is a guest, it renders the "signin"
+view. If the user is not a guest (i.e., already signed in), it sends a 403 Forbidden status code
+with the message "You have already signed in, please sign out first." */
 app.get('/signin', auth, (req, res) => {
     if (req.guest) {
         return res.render('signin');
@@ -134,6 +157,8 @@ app.get('/signin', auth, (req, res) => {
     }
 })
 
+/* The below code is a route handler for the "/signin" endpoint. It handles the user login
+functionality. */
 app.post('/signin', async (req, res) => {
     try {
         // find user then generate token for login session
@@ -195,6 +220,8 @@ app.get('/me', auth, (req, res) => {
     }
 })
 
+/* The below code is defining a route handler for the "/signout" endpoint. It is using the "auth"
+middleware to authenticate the request. */
 app.get('/signout', auth, (req, res) => {
     if (req.guest) {
         return res
@@ -226,7 +253,7 @@ app.get('/products', auth, async (req, res) => {
             .redirect('/signin');
     }
     else if (await User.getAccountType(req.user) == 'vendor') {
-        return res.render('vendor/products');
+        return res.render('products', { data: await getData(req) });
     }
     else {
         return res
@@ -244,6 +271,23 @@ app.get('/products/:vendorname', auth, async (req, res) => {
     }
     else {
         return res.render('products');
+    }
+})
+
+/* add new product page for vendor only */
+app.get('/dashboard', auth, async (req, res) => {
+    if (req.guest) {
+        return res
+            .status(401)
+            .redirect('/signin');
+    }
+    else if (await User.getAccountType(req.user) == 'vendor') {
+        return res.render('vendor/dashboard', { data: await getData(req) });
+    }
+    else {
+        return res
+            .status(403)
+            .send("The account you are logged in is not a vendor account.");
     }
 })
 

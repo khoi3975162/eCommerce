@@ -1,0 +1,17 @@
+<%- include('../partials/header.ejs') %>
+
+    <div class="container vendor-dashboard rounded text-center shadow-sm mt-5 mb-5">
+        <div class="row dashboard-row">
+            <div class="col dashboard-item rounded">
+                <div class="row dashboard-icon mb-4"><i class="bi bi-bag"></i></div>
+                <a href="/products" class="btn dashboard-btn btn-lg mb-2"><span>View My Products</span></a>
+            </div>
+            <div class="vr dashboard-vr"></div>
+            <div class="col dashboard-item rounded">
+                <div class="row dashboard-icon mb-4"><i class="bi bi-bag-plus"></i></div>
+                <a href="/product/new" class="btn dashboard-btn btn-lg mb-2"><span>Add New Product</span></a>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/footer.ejs') %>

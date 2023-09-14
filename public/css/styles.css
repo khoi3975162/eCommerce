@@ -328,3 +328,39 @@ body {
         border-color: #ce6e7d;
     }
 }
+
+.vendor-dashboard {
+    background-color: white;
+
+    .dashboard-row {
+        padding: 30px;
+    }
+
+    .dashboard-vr {
+        width: 2px;
+        padding: 0px;
+    }
+
+    .dashboard-item {
+        margin: 10px;
+        padding: 10px;
+    }
+
+    .dashboard-icon {
+        font-size: 50px;
+    }
+
+    .dashboard-btn {
+        font-size: 20px;
+        background-color: #ce6e7d;
+        border-color: #ce6e7d;
+        color: white;
+        transition: all 0.25s;
+        white-space: nowrap;
+    }
+
+    .dashboard-btn:hover {
+        background-color: #3b71ca;
+        border-color: #3b71ca;
+    }
+}
