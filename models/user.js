@@ -63,6 +63,7 @@ const userSchema = mongoose.Schema({
         accountType: Boolean,
         hub: {
             type: String,
+            trim: true
         }
     }
 })

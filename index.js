@@ -2,8 +2,10 @@
 const express = require('express');
 const cookieParser = require("cookie-parser");
 const multer = require('multer');
+const fs = require('fs/promises');
+
 const profile_upload = multer({ dest: 'public/images/profiles/' });
-const product_upload = multer({ dest: 'public/images/products/' });
+const product_upload = multer({ dest: 'public/images/products/temp' });
 
 require('./modules/database');
 const auth = require('./modules/auth');
@@ -11,6 +13,7 @@ const User = require('./models/User');
 const Product = require('./models/Product');
 const Cart = require('./models/Cart');
 const Order = require('./models/Order');
+const { existsSync } = require('fs');
 
 // Create instances of the express application
 const app = express();
@@ -341,6 +344,7 @@ app.get('/product/new', auth, async (req, res) => {
 
 app.post('/product/new', product_upload.array('product-imgs', 4), auth, async (req, res) => {
     const owner = await Product.getVendor(req.user);
+    console.log(req.files)
     var images = [];
     for (i = 0; i < req.files.length; i++) {
         images.push(req.files[i]['filename'])
@@ -354,8 +358,15 @@ app.post('/product/new', product_upload.array('product-imgs', 4), auth, async (r
                 images: images,
                 description: req.body['product-desciption']
             }
-            const product = await new Product(productData).save();
-            return res.redirect('/product/' + product._id);
+            const product = await new Product(productData);
+            if (!existsSync('./public/images/products/' + owner._id)) {
+                await fs.mkdir('./public/images/products/' + owner._id, { recursive: true });
+            }
+            await fs.rename('./public/images/products/temp', './public/images/products/' + owner._id + '/' + product._id);
+            await fs.mkdir('./public/images/products/temp', { recursive: true });
+            await product.save();
+            // return res.redirect('/product/' + product._id);
+            return res.render('vendor/create-product', { data: await getData(req) });
         }
         catch (error) {
             console.log(error);

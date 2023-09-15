@@ -25,6 +25,7 @@ const orderSchema = mongoose.Schema({
     hub: {
         type: String,
         required: true,
+        trim: true
     },
     totalPrice: {
         type: Number,
@@ -34,7 +35,8 @@ const orderSchema = mongoose.Schema({
     status: {
         type: String,
         required: true,
-        maxLength: 9
+        maxLength: 9,
+        trim: true
     }
 })
 
