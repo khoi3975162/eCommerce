@@ -242,8 +242,8 @@ app.get('/me', auth, async (req, res) => {
                 hub: req.user.shipper.hub
             }
         }
-        return res.render('me', { 
-            data:  {
+        return res.render('me', {
+            data: {
                 ...data,
                 user: user,
             }
@@ -395,7 +395,15 @@ app.get('/product/:id/update', auth, async (req, res) => {
             .redirect('/signin');
     }
     else if (await User.getAccountType(req.user) == 'vendor') {
-        return res.render('vendor/update-product');
+        const productData = await Product.getProduct(req.params.id);
+        if (productData) {
+            return res.render('vendor/update-product', {
+                data: {
+                    ...await getData(req),
+                    product: productData.toObject()
+                }
+            });
+        }
     }
     else {
         return res
