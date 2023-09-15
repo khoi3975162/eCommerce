@@ -1,1 +1,19 @@
-<h1>ME!</h1>
+<%- include('./partials/header.ejs') %>
+
+<div class="container">
+    <p>
+        <%= data.user.username %>
+    </p>
+    <p>
+        /images/profiles/<%= data.user.profile %>
+    </p>
+    <p>
+        <%= data.user.customerName %>
+    </p>
+    <p>
+        <%= data.user.customerAddress %>
+    </p>
+
+</div>
+
+    <%- include('./partials/footer.ejs') %>

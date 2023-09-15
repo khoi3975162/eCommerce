@@ -210,14 +210,44 @@ app.post('/signin', async (req, res) => {
     }
 })
 
-app.get('/me', auth, (req, res) => {
+app.get('/me', auth, async (req, res) => {
     if (req.guest) {
         return res
             .status(401)
             .redirect('/signin');
     }
     else {
-        return res.render('me', { user: req.user });
+        const data = await getData(req);
+        var user = null;
+        if (data.accountType == "customer") {
+            user = {
+                username: req.user.username,
+                profile: req.user.profile,
+                customerName: req.user.customer.customerName,
+                customerAddress: req.user.customer.customerAddress
+            }
+        }
+        else if (data.accountType == "vendor") {
+            user = {
+                username: req.user.username,
+                profile: req.user.profile,
+                vendorName: req.user.customer.vendorName,
+                vendorAddress: req.user.customer.vendorAddress
+            }
+        }
+        else if (data.accountType == "shipper") {
+            user = {
+                username: req.user.username,
+                profile: req.user.profile,
+                hub: req.user.shipper.hub
+            }
+        }
+        return res.render('me', { 
+            data:  {
+                ...data,
+                user: user,
+            }
+        });
     }
 })
 
