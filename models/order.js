@@ -46,6 +46,21 @@ orderSchema.statics.getOrdersfromHub = async (hub) => {
     return await Order.find({ hub: hub, status: 'Active' });
 }
 
+orderSchema.statics.getOrder = async (id) => {
+    try {
+        return await Order.findOne({ _id: id });
+    }
+    catch (error) {
+        if (error.name == "CastError") {
+            return false;
+        }
+        else {
+            console.log(error)
+        }
+    }
+}
+
+
 // Define models based on the schema
 const Order = mongoose.model('Order', orderSchema);
 

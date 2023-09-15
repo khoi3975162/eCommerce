@@ -310,7 +310,7 @@ app.get('/product/new', auth, async (req, res) => {
 })
 
 app.post('/product/new', product_upload.array('product-imgs', 4), auth, async (req, res) => {
-    owner = await Product.getVendor(req.user);
+    const owner = await Product.getVendor(req.user);
     var images = [];
     for (i = 0; i < req.files.length; i++) {
         images.push(req.files[i]['filename'])
@@ -345,8 +345,7 @@ app.get('/product/:id', auth, async (req, res) => {
         return res.render('product', {
             data: {
                 ...await getData(req),
-                ...productData.toObject(),
-                owner: (await Product.getVendor(productData.owner)).username
+                product: productData.toObject()
             }
         });
     }
@@ -429,7 +428,37 @@ app.get('/cart', auth, async (req, res) => {
     }
 })
 
-/* orders page for customer and shipper only */
+/* specific order page for customer and shipper only */
+app.get('/order/:id', auth, async (req, res) => {
+    const accountType = await User.getAccountType(req.user);
+    if (req.guest) {
+        return res
+            .status(401)
+            .redirect('/signin');
+    }
+    else if (accountType == 'customer' || accountType == 'shipper') {
+        const order = await Order.getOrder(req.params.id);
+        if (order) {
+            return res.render('order', {
+                data: {
+                    ...await getData(req),
+                    order: order,
+                    accountType: accountType,
+                }
+            });
+        }
+        else {
+            return res.status(404).send("There is no order with the id " + req.params.id + ".")
+        }
+    }
+    else {
+        return res
+            .status(403)
+            .send("The account you are logged in is not a customer or shipper account.");
+    }
+})
+
+/* view all orders page for customer and shipper only */
 app.get('/orders', auth, async (req, res) => {
     const accountType = await User.getAccountType(req.user);
     if (req.guest) {
@@ -437,27 +466,18 @@ app.get('/orders', auth, async (req, res) => {
             .status(401)
             .redirect('/signin');
     }
-    else if (accountType == 'customer') {
+    else if (accountType == 'customer' || accountType == 'shipper') {
         const orders = await Order.getOrdersfromCustomer(req.user);
+        var hub = "none";
+        if (accountType == 'shipper') {
+            hub = req.user.shipper.hub;
+        }
         return res.render('orders', {
             data: {
                 ...await getData(req),
-                ...orders,
+                orders: orders,
                 accountType: accountType,
-                hub: "none",
-                orderCount: orders.length
-            }
-        });
-    }
-    else if (accountType == 'shipper') {
-        const orders = await Order.getOrdersfromHub(req.user.shipper.hub);
-        return res.render('orders', {
-            data: {
-                ...await getData(req),
-                ...orders,
-                accountType: accountType,
-                hub: req.user.shipper.hub,
-                orderCount: orders.length
+                hub: hub
             }
         });
     }
