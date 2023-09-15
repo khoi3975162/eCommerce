@@ -11,7 +11,8 @@ const productSchema = mongoose.Schema({
         type: String,
         required: true,
         minLength: 10,
-        maxLength: 20
+        maxLength: 20,
+        trim: true
     },
     price: {
         type: Number,
@@ -24,7 +25,8 @@ const productSchema = mongoose.Schema({
     }],
     description: {
         type: String,
-        maxLength: 500
+        maxLength: 500,
+        trim: true
     }
 })
 

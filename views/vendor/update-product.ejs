@@ -6,16 +6,16 @@
                 <div class="row d-flex justify-content-around">
                     <div class="col-10 col-sm-10 col-md-10 col-lg-6 col-xl-6 product-img mb-4">
                         <div class="row">
-                            <img id="frame" class="col-6 img-fluid h-100 add-pd-img" src="<%= data.product.images[0] %>"
-                                alt="add-pd-img">
-                            <img id="frame" class="col-6 img-fluid h-100 add-pd-img" src="<%= data.product.images[1] %>"
-                                alt="add-pd-img">
+                            <img id="frame" class="col-6 img-fluid h-100 add-pd-img"
+                                src="<%= data.product.images[0] || ./images/products/default.png %>" alt="add-pd-img">
+                            <img id="frame" class="col-6 img-fluid h-100 add-pd-img"
+                                src="<%= data.product.images[1] || ./images/products/default.png %>" alt="add-pd-img">
                         </div>
                         <div class="row">
-                            <img id="frame" class="col-6 img-fluid h-100 add-pd-img" src="<%= data.product.images[2] %>"
-                                alt="add-pd-img">
-                            <img id="frame" class="col-6 img-fluid h-100 add-pd-img" src="<%= data.product.images[3] %>"
-                                alt="add-pd-img">
+                            <img id="frame" class="col-6 img-fluid h-100 add-pd-img"
+                                src="<%= data.product.images[2] || ./images/products/default.png %>" alt="add-pd-img">
+                            <img id="frame" class="col-6 img-fluid h-100 add-pd-img"
+                                src="<%= data.product.images[3] || ./images/products/default.png %>" alt="add-pd-img">
                         </div>
                         <div class="row pd-img-action">
                             <div class="col-9 col-sm-9 col-md-9 col-lg-3 col-xl-3 w-100">

@@ -235,12 +235,12 @@ function previewImgs() {
     if (uploadedImgs == 4) {
         customAlert('The maximum amount of images for a product is 4.');
     }
+    else if (document.getElementById('formFile').files.length > 4) {
+        customAlert('Only 4 files can be selected.');
+    }
     else {
         for (i = 0; i < addProductImgs.length; i++) {
-            if (addProductImgs[i].src.includes("/images/products/default.png")) {
-                addProductImgs[i].src = URL.createObjectURL(event.target.files[0]);
-                break;
-            }
+            addProductImgs[i].src = URL.createObjectURL(event.target.files[i]);
         }
     }
 }
@@ -265,6 +265,7 @@ function addProductCheck() {
     const productName = document.querySelector('.product-name').value;
     const productPrice = document.querySelector('.product-price').value;
     const productImages = document.querySelectorAll('.add-pd-img');
+    const productDescription = document.querySelector('.product-desciption').value
 
     // check if not entered
     if (productName == "" | productPrice == "") {
@@ -281,8 +282,11 @@ function addProductCheck() {
     else if (productImages[0].src.includes("/images/products/default.png")) {
         customAlert('There has to be atleast 1 image.');
     }
+    else if (productDescription.length > 500) {
+        customAlert('The maximum length of product description is 500.');
+    }
     else {
-        if (document.querySelector('.product-desciption').value == "") {
+        if (productDescription == "") {
             document.querySelector('.product-desciption').value = "No description provided.";
         }
         document.querySelector(".add-pd-form").submit();
