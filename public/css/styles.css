@@ -382,14 +382,6 @@ body {
         padding-bottom: 100px;
     }
 }
-
-.me-page {
-    .me-container {
-        background-color: white;
-        padding: 30px;
-    }
-    .profile-edit {
-        bottom: 252px;
-        right: 535px;
-    }
+.footer-container {
+    background-color: #3b71ca;
 }
