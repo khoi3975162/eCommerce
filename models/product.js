@@ -47,10 +47,48 @@ productSchema.statics.getProduct = async (id) => {
             return false;
         }
         else {
-            console.log(error)
+            console.log(error);
         }
     }
 }
+
+productSchema.statics.getProductsfromVendor = async (username) => {
+    const owner = await User.findOne({ username: username });
+    const products = await Product.find({ owner: owner })
+    if (products.length != 0) {
+        return [{
+            id: owner._id,
+            username: owner.username,
+            vendorName: owner.vendor.vendorName,
+            products: products
+        }]
+    }
+    else {
+        return false;
+    }
+}
+
+productSchema.statics.getProductsbyVendors = async () => {
+    const vendors = await User.find({ "vendor.accountType": true });
+    const products = await Product.find({});
+    var groupedProducts = [];
+    for (i = 0; i < vendors.length; i++) {
+        var filteredProducts = []
+        products.forEach(function (product) {
+            if (product.owner._id.toString() == vendors[i]._id.toString()) {
+                filteredProducts.push(product)
+            }
+        })
+        groupedProducts.push({
+            id: vendors[i]._id.toString(),
+            username: vendors[i].username,
+            vendorName: vendors[i].vendor.vendorName,
+            products: filteredProducts.sort(() => Math.random() - 0.5)
+        })
+    }
+    return groupedProducts.sort(() => Math.random() - 0.5);
+}
+
 
 // Define models based on the schema
 const Product = mongoose.model('Product', productSchema);

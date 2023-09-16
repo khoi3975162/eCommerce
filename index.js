@@ -42,7 +42,7 @@ async function getData(req) {
             accountType: "none",
             username: "Guest",
             cartCount: 0
-        };
+        }
     }
     else {
         const cart = await Cart.findOne({ 'owner': req.user });
@@ -213,6 +213,7 @@ app.post('/signin', async (req, res) => {
     }
 })
 
+/* view my account page */
 app.get('/me', auth, async (req, res) => {
     if (req.guest) {
         return res
@@ -279,32 +280,37 @@ app.get('/signout', auth, (req, res) => {
     }
 })
 
-/* products viewport for vendor only */
+/* view all products on the db, available for all user  */
 app.get('/products', auth, async (req, res) => {
     if (req.guest) {
         return res
             .status(401)
             .redirect('/signin');
     }
-    else if (await User.getAccountType(req.user) == 'vendor') {
-        return res.render('products', { data: await getData(req) });
-    }
     else {
-        return res
-            .status(403)
-            .send("The account you are logged in is not a vendor account.");
+        return res.render('products', {
+            data: {
+                ...await getData(req),
+                products: await Product.getProductsbyVendors()
+            }
+        });
     }
 })
 
 /* view products of a vendor, available for all user */
-app.get('/products/:vendorname', auth, async (req, res) => {
+app.get('/products/:vendorusername', auth, async (req, res) => {
     if (req.guest) {
         return res
             .status(401)
             .redirect('/signin');
     }
     else {
-        return res.render('products');
+        return res.render('products', {
+            data: {
+                ...await getData(req),
+                products: await Product.getProductsfromVendor(req.params.vendorusername)
+            }
+        });
     }
 })
 
@@ -342,6 +348,7 @@ app.get('/product/new', auth, async (req, res) => {
     }
 })
 
+/* post endpoint for adding new product, for vendor only */
 app.post('/product/new', product_upload.array('product-imgs', 4), auth, async (req, res) => {
     const owner = await Product.getVendor(req.user);
     console.log(req.files)
@@ -359,14 +366,18 @@ app.post('/product/new', product_upload.array('product-imgs', 4), auth, async (r
                 description: req.body['product-desciption']
             }
             const product = await new Product(productData);
+
+            // create new folder for the vendor
             if (!existsSync('./public/images/products/' + owner._id)) {
                 await fs.mkdir('./public/images/products/' + owner._id, { recursive: true });
             }
+            // rename temp folder contains the uploaded imgs to product id and place it inside vendor folder
             await fs.rename('./public/images/products/temp', './public/images/products/' + owner._id + '/' + product._id);
+            // recreate temp folder
             await fs.mkdir('./public/images/products/temp', { recursive: true });
+
             await product.save();
-            // return res.redirect('/product/' + product._id);
-            return res.render('vendor/create-product', { data: await getData(req) });
+            return res.redirect('/product/' + product._id);
         }
         catch (error) {
             console.log(error);
@@ -491,8 +502,7 @@ app.get('/order/:id', auth, async (req, res) => {
             return res.render('order', {
                 data: {
                     ...await getData(req),
-                    order: order,
-                    accountType: accountType,
+                    order: order
                 }
             });
         }
@@ -525,7 +535,6 @@ app.get('/orders', auth, async (req, res) => {
             data: {
                 ...await getData(req),
                 orders: orders,
-                accountType: accountType,
                 hub: hub
             }
         });

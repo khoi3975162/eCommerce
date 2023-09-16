@@ -370,3 +370,15 @@ document.addEventListener("DOMContentLoaded", function setDummyDiv() {
         }
     }
 })
+
+document.addEventListener("DOMContentLoaded", function viewProducts() {
+    if (window.location.pathname.includes("/products")) {
+        const vendorName = document.querySelectorAll('.vendor-name');
+        if (vendorName.length == 1) {
+            const productCards = document.querySelectorAll('.product-card');
+            for (i = 0; i < productCards.length; i++) {
+                productCards[i].classList.remove("product-card-ctrl");
+            }
+        }
+    }
+})
