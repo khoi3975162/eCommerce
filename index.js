@@ -63,12 +63,9 @@ async function getData(req) {
  * after setting the cookie and sending the response.
  * @returns the response object after setting a cookie and redirecting to the specified endpoint.
  */
-function resRedirect(res, endpoint) {
+function resRedirect(res, token, endpoint) {
     return res
-        .cookie("access_token", token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-        })
+        .cookie("access_token", token)
         .status(200)
         .redirect(endpoint);
 }
@@ -149,13 +146,13 @@ app.post('/signup', profile_upload.single('profile'), async (req, res, next) => 
 
         // save token in cookie on client redirect user based on account type
         if (req.body['accounttype'] == 'vendor') {
-            return resRedirect(res, '/dashboard');
+            return resRedirect(res, token, '/dashboard');
         }
         else if (req.body['accounttype'] == 'customer') {
-            return resRedirect(res, '/');
+            return resRedirect(res, token, '/');
         }
         else if (req.body['accounttype'] == 'shipper') {
-            return resRedirect(res, '/orders');
+            return resRedirect(res, token, '/orders');
         }
     } catch (error) {
         console.log(error);
@@ -195,14 +192,14 @@ app.post('/signin', async (req, res) => {
 
         // save token in cookie on client redirect user based on account type
         const accountType = await User.getAccountType(user);
-        if (req.body['accounttype'] == 'vendor') {
-            return resRedirect(res, '/dashboard');
+        if (accountType == 'vendor') {
+            return resRedirect(res, token, '/dashboard');
         }
-        else if (req.body['accounttype'] == 'customer') {
-            return resRedirect(res, '/');
+        else if (accountType == 'customer') {
+            return resRedirect(res, token, '/');
         }
-        else if (req.body['accounttype'] == 'shipper') {
-            return resRedirect(res, '/orders');
+        else if (accountType == 'shipper') {
+            return resRedirect(res, token, '/orders');
         }
     } catch (error) {
         console.log(error);
