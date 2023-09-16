@@ -54,6 +54,38 @@ async function getData(req) {
     }
 }
 
+/**
+ * The function resRedirect sets a cookie, sends a 200 status code, and redirects the response to a
+ * specified endpoint.
+ * @param res - The `res` parameter is the response object that is passed to the function. It is used
+ * to send the response back to the client.
+ * @param endpoint - The `endpoint` parameter is the URL or path where you want to redirect the user
+ * after setting the cookie and sending the response.
+ * @returns the response object after setting a cookie and redirecting to the specified endpoint.
+ */
+function resRedirect(res, endpoint) {
+    return res
+        .cookie("access_token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+        })
+        .status(200)
+        .redirect(endpoint);
+}
+
+/**
+ * The function resSignIn redirects the user to the signin page with a status code of 401
+ * (Unauthorized).
+ * @param res - The "res" parameter is the response object that is passed to the function. It is used
+ * to send a response back to the client.
+ * @returns a response object with a status code of 401 and a redirect to the '/signin' route.
+ */
+function resSignIn(res) {
+    return res
+        .status(401)
+        .redirect('/signin');
+}
+
 /* The below code is defining a route handler for the root URL ("/") using the Express.js framework. It
 is using the `app.get()` method to handle GET requests to the root URL. The `auth` middleware
 function is being used to authenticate the request before executing the route handler. */
@@ -117,31 +149,13 @@ app.post('/signup', profile_upload.single('profile'), async (req, res, next) => 
 
         // save token in cookie on client redirect user based on account type
         if (req.body['accounttype'] == 'vendor') {
-            return res
-                .cookie("access_token", token, {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === "production",
-                })
-                .status(200)
-                .redirect('/dashboard');
+            return resRedirect(res, '/dashboard');
         }
         else if (req.body['accounttype'] == 'customer') {
-            return res
-                .cookie("access_token", token, {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === "production",
-                })
-                .status(200)
-                .redirect('/');
+            return resRedirect(res, '/');
         }
         else if (req.body['accounttype'] == 'shipper') {
-            return res
-                .cookie("access_token", token, {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === "production",
-                })
-                .status(200)
-                .redirect('/orders');
+            return resRedirect(res, '/orders');
         }
     } catch (error) {
         console.log(error);
@@ -181,32 +195,14 @@ app.post('/signin', async (req, res) => {
 
         // save token in cookie on client redirect user based on account type
         const accountType = await User.getAccountType(user);
-        if (accountType == 'vendor') {
-            return res
-                .cookie("access_token", token, {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === "production",
-                })
-                .status(200)
-                .redirect('/dashboard');
+        if (req.body['accounttype'] == 'vendor') {
+            return resRedirect(res, '/dashboard');
         }
-        else if (accountType == 'customer') {
-            return res
-                .cookie("access_token", token, {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === "production",
-                })
-                .status(200)
-                .redirect('/');
+        else if (req.body['accounttype'] == 'customer') {
+            return resRedirect(res, '/');
         }
-        else if (accountType == 'shipper') {
-            return res
-                .cookie("access_token", token, {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === "production",
-                })
-                .status(200)
-                .redirect('/orders');
+        else if (req.body['accounttype'] == 'shipper') {
+            return resRedirect(res, '/orders');
         }
     } catch (error) {
         console.log(error);
@@ -216,35 +212,24 @@ app.post('/signin', async (req, res) => {
 /* view my account page */
 app.get('/me', auth, async (req, res) => {
     if (req.guest) {
-        return res
-            .status(401)
-            .redirect('/signin');
+        return resSignIn(res);
     }
     else {
         const data = await getData(req);
-        var user = null;
+        var user = {
+            username: req.user.username,
+            profile: req.user.profile
+        }
         if (data.accountType == "customer") {
-            user = {
-                username: req.user.username,
-                profile: req.user.profile,
-                customerName: req.user.customer.customerName,
-                customerAddress: req.user.customer.customerAddress
-            }
+            user[customerName] = req.user.customer.customerName;
+            user[customerAddress] = req.user.customer.customerAddress;
         }
         else if (data.accountType == "vendor") {
-            user = {
-                username: req.user.username,
-                profile: req.user.profile,
-                vendorName: req.user.customer.vendorName,
-                vendorAddress: req.user.customer.vendorAddress
-            }
+            user[vendorName] = req.user.customer.vendorName;
+            user[vendorAddress] = req.user.customer.vendorAddress;
         }
         else if (data.accountType == "shipper") {
-            user = {
-                username: req.user.username,
-                profile: req.user.profile,
-                hub: req.user.shipper.hub
-            }
+            user[hub] = req.user.shipper.hub;
         }
         return res.render('me', {
             data: {
@@ -294,25 +279,28 @@ app.get('/products', auth, async (req, res) => {
             ...await getData(req),
             products: await Product.getProductsbyVendors()
         }
-    });
+    })
 })
 
 /* view products of a vendor, available for all user */
 app.get('/products/:vendorusername', auth, async (req, res) => {
+    var isOwner = false;
+    if (req.user.username == req.params.vendorusername) {
+        isOwner = true;
+    }
     return res.render('products', {
         data: {
             ...await getData(req),
+            isOwner: isOwner,
             products: await Product.getProductsfromVendor(req.params.vendorusername)
         }
-    });
+    })
 })
 
 /* add new product page for vendor only */
 app.get('/dashboard', auth, async (req, res) => {
     if (req.guest) {
-        return res
-            .status(401)
-            .redirect('/signin');
+        return resSignIn(res);
     }
     else if (await User.getAccountType(req.user) == 'vendor') {
         return res.render('vendor/dashboard', { data: await getData(req) });
@@ -327,9 +315,7 @@ app.get('/dashboard', auth, async (req, res) => {
 /* add new product page for vendor only */
 app.get('/product/new', auth, async (req, res) => {
     if (req.guest) {
-        return res
-            .status(401)
-            .redirect('/signin');
+        return resSignIn(res);
     }
     else if (await User.getAccountType(req.user) == 'vendor') {
         return res.render('vendor/create-product', { data: await getData(req) });
@@ -405,9 +391,7 @@ app.get('/product/:id', auth, async (req, res) => {
 /* update specific product page for vendor only */
 app.get('/product/:id/update', auth, async (req, res) => {
     if (req.guest) {
-        return res
-            .status(401)
-            .redirect('/signin');
+        return resSignIn(res);
     }
     else if (await User.getAccountType(req.user) == 'vendor') {
         const productData = await Product.getProduct(req.params.id);
@@ -440,9 +424,7 @@ app.post('/product/:id/update', auth, async (req, res) => {
 /* delete specific product page for vendor only */
 app.get('/product/:id/delete', auth, async (req, res) => {
     if (req.guest) {
-        return res
-            .status(401)
-            .redirect('/signin');
+        return resSignIn(res);
     }
     else if (await User.getAccountType(req.user) == 'vendor') {
         return res.render('vendor/delete-product');
@@ -467,9 +449,7 @@ app.post('/product/:id/delete', auth, async (req, res) => {
 /* cart page for customer only */
 app.get('/cart', auth, async (req, res) => {
     if (req.guest) {
-        return res
-            .status(401)
-            .redirect('/signin');
+        return resSignIn(res);
     }
     else if (await User.getAccountType(req.user) == 'customer') {
         return res.render('customer/cart');
@@ -481,15 +461,12 @@ app.get('/cart', auth, async (req, res) => {
     }
 })
 
-/* cart page for customer only */
-app.get('/cart/:username/add/:productid', auth, async (req, res) => {
+/* add to cart for customer only */
+app.post('/cart/:username/add/:productid', auth, async (req, res) => {
     if (req.guest) {
-        return res
-            .status(401)
-            .redirect('/signin');
+        return resSignIn(res);
     }
     else if (await User.getAccountType(req.user) == 'customer') {
-        return res.render('customer/cart');
     }
     else {
         return res
@@ -502,9 +479,7 @@ app.get('/cart/:username/add/:productid', auth, async (req, res) => {
 app.get('/order/:id', auth, async (req, res) => {
     const accountType = await User.getAccountType(req.user);
     if (req.guest) {
-        return res
-            .status(401)
-            .redirect('/signin');
+        return resSignIn(res);
     }
     else if (accountType == 'customer' || accountType == 'shipper') {
         const order = await Order.getOrder(req.params.id);
@@ -531,9 +506,7 @@ app.get('/order/:id', auth, async (req, res) => {
 app.get('/orders', auth, async (req, res) => {
     const accountType = await User.getAccountType(req.user);
     if (req.guest) {
-        return res
-            .status(401)
-            .redirect('/signin');
+        return resSignIn(res);
     }
     else if (accountType == 'customer' || accountType == 'shipper') {
         const orders = await Order.getOrdersfromCustomer(req.user);
@@ -547,7 +520,7 @@ app.get('/orders', auth, async (req, res) => {
                 orders: orders,
                 hub: hub
             }
-        });
+        })
     }
     else {
         return res

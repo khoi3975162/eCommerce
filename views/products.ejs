@@ -1,5 +1,8 @@
 <%- include('./partials/header.ejs') %>
 
+    <div class="is-owner d-none">
+        <%= data.isOwner %>
+    </div>
     <div class="container products-page shadow-sm mb-4 mt-4">
         <div class="row products-container rounded d-flex justify-content-center">
             <% if (data.products.length> 0) {data.products.forEach(function(productData) { if
@@ -26,13 +29,16 @@
                                     $<%= product.price %>
                                 </p>
                                 <a href="/cart/<%= data.username %>/add/<%= product._id %>"
-                                    class="btn btn-primary display-customer add-cart-btn">Add to Cart</a>
-                                <div class="display-vendor d-flex gap-2">
-                                    <a href="/product/<%= product._id %>/update"
-                                        class="btn btn-primary edit-btn w-50">Edit</a>
-                                    <a href="/product/<%= product._id %>/update"
-                                        class="btn btn-primary delete-btn w-50">Delete</a>
-                                </div>
+                                    class="btn btn-primary display-customer add-cart-btn anm-btn"><span>Add to
+                                        Cart</span></a>
+                                <% if (data.isOwner) { %>
+                                    <div class="d-flex gap-2 display-vendor">
+                                        <a href="/product/<%= product._id %>/update"
+                                            class="btn btn-primary edit-btn w-50 anm-btn"><span>Edit</span></a>
+                                        <a href="/product/<%= product._id %>/update"
+                                            class="btn btn-primary delete-btn w-50 anm-btn"><span>Delete</span></a>
+                                    </div>
+                                    <% } %>
                             </div>
                         </div>
                         <% }); %>

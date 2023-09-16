@@ -376,25 +376,21 @@ document.addEventListener("DOMContentLoaded", function displayNav() {
  * to its value. 
  */
 document.addEventListener("DOMContentLoaded", function setAccountTypeDisplay() {
+    var displayVendor = document.querySelectorAll('.display-vendor');
+    var displayCustomer = document.querySelectorAll('.display-customer');
+    var displayShipper = document.querySelectorAll('.display-shipper');
     const accountType = document.querySelector('.account-type').innerHTML.trim();
-    console.log(accountType)
     if (accountType == "vendor") {
-        var displayShipper = document.querySelectorAll('.display-shipper');
-        massDisplayEdit(displayShipper, 'none');
-        var displayCustomer = document.querySelectorAll('.display-customer');
         massDisplayEdit(displayCustomer, 'none');
+        massDisplayEdit(displayShipper, 'none');
     }
     else if (accountType == "customer") {
-        var displayShipper = document.querySelectorAll('.display-shipper');
-        massDisplayEdit(displayShipper, 'none');
-        var displayVendor = document.querySelectorAll('.display-vendor');
         massDisplayEdit(displayVendor, 'none');
+        massDisplayEdit(displayShipper, 'none');
     }
     else if (accountType == "shipper") {
-        var displayCustomer = document.querySelectorAll('.display-customer');
-        massDisplayEdit(displayCustomer, 'none');
-        var displayVendor = document.querySelectorAll('.display-vendor');
         massDisplayEdit(displayVendor, 'none');
+        massDisplayEdit(displayCustomer, 'none');
     }
 })
 
