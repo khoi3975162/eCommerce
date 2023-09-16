@@ -1,19 +1,44 @@
 <%- include('./partials/header.ejs') %>
 
-<div class="container">
-    <p>
-        <%= data.user.username %>
-    </p>
-    <p>
-        /images/profiles/<%= data.user.profile %>
-    </p>
-    <p>
-        <%= data.user.customerName %>
-    </p>
-    <p>
-        <%= data.user.customerAddress %>
-    </p>
+    <div class="container shadow-sm me-page">
+        <div class="row me-container rounded">
+            <div class="col">
+                <div class="form-group mb-4">
+                    <label for="accounttype">Account type</label>
+                    <input type="accounttype" class="form-control" id="accounttype" aria-describedby="accountType"
+                        value="<%= data.accountType %>">
+                </div>
+                <div class="form-group mb-4">
+                    <label for="username">Username</label>
+                    <input type="username" class="form-control" id="username" aria-describedby="username"
+                        value="<%= data.user.username %>">
+                </div>
+                <div class="form-group mb-4">
+                    <label for="customername">Customer Name</label>
+                    <input type="customername" class="form-control" id="customername" aria-describedby="customerName"
+                        value="<%= data.user.customerName %>">
+                </div>
+                <div class="form-group mb-4">
+                    <label for="customeraddress">Customer Address</label>
+                    <input type="customeraddress" class="form-control" id="customeraddress"
+                        aria-describedby="customerAddress" value="<%= data.user.customerAddress %>">
+                </div>
+            </div>
 
-</div>
+            <div class="col d-flex justify-content-center">
+                <img class="img-fluid" src="/images/profiles/<%= data.user.profile %>" alt="profile">
+                <div class="dropdown profile-edit">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        ✏️ Edit
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                        <li><a class="dropdown-item" href="#">Upload a photo</a></li>
+                        <li><a class="dropdown-item" href="#">Delete photo</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <%- include('./partials/footer.ejs') %>

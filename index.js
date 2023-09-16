@@ -2,8 +2,10 @@
 const express = require('express');
 const cookieParser = require("cookie-parser");
 const multer = require('multer');
+const fs = require('fs/promises');
+
 const profile_upload = multer({ dest: 'public/images/profiles/' });
-const product_upload = multer({ dest: 'public/images/products/' });
+const product_upload = multer({ dest: 'public/images/products/temp' });
 
 require('./modules/database');
 const auth = require('./modules/auth');
@@ -11,6 +13,7 @@ const User = require('./models/User');
 const Product = require('./models/Product');
 const Cart = require('./models/Cart');
 const Order = require('./models/Order');
+const { existsSync } = require('fs');
 
 // Create instances of the express application
 const app = express();
@@ -39,7 +42,7 @@ async function getData(req) {
             accountType: "none",
             username: "Guest",
             cartCount: 0
-        };
+        }
     }
     else {
         const cart = await Cart.findOne({ 'owner': req.user });
@@ -210,6 +213,7 @@ app.post('/signin', async (req, res) => {
     }
 })
 
+/* view my account page */
 app.get('/me', auth, async (req, res) => {
     if (req.guest) {
         return res
@@ -242,14 +246,21 @@ app.get('/me', auth, async (req, res) => {
                 hub: req.user.shipper.hub
             }
         }
-        return res.render('me', { 
-            data:  {
+        return res.render('me', {
+            data: {
                 ...data,
                 user: user,
             }
         });
     }
 })
+
+app.get('/aboutus', auth, async (req, res) => {
+    return res.render('aboutus', {
+        data: await getData(req)
+    });
+}
+)
 
 /* The below code is defining a route handler for the "/signout" endpoint. It is using the "auth"
 middleware to authenticate the request. */
@@ -276,33 +287,24 @@ app.get('/signout', auth, (req, res) => {
     }
 })
 
-/* products viewport for vendor only */
+/* view all products on the db, available for all user  */
 app.get('/products', auth, async (req, res) => {
-    if (req.guest) {
-        return res
-            .status(401)
-            .redirect('/signin');
-    }
-    else if (await User.getAccountType(req.user) == 'vendor') {
-        return res.render('products', { data: await getData(req) });
-    }
-    else {
-        return res
-            .status(403)
-            .send("The account you are logged in is not a vendor account.");
-    }
+    return res.render('products', {
+        data: {
+            ...await getData(req),
+            products: await Product.getProductsbyVendors()
+        }
+    });
 })
 
 /* view products of a vendor, available for all user */
-app.get('/products/:vendorname', auth, async (req, res) => {
-    if (req.guest) {
-        return res
-            .status(401)
-            .redirect('/signin');
-    }
-    else {
-        return res.render('products');
-    }
+app.get('/products/:vendorusername', auth, async (req, res) => {
+    return res.render('products', {
+        data: {
+            ...await getData(req),
+            products: await Product.getProductsfromVendor(req.params.vendorusername)
+        }
+    });
 })
 
 /* add new product page for vendor only */
@@ -339,8 +341,10 @@ app.get('/product/new', auth, async (req, res) => {
     }
 })
 
+/* post endpoint for adding new product, for vendor only */
 app.post('/product/new', product_upload.array('product-imgs', 4), auth, async (req, res) => {
-    owner = await Product.getVendor(req.user);
+    const owner = await Product.getVendor(req.user);
+    console.log(req.files)
     var images = [];
     for (i = 0; i < req.files.length; i++) {
         images.push(req.files[i]['filename'])
@@ -354,7 +358,18 @@ app.post('/product/new', product_upload.array('product-imgs', 4), auth, async (r
                 images: images,
                 description: req.body['product-desciption']
             }
-            const product = await new Product(productData).save();
+            const product = await new Product(productData);
+
+            // create new folder for the vendor
+            if (!existsSync('./public/images/products/' + owner._id)) {
+                await fs.mkdir('./public/images/products/' + owner._id, { recursive: true });
+            }
+            // rename temp folder contains the uploaded imgs to product id and place it inside vendor folder
+            await fs.rename('./public/images/products/temp', './public/images/products/' + owner._id + '/' + product._id);
+            // recreate temp folder
+            await fs.mkdir('./public/images/products/temp', { recursive: true });
+
+            await product.save();
             return res.redirect('/product/' + product._id);
         }
         catch (error) {
@@ -375,8 +390,7 @@ app.get('/product/:id', auth, async (req, res) => {
         return res.render('product', {
             data: {
                 ...await getData(req),
-                ...productData.toObject(),
-                owner: (await Product.getVendor(productData.owner)).username
+                product: productData.toObject()
             }
         });
     }
@@ -396,7 +410,15 @@ app.get('/product/:id/update', auth, async (req, res) => {
             .redirect('/signin');
     }
     else if (await User.getAccountType(req.user) == 'vendor') {
-        return res.render('vendor/update-product');
+        const productData = await Product.getProduct(req.params.id);
+        if (productData) {
+            return res.render('vendor/update-product', {
+                data: {
+                    ...await getData(req),
+                    product: productData.toObject()
+                }
+            });
+        }
     }
     else {
         return res
@@ -459,7 +481,36 @@ app.get('/cart', auth, async (req, res) => {
     }
 })
 
-/* orders page for customer and shipper only */
+/* specific order page for customer and shipper only */
+app.get('/order/:id', auth, async (req, res) => {
+    const accountType = await User.getAccountType(req.user);
+    if (req.guest) {
+        return res
+            .status(401)
+            .redirect('/signin');
+    }
+    else if (accountType == 'customer' || accountType == 'shipper') {
+        const order = await Order.getOrder(req.params.id);
+        if (order) {
+            return res.render('order', {
+                data: {
+                    ...await getData(req),
+                    order: order
+                }
+            });
+        }
+        else {
+            return res.status(404).send("There is no order with the id " + req.params.id + ".")
+        }
+    }
+    else {
+        return res
+            .status(403)
+            .send("The account you are logged in is not a customer or shipper account.");
+    }
+})
+
+/* view all orders page for customer and shipper only */
 app.get('/orders', auth, async (req, res) => {
     const accountType = await User.getAccountType(req.user);
     if (req.guest) {
@@ -467,27 +518,17 @@ app.get('/orders', auth, async (req, res) => {
             .status(401)
             .redirect('/signin');
     }
-    else if (accountType == 'customer') {
+    else if (accountType == 'customer' || accountType == 'shipper') {
         const orders = await Order.getOrdersfromCustomer(req.user);
+        var hub = "none";
+        if (accountType == 'shipper') {
+            hub = req.user.shipper.hub;
+        }
         return res.render('orders', {
             data: {
                 ...await getData(req),
-                ...orders,
-                accountType: accountType,
-                hub: "none",
-                orderCount: orders.length
-            }
-        });
-    }
-    else if (accountType == 'shipper') {
-        const orders = await Order.getOrdersfromHub(req.user.shipper.hub);
-        return res.render('orders', {
-            data: {
-                ...await getData(req),
-                ...orders,
-                accountType: accountType,
-                hub: req.user.shipper.hub,
-                orderCount: orders.length
+                orders: orders,
+                hub: hub
             }
         });
     }

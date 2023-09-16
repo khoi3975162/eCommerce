@@ -235,12 +235,12 @@ function previewImgs() {
     if (uploadedImgs == 4) {
         customAlert('The maximum amount of images for a product is 4.');
     }
+    else if (document.getElementById('formFile').files.length > 4) {
+        customAlert('Only 4 files can be selected.');
+    }
     else {
         for (i = 0; i < addProductImgs.length; i++) {
-            if (addProductImgs[i].src.includes("/images/products/default.png")) {
-                addProductImgs[i].src = URL.createObjectURL(event.target.files[0]);
-                break;
-            }
+            addProductImgs[i].src = URL.createObjectURL(event.target.files[i]);
         }
     }
 }
@@ -265,6 +265,7 @@ function addProductCheck() {
     const productName = document.querySelector('.product-name').value;
     const productPrice = document.querySelector('.product-price').value;
     const productImages = document.querySelectorAll('.add-pd-img');
+    const productDescription = document.querySelector('.product-desciption').value
 
     // check if not entered
     if (productName == "" | productPrice == "") {
@@ -281,15 +282,33 @@ function addProductCheck() {
     else if (productImages[0].src.includes("/images/products/default.png")) {
         customAlert('There has to be atleast 1 image.');
     }
+    else if (productDescription.length > 500) {
+        customAlert('The maximum length of product description is 500.');
+    }
     else {
-        if (document.querySelector('.product-desciption').value == "") {
+        if (productDescription == "") {
             document.querySelector('.product-desciption').value = "No description provided.";
         }
         document.querySelector(".add-pd-form").submit();
     }
 }
 
+function editOrderStatus() {
+
+}
+
 // ========== Listener ==========
+
+
+document.addEventListener("DOMContentLoaded", function pushFooter() {
+    if (window.location.pathname != "/signup") {
+        const viewportHeight = window.innerHeight;
+        const documentHeight = document.body.offsetHeight;
+        if (viewportHeight > documentHeight) {
+            document.querySelector('.dummy').style.height = (viewportHeight - documentHeight) + 'px';
+        }
+    }
+})
 
 /**
  * The code is adding an event listener to the `DOMContentLoaded` event to set the height of the
@@ -297,9 +316,16 @@ function addProductCheck() {
  */
 document.addEventListener("DOMContentLoaded", function setDummyDiv() {
     if (window.location.pathname == "/signup") {
-        var absoluteDivHeight = document.querySelector('.register-1').offsetHeight;
-        var blankDiv = document.querySelector('.dummy');
-        blankDiv.style.height = absoluteDivHeight + 'px';
+        const viewportHeight = window.innerHeight;
+        const documentHeight = document.body.offsetHeight;
+        const absoluteDivHeight = document.querySelector('.register-1').offsetHeight;
+        const footerHeight = document.querySelector('.footer-container').offsetHeight;
+        if ((viewportHeight - documentHeight) < absoluteDivHeight) {
+            document.querySelector('.dummy').style.height = (absoluteDivHeight + footerHeight) + 'px';
+        }
+        else {
+            document.querySelector('.dummy').style.height = ((viewportHeight - footerHeight) - (documentHeight - footerHeight)) + 'px';
+        }
     }
 })
 
@@ -341,7 +367,7 @@ document.addEventListener("DOMContentLoaded", function displayNav() {
     }
 })
 
-document.addEventListener("DOMContentLoaded", function setDummyDiv() {
+document.addEventListener("DOMContentLoaded", function setOrdersPage() {
     if (window.location.pathname == "/orders") {
         const accountType = document.querySelector('.account-type').innerHTML.trim();
         if (accountType == "customer") {
@@ -359,6 +385,18 @@ document.addEventListener("DOMContentLoaded", function setDummyDiv() {
         }
         else {
             document.querySelector('.display-orders').style.display = "none";
+        }
+    }
+})
+
+document.addEventListener("DOMContentLoaded", function viewProducts() {
+    if (window.location.pathname.includes("/products")) {
+        const vendorName = document.querySelectorAll('.vendor-name');
+        if (vendorName.length == 1) {
+            const productCards = document.querySelectorAll('.product-card');
+            for (i = 0; i < productCards.length; i++) {
+                productCards[i].classList.remove("product-card-ctrl");
+            }
         }
     }
 })
