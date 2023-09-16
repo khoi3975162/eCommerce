@@ -299,15 +299,33 @@ function editOrderStatus() {
 
 // ========== Listener ==========
 
+
+document.addEventListener("DOMContentLoaded", function pushFooter() {
+    if (window.location.pathname != "/signup") {
+        const viewportHeight = window.innerHeight;
+        const documentHeight = document.body.offsetHeight;
+        if (viewportHeight > documentHeight) {
+            document.querySelector('.dummy').style.height = (viewportHeight - documentHeight) + 'px';
+        }
+    }
+})
+
 /**
  * The code is adding an event listener to the `DOMContentLoaded` event to set the height of the
  * dummy div for pushing the footer down because there are absolute divs on the page
  */
 document.addEventListener("DOMContentLoaded", function setDummyDiv() {
     if (window.location.pathname == "/signup") {
-        var absoluteDivHeight = document.querySelector('.register-1').offsetHeight;
-        var blankDiv = document.querySelector('.dummy');
-        blankDiv.style.height = absoluteDivHeight + 'px';
+        const viewportHeight = window.innerHeight;
+        const documentHeight = document.body.offsetHeight;
+        const absoluteDivHeight = document.querySelector('.register-1').offsetHeight;
+        const footerHeight = document.querySelector('.footer-container').offsetHeight;
+        if ((viewportHeight - documentHeight) < absoluteDivHeight) {
+            document.querySelector('.dummy').style.height = (absoluteDivHeight + footerHeight) + 'px';
+        }
+        else {
+            document.querySelector('.dummy').style.height = ((viewportHeight - footerHeight) - (documentHeight - footerHeight)) + 'px';
+        }
     }
 })
 
@@ -349,7 +367,7 @@ document.addEventListener("DOMContentLoaded", function displayNav() {
     }
 })
 
-document.addEventListener("DOMContentLoaded", function setDummyDiv() {
+document.addEventListener("DOMContentLoaded", function setOrdersPage() {
     if (window.location.pathname == "/orders") {
         const accountType = document.querySelector('.account-type').innerHTML.trim();
         if (accountType == "customer") {

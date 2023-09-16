@@ -257,9 +257,9 @@ app.get('/me', auth, async (req, res) => {
 
 app.get('/aboutus', auth, async (req, res) => {
     return res.render('aboutus', {
-            data: await getData(req)
-        });
-    }
+        data: await getData(req)
+    });
+}
 )
 
 /* The below code is defining a route handler for the "/signout" endpoint. It is using the "auth"
@@ -289,36 +289,22 @@ app.get('/signout', auth, (req, res) => {
 
 /* view all products on the db, available for all user  */
 app.get('/products', auth, async (req, res) => {
-    if (req.guest) {
-        return res
-            .status(401)
-            .redirect('/signin');
-    }
-    else {
-        return res.render('products', {
-            data: {
-                ...await getData(req),
-                products: await Product.getProductsbyVendors()
-            }
-        });
-    }
+    return res.render('products', {
+        data: {
+            ...await getData(req),
+            products: await Product.getProductsbyVendors()
+        }
+    });
 })
 
 /* view products of a vendor, available for all user */
 app.get('/products/:vendorusername', auth, async (req, res) => {
-    if (req.guest) {
-        return res
-            .status(401)
-            .redirect('/signin');
-    }
-    else {
-        return res.render('products', {
-            data: {
-                ...await getData(req),
-                products: await Product.getProductsfromVendor(req.params.vendorusername)
-            }
-        });
-    }
+    return res.render('products', {
+        data: {
+            ...await getData(req),
+            products: await Product.getProductsfromVendor(req.params.vendorusername)
+        }
+    });
 })
 
 /* add new product page for vendor only */

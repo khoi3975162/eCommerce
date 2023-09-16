@@ -385,6 +385,30 @@ body {
 
 .footer-container {
     background-color: #3b71ca;
+
+    font-weight: bold;
+
+    .copyright {
+        color: #ce6e7d;
+    }
+
+    .nav-item a {
+        color: #ce6e7d;
+    }
+
+    .footer-logo {
+        max-width: 75px;
+    }
+
+    .footer-wrap {
+        padding-bottom: 20px;
+    }
+
+    .footer-wrap-footer {
+        padding: 15px;
+        padding-left: 40px;
+        padding-right: 40px;
+    }
 }
 
 .me-page {
@@ -392,6 +416,10 @@ body {
         background-color: white;
         padding: 30px;
     }
+
+    margin-top: 40px;
+    margin-bottom: 80px;
+
 }
 
 .products-container {
