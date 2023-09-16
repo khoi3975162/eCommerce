@@ -299,7 +299,10 @@ function editOrderStatus() {
 
 // ========== Listener ==========
 
-
+/**
+ * The code is adding an event listener to the `DOMContentLoaded` event to set the height of the
+ * dummy div except the signup page for pushing the footer down
+ */
 document.addEventListener("DOMContentLoaded", function pushFooter() {
     if (window.location.pathname != "/signup") {
         const viewportHeight = window.innerHeight;
@@ -312,7 +315,7 @@ document.addEventListener("DOMContentLoaded", function pushFooter() {
 
 /**
  * The code is adding an event listener to the `DOMContentLoaded` event to set the height of the
- * dummy div for pushing the footer down because there are absolute divs on the page
+ * dummy div in signup page for pushing the footer down because there are absolute divs on the page
  */
 document.addEventListener("DOMContentLoaded", function setDummyDiv() {
     if (window.location.pathname == "/signup") {
@@ -329,7 +332,8 @@ document.addEventListener("DOMContentLoaded", function setDummyDiv() {
     }
 })
 
-/* The code is adding an event listener to the "DOMContentLoaded" event to set appropriate content
+/**
+ * The code is adding an event listener to the "DOMContentLoaded" event to set appropriate content
  * on the navigation bar for each account type.
  */
 document.addEventListener("DOMContentLoaded", function displayNav() {
@@ -367,18 +371,39 @@ document.addEventListener("DOMContentLoaded", function displayNav() {
     }
 })
 
-document.addEventListener("DOMContentLoaded", function setOrdersPage() {
-    if (window.location.pathname == "/orders") {
-        const accountType = document.querySelector('.account-type').innerHTML.trim();
-        if (accountType == "customer") {
-            var displayShipper = document.querySelectorAll('.display-shipper');
-            massDisplayEdit(displayShipper, 'none');
-        }
-        else if (accountType == "shipper") {
-            var displayCustomer = document.querySelectorAll('.display-customer');
-            massDisplayEdit(displayCustomer, 'none');
-        }
+/**
+ * Retrieves the value of the "account-type" element and display content according
+ * to its value. 
+ */
+document.addEventListener("DOMContentLoaded", function setAccountTypeDisplay() {
+    const accountType = document.querySelector('.account-type').innerHTML.trim();
+    console.log(accountType)
+    if (accountType == "vendor") {
+        var displayShipper = document.querySelectorAll('.display-shipper');
+        massDisplayEdit(displayShipper, 'none');
+        var displayCustomer = document.querySelectorAll('.display-customer');
+        massDisplayEdit(displayCustomer, 'none');
+    }
+    else if (accountType == "customer") {
+        var displayShipper = document.querySelectorAll('.display-shipper');
+        massDisplayEdit(displayShipper, 'none');
+        var displayVendor = document.querySelectorAll('.display-vendor');
+        massDisplayEdit(displayVendor, 'none');
+    }
+    else if (accountType == "shipper") {
+        var displayCustomer = document.querySelectorAll('.display-customer');
+        massDisplayEdit(displayCustomer, 'none');
+        var displayVendor = document.querySelectorAll('.display-vendor');
+        massDisplayEdit(displayVendor, 'none');
+    }
+})
 
+/**
+ * Retrieves the value of the "order-count" in order page and display no
+ * orders if value is 0.
+ */
+document.addEventListener("DOMContentLoaded", function setOrdersCount() {
+    if (window.location.pathname == "/orders") {
         const orderCount = document.querySelector('.order-count').innerHTML.trim();
         if (orderCount != "0") {
             document.querySelector('.no-order').style.display = "none";
@@ -389,6 +414,11 @@ document.addEventListener("DOMContentLoaded", function setOrdersPage() {
     }
 })
 
+/**
+ * Retrieves the value of the "vendor-name" in view products page to determine
+ * if the page is view all products from a vendor, if it is, remove "product-card-ctrl"
+ * from the product cards to display all products instead of partically remove in css.
+ */
 document.addEventListener("DOMContentLoaded", function viewProducts() {
     if (window.location.pathname.includes("/products")) {
         const vendorName = document.querySelectorAll('.vendor-name');

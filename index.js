@@ -255,12 +255,12 @@ app.get('/me', auth, async (req, res) => {
     }
 })
 
-app.get('/aboutus', auth, async (req, res) => {
+/* about us page */
+app.get('/about', auth, async (req, res) => {
     return res.render('aboutus', {
         data: await getData(req)
-    });
-}
-)
+    })
+})
 
 /* The below code is defining a route handler for the "/signout" endpoint. It is using the "auth"
 middleware to authenticate the request. */
@@ -466,6 +466,23 @@ app.post('/product/:id/delete', auth, async (req, res) => {
 
 /* cart page for customer only */
 app.get('/cart', auth, async (req, res) => {
+    if (req.guest) {
+        return res
+            .status(401)
+            .redirect('/signin');
+    }
+    else if (await User.getAccountType(req.user) == 'customer') {
+        return res.render('customer/cart');
+    }
+    else {
+        return res
+            .status(403)
+            .send("The account you are logged in is not a customer account.");
+    }
+})
+
+/* cart page for customer only */
+app.get('/cart/:username/add/:productid', auth, async (req, res) => {
     if (req.guest) {
         return res
             .status(401)

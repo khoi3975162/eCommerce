@@ -1,6 +1,6 @@
 body {
     font-family: system, -apple-system, ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;
-    background-color: #e6e6e6;
+    background-color: #f7f4f3;
     scroll-behavior: smooth;
     overflow-x: hidden;
 }
@@ -17,43 +17,48 @@ body {
 }
 
 /*  navigation bar */
-.navigation,
-.input-group-text {
-    background-color: #3b71ca;
-}
-
 .navigation {
+    background-color: #5b2333;
     max-height: 73px;
-}
 
-.navigation .logo {
-    max-width: 44px;
-}
+    .logo {
+        max-width: 55px;
+        margin-left: 20px;
+    }
 
-.navigation li a {
-    color: #ce6e7d;
-    font-weight: bold;
-    transition: all 0.25s;
-}
+    .search-box {
+        margin-right: 20px;
+    }
 
-.navigation li a:hover {
-    color: #232582;
+    .active {
+        background-color: #ba1b1d !important;
+    }
+
+    .nav-item a {
+        color: #f7f4f3;
+        font-weight: bold;
+        transition: all 0.25s;
+    }
+
+    .nav-item a:hover {
+        color: #ba1b1d;
+    }
+
+    .dropdown-item {
+        color: #ba1b1d !important;
+    }
+
+    .dropdown-item:hover {
+        color: #f24333 !important;
+    }
 }
 
 .navigation form button {
-    background-color: #ce6e7d;
+    background-color: #ba1b1d;
 }
 
 .navigation form i {
-    color: #e6e6e6;
-}
-
-.navigation .search-box {
-    margin-right: 20px;
-}
-
-.navigation .active {
-    background-color: #ce6e7d !important;
+    color: #f7f4f3;
 }
 
 .alert-container {
@@ -63,6 +68,38 @@ body {
     left: 0;
     right: 0;
     z-index: 999;
+}
+
+.footer-container {
+    background-color: #564d4a;
+
+    font-weight: bold;
+
+    .copyright {
+        color: #f7f4f3;
+    }
+
+    .nav-item a {
+        color: #f7f4f3;
+    }
+
+    .nav-item a:hover {
+        color: #ba1b1d;
+    }
+
+    .footer-logo {
+        max-width: 75px;
+    }
+
+    .footer-wrap {
+        padding-bottom: 20px;
+    }
+
+    .footer-wrap-footer {
+        padding: 15px;
+        padding-left: 40px;
+        padding-right: 40px;
+    }
 }
 
 /* login & register page */
@@ -93,14 +130,12 @@ body {
 }
 
 @media (max-width: 768px) {
-
     .login-img {
         display: none;
     }
 }
 
 @media (max-width: 992px) {
-
     .signup-img-1 {
         display: none;
     }
@@ -114,30 +149,30 @@ body {
 
 .form-box a {
     text-decoration: none;
-    color: #3b71ca;
+    color: #ba1b1d;
     transition: all 0.25s;
 }
 
 .form-box a:hover {
-    color: #ce6e7d;
+    color: #f24333;
 }
 
 .form-box h1 {
     font-weight: bold;
-    color: #ce6e7d;
-    text-shadow: 2.5px 2.5px #232582;
+    color: #ba1b1d;
+    text-shadow: 2.5px 2.5px #564d4a;
     pointer-events: none;
 }
 
 .form-box button {
-    background-color: #3b71ca;
-    border-color: #3b71ca;
+    background-color: #5b2333;
+    border-color: #5b2333;
     transition: all 0.25s;
 }
 
 .form-box button:hover {
-    background-color: #ce6e7d;
-    border-color: #ce6e7d;
+    background-color: #ba1b1d;
+    border-color: #ba1b1d;
 }
 
 .form-box input {
@@ -146,7 +181,7 @@ body {
 }
 
 .form-box input:hover {
-    box-shadow: 2.5px 2.5px #ce6e7d;
+    box-shadow: 2.5px 2.5px #ba1b1d;
 }
 
 .register-box {
@@ -272,7 +307,7 @@ body {
         right: -4px;
         font-size: 11px;
         border-radius: 50%;
-        background: #ce6e7d;
+        background: #ba1b1d;
         width: 16px;
         height: 16px;
         line-height: 16px;
@@ -290,15 +325,15 @@ body {
     }
 
     .add-pd-btn {
-        background-color: #3b71ca;
-        border-color: #3b71ca;
+        background-color: #5b2333;
+        border-color: #5b2333;
         color: white;
         transition: all 0.25s;
     }
 
     .add-pd-btn:hover {
-        background-color: #ce6e7d;
-        border-color: #ce6e7d;
+        background-color: #ba1b1d;
+        border-color: #ba1b1d;
     }
 
     .add-pd-btn:hover span:after {
@@ -317,15 +352,15 @@ body {
     }
 
     .rm-imgs {
-        background-color: #3b71ca;
-        border-color: #3b71ca;
+        background-color: #5b2333;
+        border-color: #5b2333;
         color: white;
         transition: all 0.25s;
     }
 
     .rm-imgs:hover {
-        background-color: #ce6e7d;
-        border-color: #ce6e7d;
+        background-color: #ba1b1d;
+        border-color: #ba1b1d;
     }
 }
 
@@ -352,16 +387,16 @@ body {
 
     .dashboard-btn {
         font-size: 20px;
-        background-color: #ce6e7d;
-        border-color: #ce6e7d;
+        background-color: #5b2333;
+        border-color: #5b2333;
         color: white;
         transition: all 0.25s;
         white-space: nowrap;
     }
 
     .dashboard-btn:hover {
-        background-color: #3b71ca;
-        border-color: #3b71ca;
+        background-color: #ba1b1d;
+        border-color: #ba1b1d;
     }
 }
 
@@ -383,43 +418,11 @@ body {
     }
 }
 
-.footer-container {
-    background-color: #3b71ca;
-
-    font-weight: bold;
-
-    .copyright {
-        color: #ce6e7d;
-    }
-
-    .nav-item a {
-        color: #ce6e7d;
-    }
-
-    .footer-logo {
-        max-width: 75px;
-    }
-
-    .footer-wrap {
-        padding-bottom: 20px;
-    }
-
-    .footer-wrap-footer {
-        padding: 15px;
-        padding-left: 40px;
-        padding-right: 40px;
-    }
-}
-
 .me-page {
     .me-container {
         background-color: white;
         padding: 30px;
     }
-
-    margin-top: 40px;
-    margin-bottom: 80px;
-
 }
 
 .products-container {
@@ -431,15 +434,32 @@ body {
         margin: 5px;
     }
 
-    .pd-card-img {
+    .pd-card {
         max-height: 200px;
     }
 
-    .pd-card-img img {
+    .pd-card img {
         height: 100%;
         width: auto;
         padding: 10px;
     }
+
+    .product-name {
+        text-decoration: none;
+        color: black;
+    }
+
+    .add-cart-btn,
+    .edit-btn {
+        background-color: #564d4a;
+        border-color: #564d4a;
+    }
+
+    .delete-btn {
+        background-color: #ba1b1d;
+        border-color: #ba1b1d;
+    }
+
 }
 
 @media (min-width: 991px) {
