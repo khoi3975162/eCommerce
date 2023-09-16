@@ -255,6 +255,13 @@ app.get('/me', auth, async (req, res) => {
     }
 })
 
+app.get('/aboutus', auth, async (req, res) => {
+    return res.render('aboutus', {
+            data: await getData(req)
+        });
+    }
+)
+
 /* The below code is defining a route handler for the "/signout" endpoint. It is using the "auth"
 middleware to authenticate the request. */
 app.get('/signout', auth, (req, res) => {
