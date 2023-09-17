@@ -2,6 +2,7 @@
 
     <div class="container product-add rounded shadow-sm mt-4 mb-4">
         <div class="product-box">
+            <h1 class="mb-4"><i class="bi bi-plus-circle"></i> Create Product</h1>
             <form method="POST" action="/product/new" enctype="multipart/form-data" class="add-pd-form">
                 <div class="row d-flex justify-content-around mb-4">
                     <div class="col-10 col-sm-10 col-md-10 col-lg-6 col-xl-6 product-img">
@@ -17,33 +18,51 @@
                             <img id="frame" class="col-6 img-fluid h-100 add-pd-img" src="/images/products/default.png"
                                 alt="add-pd-img">
                         </div>
-                        <div class="row pd-img-action">
+                        <div class="row pd-img-action mb-4">
                             <div class="col-9 col-sm-9 col-md-9 col-lg-3 col-xl-3 w-100">
-                                <label for="formFileMultiple" class="form-label">Upload images (you can select multiple
-                                    files)</label>
-                                <input class="form-control" id="formFile" type="file" id="formFileMultiple"
-                                    onchange="previewImgs()" name="product-imgs" multiple='multiple' accept='image/*'>
-                                <button type="button" onclick="clearImages()"
-                                    class="btn btn-primary mt-3 rm-imgs w-100 mb-4">Remove
-                                    all images</button>
+                                <div class="row">
+                                    <label for="formFileMultiple" class="form-label">
+                                        Upload images (you can select multiple files)</label>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <input class="form-control" id="formFile" type="file" id="formFileMultiple"
+                                            onchange="previewImgs()" name="product-imgs" multiple='multiple'
+                                            accept='image/*'>
+                                    </div>
+                                    <div class="col">
+                                        <button type="button" onclick="clearImages()"
+                                            class="btn rm-imgs w-100 anm-btn"><span>Remove
+                                                all images</span></button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div
                         class="col-10 col-sm-10 col-md-10 col-lg-6 col-xl-5 product-info mb-5 d-flex flex-column justify-content-center">
+                        <span class="mb-2">Product's name:</span>
                         <input type="text" id="product-name" name="product-name" class="form-control mb-4 product-name"
                             placeholder="Product Name" required />
+                        <span class="mb-2">Product's price:</span>
                         <input type="number" step="any" id="product-price" name="product-price"
                             class="form-control mb-4 product-price" placeholder="Product Price" required />
-                        <button type="button" class="btn anm-btn add-pd-btn mb-4" onclick="addProductCheck()"><span>Add
-                                product</span></button>
+                        <div class="row">
+                            <div class="col d-flex gap-2">
+                                <button type="button" class="btn anm-btn clr-btn mb-4 w-50"
+                                    onclick="clearProductInfo()"><span>Clear All</span></button>
+                                <button type="button" class="btn anm-btn add-pd-btn mb-4 w-50"
+                                    onclick="addProductCheck()"><span>Add
+                                        product</span></button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="row product-desciption-row">
                     <div class="col product-desciption-div">
                         <label for="exampleFormControlTextarea1" class="form-label">Product's description</label>
                         <textarea class="form-control product-desciption" name="product-desciption"
-                            id="exampleFormControlTextarea1" rows="7"></textarea>
+                            placeholder="Product Description" id="exampleFormControlTextarea1" rows="7"></textarea>
                     </div>
                 </div>
             </form>

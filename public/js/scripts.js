@@ -198,6 +198,10 @@ function vendorCheck() {
     }
 }
 
+/**
+ * The `signIn` function sends a POST request to the server to check the user's credentials and if they
+ * are valid, it submits the sign-in form.
+ */
 function signIn() {
     const username = document.querySelector('.username').value;
     const password = document.querySelector('.password').value;
@@ -240,6 +244,9 @@ function previewImgs() {
     }
     else {
         for (i = 0; i < addProductImgs.length; i++) {
+            addProductImgs[i].src = "/images/products/default.png";
+        }
+        for (i = 0; i < addProductImgs.length; i++) {
             addProductImgs[i].src = URL.createObjectURL(event.target.files[i]);
         }
     }
@@ -265,7 +272,7 @@ function addProductCheck() {
     const productName = document.querySelector('.product-name').value;
     const productPrice = document.querySelector('.product-price').value;
     const productImages = document.querySelectorAll('.add-pd-img');
-    const productDescription = document.querySelector('.product-desciption').value
+    const productDescription = document.querySelector('.product-desciption').value;
 
     // check if not entered
     if (productName == "" | productPrice == "") {
@@ -291,6 +298,16 @@ function addProductCheck() {
         }
         document.querySelector(".add-pd-form").submit();
     }
+}
+
+/**
+ * The function clears the product information fields and calls another function to clear the images.
+ */
+function clearProductInfo() {
+    document.querySelector('.product-name').value = "";
+    document.querySelector('.product-price').value = "";
+    document.querySelector('.product-desciption').value = "";
+    clearImages();
 }
 
 function editOrderStatus() {
@@ -424,5 +441,16 @@ document.addEventListener("DOMContentLoaded", function viewProducts() {
                 productCards[i].classList.remove("product-card-ctrl");
             }
         }
+    }
+})
+
+/**
+ * Workaround for setting value of product description because setting value of textarea
+ * in html not showing the content.
+ */
+document.addEventListener("DOMContentLoaded", function viewProducts() {
+    if (window.location.pathname.includes("/product") & window.location.pathname.includes("/update")) {
+        const productDescription = document.querySelector('.product-desciption-value').innerHTML.trim()
+        document.querySelector('.product-desciption').value = productDescription;
     }
 })

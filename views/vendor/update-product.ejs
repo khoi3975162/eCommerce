@@ -1,50 +1,104 @@
 <%- include('../partials/header.ejs') %>
 
-    <div class="container product-update rounded shadow-sm">
+    <div class="modal cf-modal fade" id="cf-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Confirm
+                    </h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this product?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn w-25 cancel-btn anm-btn"
+                        data-bs-dismiss="modal"><span>Cancel</span></button>
+                    <form action="/product/<%= data.product._id %>/delete" method="POST" class="w-25">
+                        <button type="submit" class="btn w-100 confirm-btn anm-btn"><span>Confirm</span></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container product-add rounded shadow-sm mt-4 mb-4">
         <div class="product-box">
-            <form method="POST" action="/product/new" enctype="multipart/form-data" class="add-pd-form">
-                <div class="row d-flex justify-content-around">
-                    <div class="col-10 col-sm-10 col-md-10 col-lg-6 col-xl-6 product-img mb-4">
+            <h1 class="mb-4"><i class="bi bi-pencil-square"></i> Update Product</h1>
+            <form method="POST" action="/product/<%= data.product._id %>/update" enctype="multipart/form-data"
+                class="add-pd-form">
+                <div class="row d-flex justify-content-around mb-4">
+                    <div class="col-10 col-sm-10 col-md-10 col-lg-6 col-xl-6 product-img">
                         <div class="row">
-                            <img id="frame" class="col-6 img-fluid h-100 add-pd-img"
-                                src="<%= data.product.images[0] || ./images/products/default.png %>" alt="add-pd-img">
-                            <img id="frame" class="col-6 img-fluid h-100 add-pd-img"
-                                src="<%= data.product.images[1] || ./images/products/default.png %>" alt="add-pd-img">
+                            <% for (i=0; i < 2; i++) { if (data.product.images[i]) { %>
+                                <img id="frame" class="col-6 img-fluid h-100 add-pd-img"
+                                    src="/images/products/<%= data.product.owner._id %>/<%= data.product._id %>/<%= data.product.images[i] %>"
+                                    alt="add-pd-img">
+                                <% } else { %>
+                                    <img id="frame" class="col-6 img-fluid h-100 add-pd-img"
+                                        src="/images/products/default.png" alt="add-pd-img">
+                                    <% }} %>
                         </div>
                         <div class="row">
-                            <img id="frame" class="col-6 img-fluid h-100 add-pd-img"
-                                src="<%= data.product.images[2] || ./images/products/default.png %>" alt="add-pd-img">
-                            <img id="frame" class="col-6 img-fluid h-100 add-pd-img"
-                                src="<%= data.product.images[3] || ./images/products/default.png %>" alt="add-pd-img">
+                            <% for (i=2; i < 4; i++) { if (data.product.images[i]) { %>
+                                <img id="frame" class="col-6 img-fluid h-100 add-pd-img"
+                                    src="/images/products/<%= data.product.owner._id %>/<%= data.product._id %>/<%= data.product.images[i] %>"
+                                    alt="add-pd-img">
+                                <% } else { %>
+                                    <img id="frame" class="col-6 img-fluid h-100 add-pd-img"
+                                        src="/images/products/default.png" alt="add-pd-img">
+                                    <% }} %>
                         </div>
-                        <div class="row pd-img-action">
+                        <div class="row pd-img-action mb-4">
                             <div class="col-9 col-sm-9 col-md-9 col-lg-3 col-xl-3 w-100">
-                                <label for="formFileMultiple" class="form-label">Upload images</label>
-                                <input class="form-control" id="formFile" name="product-imgs" type="file"
-                                    id="formFileMultiple" onchange="previewImgs()" multiple>
-                                <button type="button" onclick="clearImages()"
-                                    class="btn btn-primary mt-3 rm-imgs w-100 mb-4">Remove
-                                    all images</button>
+                                <div class="row">
+                                    <label for="formFileMultiple" class="form-label">
+                                        Upload images (you can select multiple files)</label>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <input class="form-control" id="formFile" type="file" id="formFileMultiple"
+                                            onchange="previewImgs()" name="product-imgs" multiple='multiple'
+                                            accept='image/*'>
+                                    </div>
+                                    <div class="col">
+                                        <button type="button" onclick="clearImages()"
+                                            class="btn rm-imgs w-100 anm-btn"><span>Remove
+                                                all images</span></button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div
                         class="col-10 col-sm-10 col-md-10 col-lg-6 col-xl-5 product-info mb-5 d-flex flex-column justify-content-center">
+                        <span class="mb-2">Product's name:</span>
                         <input type="text" id="product-name" name="product-name" class="form-control mb-4 product-name"
                             placeholder="Product Name" value="<%= data.product.name %>" required />
+                        <span class="mb-2">Product's price:</span>
                         <input type="number" step="any" id="product-price" name="product-price"
                             class="form-control mb-4 product-price" placeholder="Product Price"
                             value="<%= data.product.price %>" required />
-                        <button type="button" class="btn anm-btn add-pd-btn mb-4" onclick="addProductCheck()"><span>Add
-                                product</span></button>
+                        <div class="row">
+                            <div class="col d-flex gap-2">
+                                <button type="button" class="btn anm-btn clr-btn mb-4 w-50" data-bs-toggle="modal"
+                                    data-bs-target="#cf-modal"><span>Delete
+                                        product</span></button>
+                                <button type="button" class="btn anm-btn update-pd-btn mb-4 w-50"
+                                    onclick="addProductCheck()"><span>Update
+                                        product</span></button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="row product-desciption-row">
                     <div class="col product-desciption-div">
                         <label for="exampleFormControlTextarea1" class="form-label">Product's description</label>
                         <textarea class="form-control product-desciption" name="product-desciption"
-                            id="exampleFormControlTextarea1" rows="10"
-                            value="<%= data.product.description %>"></textarea>
+                            placeholder="Product Description" id="exampleFormControlTextarea1" rows="7"></textarea>
+                        <div class="product-desciption-value d-none">
+                            <%= data.product.description %>
+                        </div>
                     </div>
                 </div>
             </form>

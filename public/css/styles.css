@@ -100,6 +100,10 @@ body {
         padding-left: 40px;
         padding-right: 40px;
     }
+
+    .hr {
+        color: white;
+    }
 }
 
 /* login & register page */
@@ -324,43 +328,53 @@ body {
         padding: 30px;
     }
 
-    .add-pd-btn {
+    .anm-btn {
         background-color: #5b2333;
         border-color: #5b2333;
         color: white;
         transition: all 0.25s;
     }
 
-    .add-pd-btn:hover {
+    .clr-btn {
+        background-color: white;
+        color: #5b2333;
+    }
+
+    .anm-btn:hover {
         background-color: #ba1b1d;
         border-color: #ba1b1d;
     }
 
-    .add-pd-btn:hover span:after {
+    .clr-btn:hover {
+        background-color: #564d4a;
+        border-color: #564d4a;
+    }
+
+    .anm-btn:hover span:after {
         opacity: 1;
         right: 0;
     }
 
-    .add-pd-btn span:after {
-        content: '\F4FA';
+    .anm-btn span:after {
         right: -20px;
         font-family: "bootstrap-icons";
     }
 
-    .add-pd-btn:hover span {
+    .anm-btn:hover span {
         padding-right: 20px;
     }
 
-    .rm-imgs {
-        background-color: #5b2333;
-        border-color: #5b2333;
-        color: white;
-        transition: all 0.25s;
+    .add-pd-btn span:after {
+        content: '\F4FA';
     }
 
-    .rm-imgs:hover {
-        background-color: #ba1b1d;
-        border-color: #ba1b1d;
+    .update-pd-btn span:after {
+        content: '\F4CA';
+    }
+
+    .rm-imgs span:after,
+    .clr-btn span:after {
+        content: '\F659';
     }
 }
 
@@ -456,6 +470,7 @@ body {
     }
 
     .delete-btn {
+        color: white;
         background-color: #ba1b1d;
         border-color: #ba1b1d;
     }
@@ -501,6 +516,55 @@ body {
 
     .delete-btn span:after {
         content: '\F659';
+    }
+}
+
+.cf-modal {
+
+    .cancel-btn,
+    .confirm-btn {
+        color: white;
+    }
+
+    .cancel-btn {
+        background-color: #564d4a;
+        border-color: #564d4a;
+    }
+
+    .confirm-btn {
+        background-color: #ba1b1d;
+        border-color: #ba1b1d;
+    }
+
+    .cancel-btn:hover,
+    .confirm-btn:hover {
+        background-color: #5b2333;
+        border-color: #5b2333;
+    }
+
+    .cancel-btn:hover span:after,
+    .confirm-btn:hover span:after {
+        opacity: 1;
+        right: 0;
+    }
+
+    .cancel-btn:hover span,
+    .confirm-btn:hover span {
+        padding-right: 20px;
+    }
+
+    .cancel-btn span:after,
+    .confirm-btn span:after {
+        right: -20px;
+        font-family: "bootstrap-icons";
+    }
+
+    .cancel-btn span:after {
+        content: '\F659';
+    }
+
+    .confirm-btn span:after {
+        content: '\F633';
     }
 }
 

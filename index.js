@@ -64,10 +64,7 @@ async function getData(req) {
  * @returns the response object after setting a cookie and redirecting to the specified endpoint.
  */
 function resRedirect(res, token, endpoint) {
-    return res
-        .cookie("access_token", token)
-        .status(200)
-        .redirect(endpoint);
+    return res.cookie("access_token", token).redirect(endpoint);
 }
 
 /**
@@ -78,9 +75,7 @@ function resRedirect(res, token, endpoint) {
  * @returns a response object with a status code of 401 and a redirect to the '/signin' route.
  */
 function resSignIn(res) {
-    return res
-        .status(401)
-        .redirect('/signin');
+    return res.redirect('/signin');
 }
 
 /* The below code is defining a route handler for the root URL ("/") using the Express.js framework. It
@@ -99,7 +94,7 @@ app.get('/signup', auth, (req, res) => {
         return res.render('signup');
     }
     else {
-        return res.status(403).send("You have already signed in, please sign out first.")
+        return res.send("You have already signed in, please sign out first.")
     }
 })
 
@@ -168,7 +163,7 @@ app.get('/signin', auth, (req, res) => {
         return res.render('signin');
     }
     else {
-        return res.status(403).send("You have already signed in, please sign out first.")
+        return res.send("You have already signed in, please sign out first.")
     }
 })
 
@@ -180,7 +175,7 @@ app.post('/signin', async (req, res) => {
         const { username, password } = req.body;
         const user = await User.findByCredentials(username, password);
         if (!user) {
-            return res.status(401).send('Login failed! Please check your credentials');
+            return res.send('Login failed! Please check your credentials');
         }
         const token = await user.generateAuthToken();
 
@@ -248,9 +243,7 @@ app.get('/about', auth, async (req, res) => {
 middleware to authenticate the request. */
 app.get('/signout', auth, (req, res) => {
     if (req.guest) {
-        return res
-            .status(401)
-            .redirect('/');
+        return res.redirect('/');
     }
     else {
         try {
@@ -259,10 +252,7 @@ app.get('/signout', auth, (req, res) => {
                 return token.token != req.token;
             })
             req.user.save();
-            return res
-                .clearCookie("access_token")
-                .status(200)
-                .redirect('/');
+            return res.clearCookie("access_token").redirect('/');
         } catch (error) {
             console.log(error);
         }
@@ -303,9 +293,7 @@ app.get('/dashboard', auth, async (req, res) => {
         return res.render('vendor/dashboard', { data: await getData(req) });
     }
     else {
-        return res
-            .status(403)
-            .send("The account you are logged in is not a vendor account.");
+        return res.send("The account you are logged in is not a vendor account.");
     }
 })
 
@@ -318,58 +306,53 @@ app.get('/product/new', auth, async (req, res) => {
         return res.render('vendor/create-product', { data: await getData(req) });
     }
     else {
-        return res
-            .status(403)
-            .send("The account you are logged in is not a vendor account.");
+        return res.send("The account you are logged in is not a vendor account.");
     }
 })
 
 /* post endpoint for adding new product, for vendor only */
 app.post('/product/new', product_upload.array('product-imgs', 4), auth, async (req, res) => {
-    const owner = await Product.getVendor(req.user);
-    console.log(req.files)
-    var images = [];
-    for (i = 0; i < req.files.length; i++) {
-        images.push(req.files[i]['filename'])
-    }
-    if (owner) {
-        try {
-            const productData = {
-                owner: owner,
-                name: req.body['product-name'],
-                price: req.body['product-price'],
-                images: images,
-                description: req.body['product-desciption']
-            }
-            const product = await new Product(productData);
-
-            // create new folder for the vendor
-            if (!existsSync('./public/images/products/' + owner._id)) {
-                await fs.mkdir('./public/images/products/' + owner._id, { recursive: true });
-            }
-            // rename temp folder contains the uploaded imgs to product id and place it inside vendor folder
-            await fs.rename('./public/images/products/temp', './public/images/products/' + owner._id + '/' + product._id);
-            // recreate temp folder
-            await fs.mkdir('./public/images/products/temp', { recursive: true });
-
-            await product.save();
-            return res.redirect('/product/' + product._id);
+    const vendor = await User.findOne({ _id: req.user._id, "vendor.accountType": true });
+    if (vendor) {
+        var images = [];
+        for (i = 0; i < req.files.length; i++) {
+            images.push(req.files[i]['filename'])
         }
-        catch (error) {
-            console.log(error);
+
+        const productData = {
+            owner: vendor,
+            name: req.body['product-name'],
+            price: req.body['product-price'],
+            images: images,
+            description: req.body['product-desciption']
         }
+        const product = await new Product(productData);
+
+        // create new dir for the vendor
+        if (!existsSync('./public/images/products/' + vendor._id)) {
+            await fs.mkdir('./public/images/products/' + vendor._id, { recursive: true });
+        }
+        // rename temp folder contains the uploaded imgs to product id and place it inside vendor dir
+        await fs.rename('./public/images/products/temp', './public/images/products/' + vendor._id + '/' + product._id);
+        // recreate temp dir
+        await fs.mkdir('./public/images/products/temp', { recursive: true });
+
+        await product.save();
+        return res.redirect('/product/' + product._id);
     }
     else {
-        return res
-            .status(403)
-            .send("The account you are logged in is not a vendor account.");
+        // remove temp dir that contains uploaded img and recreate it
+        await fs.rm('./public/images/products/temp', { recursive: true, force: true });
+        await fs.mkdir('./public/images/products/temp', { recursive: true });
+
+        return res.send("The account you are logged in is not a vendor account.");
     }
 })
 
 /* specific product page, available for all user */
 app.get('/product/:id', auth, async (req, res) => {
-    const productData = await Product.getProduct(req.params.id);
-    if (productData) {
+    try {
+        const productData = await Product.findById(req.params.id);
         return res.render('product', {
             data: {
                 ...await getData(req),
@@ -377,10 +360,13 @@ app.get('/product/:id', auth, async (req, res) => {
             }
         });
     }
-    else {
-        return res
-            .status(404)
-            .send("The product is not exist.");
+    catch (error) {
+        if (error.name == "CastError") {
+            return res.send("The product is not exist.");
+        }
+        else {
+            console.log(error);
+        }
     }
 })
 
@@ -391,54 +377,95 @@ app.get('/product/:id/update', auth, async (req, res) => {
         return resSignIn(res);
     }
     else if (await User.getAccountType(req.user) == 'vendor') {
-        const productData = await Product.getProduct(req.params.id);
-        if (productData) {
-            return res.render('vendor/update-product', {
-                data: {
-                    ...await getData(req),
-                    product: productData.toObject()
-                }
-            });
+        try {
+            const productData = await Product.findById(req.params.id);
+            if (productData.owner._id.toString() == req.user._id.toString()) {
+                return res.render('vendor/update-product', {
+                    data: {
+                        ...await getData(req),
+                        product: productData.toObject()
+                    }
+                });
+            }
+            else {
+                return res.send("You are not the owner of this product.");
+            }
+        }
+        catch (error) {
+            if (error.name == "CastError") {
+                return res.send("The product is not exist.");
+            }
+            else {
+                console.log(error);
+            }
         }
     }
     else {
-        return res
-            .status(403)
-            .send("The account you are logged in is not a vendor account.");
+        return res.send("The account you are logged in is not a vendor account.");
     }
 })
 
-app.post('/product/:id/update', auth, async (req, res) => {
-    try {
+/* post endpoint for updating product */
+app.post('/product/:id/update', product_upload.array('product-imgs', 4), auth, async (req, res) => {
+    const productData = await Product.findById(req.params.id);
+    if (productData.owner._id.toString() == req.user._id.toString()) {
+        const productData = {
+            name: req.body['product-name'],
+            price: req.body['product-price'],
+            description: req.body['product-desciption']
+        }
 
-    }
-    catch (error) {
-        console.log(error);
-    }
-})
+        // check if images being edited
+        if (req.files.length > 0) {
+            var images = [];
+            for (i = 0; i < req.files.length; i++) {
+                images.push(req.files[i]['filename'])
+            }
+            productData.images = images;
 
+            // remove old products images folder
+            await fs.rm('./public/images/products/' + req.user._id + '/' + req.params.id, { recursive: true, force: true });
+            // rename temp folder contains the uploaded imgs to product id and place it inside vendor folder
+            await fs.rename('./public/images/products/temp', './public/images/products/' + req.user._id + '/' + req.params.id);
+            // recreate temp folder
+            await fs.mkdir('./public/images/products/temp', { recursive: true });
+        }
 
-/* delete specific product page for vendor only */
-app.get('/product/:id/delete', auth, async (req, res) => {
-    if (req.guest) {
-        return resSignIn(res);
-    }
-    else if (await User.getAccountType(req.user) == 'vendor') {
-        return res.render('vendor/delete-product');
+        await Product.findByIdAndUpdate(req.params.id, productData, {
+            new: true,
+            runValidators: true,
+        })
+        return res.redirect('/product/' + req.params.id);
     }
     else {
-        return res
-            .status(403)
-            .send("The account you are logged in is not a vendor account.");
+        // remove temp dir that contains uploaded img and recreate it
+        await fs.rm('./public/images/products/temp', { recursive: true, force: true });
+        await fs.mkdir('./public/images/products/temp', { recursive: true });
+
+        return res.send("You are not the owner of this product.");
     }
 })
 
+/* post endpoint for deleting a product */
 app.post('/product/:id/delete', auth, async (req, res) => {
     try {
-
+        const product = await Product.findById(req.params.id);
+        if (product.owner._id.toString() == req.user._id.toString()) {
+            await Product.findByIdAndDelete(req.params.id);
+            await fs.rm('./public/images/products/' + req.user._id + '/' + req.params.id, { recursive: true, force: true });
+            return res.redirect('/products/' + req.user._id);
+        }
+        else {
+            return res.send("You are not the owner of this product.");
+        }
     }
     catch (error) {
-        console.log(error);
+        if (error.name == "CastError") {
+            return res.send("The product is not exist.");
+        }
+        else {
+            console.log(error);
+        }
     }
 })
 
@@ -452,9 +479,7 @@ app.get('/cart', auth, async (req, res) => {
         return res.render('customer/cart');
     }
     else {
-        return res
-            .status(403)
-            .send("The account you are logged in is not a customer account.");
+        return res.send("The account you are logged in is not a customer account.");
     }
 })
 
@@ -466,9 +491,7 @@ app.post('/cart/:username/add/:productid', auth, async (req, res) => {
     else if (await User.getAccountType(req.user) == 'customer') {
     }
     else {
-        return res
-            .status(403)
-            .send("The account you are logged in is not a customer account.");
+        return res.send("The account you are logged in is not a customer account.");
     }
 })
 
@@ -479,8 +502,8 @@ app.get('/order/:id', auth, async (req, res) => {
         return resSignIn(res);
     }
     else if (accountType == 'customer' || accountType == 'shipper') {
-        const order = await Order.getOrder(req.params.id);
-        if (order) {
+        try {
+            const order = await Order.findById(req.params.id);
             return res.render('order', {
                 data: {
                     ...await getData(req),
@@ -488,14 +511,17 @@ app.get('/order/:id', auth, async (req, res) => {
                 }
             });
         }
-        else {
-            return res.status(404).send("There is no order with the id " + req.params.id + ".")
+        catch (error) {
+            if (error.name == "CastError") {
+                return res.send("The order is not exist.");
+            }
+            else {
+                console.log(error);
+            }
         }
     }
     else {
-        return res
-            .status(403)
-            .send("The account you are logged in is not a customer or shipper account.");
+        return res.send("The account you are logged in is not a customer or shipper account.");
     }
 })
 
@@ -506,10 +532,12 @@ app.get('/orders', auth, async (req, res) => {
         return resSignIn(res);
     }
     else if (accountType == 'customer' || accountType == 'shipper') {
-        const orders = await Order.getOrdersfromCustomer(req.user);
+        var orders = null;
+        orders = await Order.find({ owner: req.user });
         var hub = "none";
         if (accountType == 'shipper') {
             hub = req.user.shipper.hub;
+            orders = await Order.find({ hub: hub, status: 'Active' });
         }
         return res.render('orders', {
             data: {
@@ -520,12 +548,11 @@ app.get('/orders', auth, async (req, res) => {
         })
     }
     else {
-        return res
-            .status(403)
-            .send("The account you are logged in is not a customer or shipper account.");
+        return res.send("The account you are logged in is not a customer or shipper account.");
     }
 })
 
+// for checking if username is already exist in database during sign up
 app.get('/check/username/:username', async (req, res) => {
     const exist = await User.ifUserExist(req.params.username);
     if (exist) {
@@ -536,6 +563,7 @@ app.get('/check/username/:username', async (req, res) => {
     }
 })
 
+// for checking if vendor name is already exist in database during sign up
 app.get('/check/vendorname/:vendorname', async (req, res) => {
     const exist = await User.ifVendorExist('vendor.vendorName', req.params.vendorname);
     if (exist) {
@@ -546,6 +574,7 @@ app.get('/check/vendorname/:vendorname', async (req, res) => {
     }
 })
 
+// for checking if vendor address is already exist in database during sign up
 app.get('/check/vendoraddress/:vendoraddress', async (req, res) => {
     const exist = await User.ifVendorExist('vendor.vendorAddress', req.params.vendoraddress);
     if (exist) {
@@ -556,6 +585,7 @@ app.get('/check/vendoraddress/:vendoraddress', async (req, res) => {
     }
 })
 
+// check if credentials exist in the database during sign in
 app.post('/check/signin', async (req, res) => {
     const { username, password } = req.body;
     const user = await User.findByCredentials(username, password);
