@@ -1,63 +1,78 @@
 <%- include('./partials/header.ejs') %>
 
-    <div class="container rounded shadow-sm orders-page mt-4 mb-4">
-        <div class="orders-container">
-            <div class="row display-for d-flex justify-content-between heading">
-                <div class="col">
-                    <span class="display-customer">My orders</span>
-                    <span class="display-shipper">Orders at hub: <%= data.hub %></span>
-                </div>
-                <div class="col order-total d-flex justify-content-end">
-                    <span>
-                        Total:
-                        <span class="order-count">
-                            <%= data.orders.length %>
-                        </span>
+    <div class="container orders-page mt-4 mb-4">
+        <div class="row rounded display-for d-flex justify-content-between heading shadow-sm mb-4">
+            <div class="col">
+                <span class="display-customer">My orders</span>
+                <span class="display-shipper">Orders at hub: <%= data.hub %></span>
+            </div>
+            <div class="col order-total d-flex justify-content-end">
+                <span>
+                    Total:
+                    <span class="order-count">
+                        <%= data.orders.length %>
                     </span>
-                </div>
+                </span>
             </div>
-            <hr>
-            <div class="row no-order text-center">
-                <span>There is no order to display.</span>
-            </div>
-            <div class="row display-orders">
-                <% if (data.orderCount !=0) {data.orders.forEach(function(order) { %>
-                    <div class="order-container">
-                        <div class="row">
-                            <div class="col">
-                                Order ID: <%= order._id %>
-                            </div>
+        </div>
+        <div class="row no-order text-center shadow-sm rounded">
+            <span>There is no order to display.</span>
+        </div>
+        <div class="row display-orders">
+            <% if (data.orderCount !=0) {data.orders.forEach(function(order) { %>
+                <div class="order-container mb-4 rounded shadow-sm">
+                    <div class="row d-flex flex-column">
+                        <div class="col">
+                            Order ID: <%= order._id %>
                         </div>
-                        <div class="row">
-                            <div class="col order-img-col">
-                                <img class="img-fluid" scr="<%= order.products[0].product.images[0] %>" alt="pd-img">
-                            </div>
-                            <div class="col order-info-col">
-                                <span class="pd-name">
-                                    <%= order.products[0].product.name %>
-                                </span>
-                                <span>
-                                    <i>from </i>
-                                    <%= order.products[0].product.owner %>
-                                </span>
-                                <span>
-                                    x<%= order.products[0].quantity %>
-                                </span>
-                            </div>
-                            <div class="col order-price-col d-flex justify-content-end">
-                                <%= order.products[0].product.price * order.products[0].quantity %>
-                            </div>
+                        <div class="col">
+                            Customer Name: <%= order.customerName %>
                         </div>
-                        <div class="row">
-                            <div class="col d-flex justify-content-end">
-                                <i>and <%= order.products.length-1 %> more</i>
-                            </div>
+                        <div class="col">
+                            Customer Address: <%= order.customerAddress %>
                         </div>
-                        <div class="row">
-                            <div class="col order-status">
+                    </div>
+                    <div class="vendorname mb-3 border-bottom">
+                        <span class="text">
+                            <i class="bi bi-shop-window"></i>
+                            <%= order.vendors[0].vendorName %>
+                        </span>
+                    </div>
+                    <div class="row">
+                        <div class="col order-img d-flex justify-content-start">
+                            <img class="img-fluid"
+                                src="/images/products/<%= order.vendors[0].id %>/<%= order.vendors[0].products[0].product._id %>/<%= order.vendors[0].products[0].product.images[0] %>"
+                                alt="pd-img">
+                        </div>
+                        <div class="col-6 col-md-7 col-lg-8 order-info d-flex flex-column">
+                            <span class="pd-name">
+                                <%= order.vendors[0].products[0].product.name %>
+                            </span>
+                            <span>
+                                x<%= order.vendors[0].products[0].quantity %>
+                            </span>
+                        </div>
+                        <div class="col-2 order-price d-flex justify-content-end align-items-center">
+                            $ <%= order.vendors[0].products[0].product.price * order.vendors[0].products[0].quantity %>
+                        </div>
+                    </div>
+
+                    <hr>
+                    <div class="row">
+                        <div class="col d-flex justify-content-center">
+                            <% var products=0; order.vendors.forEach(function(vendor) {
+                                vendor.products.forEach(function(product) { products+=1; }) }) %>
+                                <i>and <%= products-1 %> more</i>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <div class="row">
+                        <div class="col align-items-center gap-3 display-shipper">
+                            <div class="order-status">
                                 Status: <%= order.status %>
                             </div>
-                            <div class="col set-order-status">
+                            <div class="set-order-status">
                                 <div class="dropdown">
                                     <button class="btn btn-secondary dropdown-toggle" type="button"
                                         data-bs-toggle="dropdown" aria-expanded="false">
@@ -72,13 +87,16 @@
                                     </ul>
                                 </div>
                             </div>
-                            <div class="col d-flex justify-content-end">
-                                Total price: <%= order.totalPrice %>
-                            </div>
+                        </div>
+
+                        <div class="col order-total-price d-flex justify-content-end">
+                            Total: &nbsp; <span class="total-price">
+                                $<%= order.totalPrice %>
+                            </span>
                         </div>
                     </div>
-                    <% })}; %>
-            </div>
+                </div>
+                <% })}; %>
         </div>
     </div>
 

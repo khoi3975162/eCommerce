@@ -27,18 +27,84 @@ const cartSchema = mongoose.Schema({
 /* The `cartSchema.statics.createCart` function is a static method defined on the `cartSchema` object.
 It is used to create a new cart for a user. */
 cartSchema.statics.createCart = async (user) => {
-    // const owner = await User.findOne({ 'username': username });
     const data = {
-        'owner': user,
+        owner: user,
         products: []
     }
     await new Cart(data).save();
 }
 
-cartSchema.statics.addToCart = async (username, product) => {
+cartSchema.statics.addToCart = async (user, productid, quantity) => {
+    const product = await Product.findById(productid);
+    var cart = await Cart.findOne({ owner: user });
+    if (cart.products.some(_product => _product.product._id.toString() == product._id.toString())) {
+        var cartProduct = cart.products.find((_product) => _product.product._id.toString() == product._id.toString());
+        cartProduct.quantity = parseInt(cartProduct.quantity) + parseInt(quantity);
+    }
+    else {
+        cart.products = cart.products.concat({
+            product: product,
+            quantity: quantity
+        })
+    }
+    await cart.save();
 }
 
-cartSchema.statics.updateCart = async (username, action, product, quantity) => {
+cartSchema.statics.removeFromCart = async (user, productid, quantity) => {
+    const product = await Product.findById(productid);
+    var cart = await Cart.findOne({ owner: user });
+    if (cart.products.some(_product => _product.product._id.toString() == product._id.toString())) {
+        var cartProduct = cart.products.find((_product) => _product.product._id.toString() == product._id.toString());
+        tempQuantity = parseInt(cartProduct.quantity) - parseInt(quantity);
+        if (tempQuantity <= 0) {
+            cart.products = cart.products.filter(function (_product) { return _product.product._id.toString() != product._id.toString(); });
+        }
+        else {
+            cartProduct.quantity = tempQuantity;
+        }
+    }
+    await cart.save();
+}
+
+cartSchema.statics.getCartbyVendor = async (user) => {
+    const cart = await Cart.findOne({ owner: user });
+
+    var products = [];
+    for (i = 0; i < cart.products.length; i++) {
+        const product = await Product.findById(cart.products[i].product);
+        if (!products.some(_product => _product.product._id.toString() == product._id.toString())) {
+            products.push({
+                product: product,
+                quantity: cart.products[i].quantity
+            });
+        }
+    }
+
+    var vendors = [];
+    for (i = 0; i < products.length; i++) {
+        const vendor = await User.findById(products[i].product.owner);
+        if (!vendors.some(_vendor => _vendor._id.toString() == vendor._id.toString())) {
+            vendors.push(vendor);
+        }
+    }
+
+    var groupedProducts = [];
+    for (i = 0; i < vendors.length; i++) {
+        var filteredProducts = [];
+        products.forEach(function (product) {
+            if (product.product.owner._id.toString() == vendors[i]._id.toString()) {
+                filteredProducts.push(product)
+            }
+        })
+        groupedProducts.push({
+            id: vendors[i]._id.toString(),
+            username: vendors[i].username,
+            vendorName: vendors[i].vendor.vendorName,
+            products: filteredProducts
+        })
+    }
+
+    return groupedProducts;
 }
 
 // Define models based on the schema

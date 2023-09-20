@@ -476,7 +476,12 @@ app.get('/cart', auth, async (req, res) => {
         return resSignIn(res);
     }
     else if (await User.getAccountType(req.user) == 'customer') {
-        return res.render('customer/cart');
+        return res.render('customer/cart', {
+            data: {
+                ...await getData(req),
+                cart: await Cart.getCartbyVendor(req.user)
+            }
+        });
     }
     else {
         return res.send("The account you are logged in is not a customer account.");
@@ -484,11 +489,41 @@ app.get('/cart', auth, async (req, res) => {
 })
 
 /* add to cart for customer only */
-app.post('/cart/:username/add/:productid', auth, async (req, res) => {
+app.post('/cart/add/:productid/quantity/:quantity', auth, async (req, res) => {
     if (req.guest) {
         return resSignIn(res);
     }
     else if (await User.getAccountType(req.user) == 'customer') {
+        await Cart.addToCart(req.user, req.params.productid, req.params.quantity);
+        return res.redirect('back');
+    }
+    else {
+        return res.send("The account you are logged in is not a customer account.");
+    }
+})
+
+/* update items in cart for customer only */
+app.post('/cart/remove/:productid/quantity/:quantity', auth, async (req, res) => {
+    if (req.guest) {
+        return resSignIn(res);
+    }
+    else if (await User.getAccountType(req.user) == 'customer') {
+        await Cart.removeFromCart(req.user, req.params.productid, req.params.quantity);
+        return res.redirect('back');
+    }
+    else {
+        return res.send("The account you are logged in is not a customer account.");
+    }
+})
+
+/* place order for customer only */
+app.post('/order', auth, async (req, res) => {
+    if (req.guest) {
+        return resSignIn(res);
+    }
+    else if (await User.getAccountType(req.user) == 'customer') {
+        const order = await Order.createOrder(req.user);
+        return res.redirect('/order/' + order._id);
     }
     else {
         return res.send("The account you are logged in is not a customer account.");
@@ -507,7 +542,7 @@ app.get('/order/:id', auth, async (req, res) => {
             return res.render('order', {
                 data: {
                     ...await getData(req),
-                    order: order
+                    order: await Order.findById(req.params.id)
                 }
             });
         }
@@ -533,11 +568,11 @@ app.get('/orders', auth, async (req, res) => {
     }
     else if (accountType == 'customer' || accountType == 'shipper') {
         var orders = null;
-        orders = await Order.find({ owner: req.user });
+        orders = await Order.getOrdersfromUser(req.user);
         var hub = "none";
         if (accountType == 'shipper') {
             hub = req.user.shipper.hub;
-            orders = await Order.find({ hub: hub, status: 'Active' });
+            orders = await Order.getOrdersfromHub(hub);
         }
         return res.render('orders', {
             data: {
@@ -602,4 +637,4 @@ app.listen(3000, () => {
     console.log('Server is running on http://localhost:3000')
 })
 
-// app.listen(3000, ('0.0.0.0'))
+// app.listen(3000, ('0.0.0.0'

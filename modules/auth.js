@@ -35,7 +35,8 @@ const auth = async (req, res, next) => {
         }
         req.user = user;
         req.token = token;
-        next();
+        req.guest = false;
+        return next();
     } catch (error) {
         // clear client cookies if no token was found on db
         return res

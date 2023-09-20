@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const User = require('./User');
+const Cart = require('./Cart');
 const Product = require('./Product');
 
 // Define schema
@@ -25,7 +26,7 @@ const orderSchema = mongoose.Schema({
     hub: {
         type: String,
         required: true,
-        trim: true
+        enum: ["Ho Chi Minh", "Hanoi", "Da Nang"]
     },
     totalPrice: {
         type: Number,
@@ -36,9 +37,96 @@ const orderSchema = mongoose.Schema({
         type: String,
         required: true,
         maxLength: 9,
-        trim: true
+        enum: ["Active", "Delivered", "Canceled"]
     }
 })
+
+async function parseOrders(orders) {
+    var newOrders = [];
+    for (i = 0; i < orders.length; i++) {
+        const order = orders[i];
+
+        var products = [];
+        for (y = 0; y < order.products.length; y++) {
+            products.push({
+                product: await Product.findById(order.products[y].product),
+                quantity: order.products[y].quantity
+            })
+        }
+
+        var vendors = []
+        for (y = 0; y < products.length; y++) {
+            const vendor = await User.findById(products[y].product.owner);
+            if (!vendors.some(_vendor => _vendor._id.toString() == vendor._id.toString())) {
+                vendors.push(vendor);
+            }
+        }
+
+        var groupedProducts = [];
+        for (y = 0; y < vendors.length; y++) {
+            var filteredProducts = [];
+            products.forEach(function (product) {
+                if (product.product.owner._id.toString() == vendors[y]._id.toString()) {
+                    filteredProducts.push(product)
+                }
+            })
+            groupedProducts.push({
+                id: vendors[y]._id.toString(),
+                username: vendors[y].username,
+                vendorName: vendors[y].vendor.vendorName,
+                products: filteredProducts
+            })
+        }
+
+        const owner = await User.findById(order.owner)
+        newOrders.push({
+            _id: order._id.toString(),
+            username: owner.username,
+            customerName: owner.customer.customerName,
+            customerAddress: owner.customer.customerAddress,
+            vendors: groupedProducts,
+            hub: order.hub,
+            totalPrice: order.totalPrice,
+            status: order.status
+        })
+    }
+    return newOrders;
+}
+
+orderSchema.statics.getOrdersfromUser = async (user) => {
+    const orders = await Order.find({ owner: user });
+    return parseOrders(orders);
+}
+
+orderSchema.statics.getOrdersfromHub = async (hub) => {
+    const orders = await Order.find({ hub: hub, status: 'Active' });
+    return parseOrders(orders);
+}
+
+orderSchema.statics.createOrder = async (user) => {
+    const cart = await Cart.findOne({ owner: user });
+    if (cart.products.length == 0) {
+        return "Cart has no products";
+    }
+    var totalPrice = 0;
+    for (i = 0; i < cart.products.length; i++) {
+        const product = await Product.findById(cart.products[i].product)
+        totalPrice = totalPrice + (product.price * cart.products[i].quantity)
+    }
+    const hubs = ["Ho Chi Minh", "Hanoi", "Da Nang"];
+    const orderData = {
+        owner: user,
+        products: cart.products,
+        hub: hubs[Math.floor(Math.random() * hubs.length)],
+        totalPrice: totalPrice.toFixed(2),
+        status: "Active"
+    }
+    const order = await new Order(orderData);
+    await order.save();
+    cart.products = [];
+    await cart.save();
+    return order;
+}
 
 // Define models based on the schema
 const Order = mongoose.model('Order', orderSchema);

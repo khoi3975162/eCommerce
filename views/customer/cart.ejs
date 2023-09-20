@@ -1,3 +1,103 @@
 <%- include('../partials/header.ejs') %>
 
+    <div class="container cart-page mt-4 mb-4">
+        <% if (data.cart.length> 0) { data.cart.forEach(function(vendor) { %>
+            <div class="row rounded cart-container mb-4 shadow-sm">
+                <div class="vendorname mb-3 border-bottom">
+                    <span class="text">
+                        <i class="bi bi-shop-window"></i>
+                        <%= vendor.vendorName %>
+                    </span>
+                </div>
+                <% vendor.products.forEach(function(product) { %>
+                    <div class="row vendor-products">
+                        <div class="col pd-img d-flex justify-content-center mb-3">
+                            <img class="img-fluid"
+                                src="/images/products/<%= vendor.id %>/<%= product.product._id %>/<%= product.product.images[0] %>"
+                                alt="product-img">
+                        </div>
+                        <div class="col-8 col-md-9 pd-info d-flex justify-content-center mb-3">
+                            <div class="col pd-name text-start">
+                                <%= product.product.name %>
+                            </div>
+                            <div class="col pd-price text-center">
+                                $
+                                <span class="pd-price-<%= product.product._id %>">
+                                    <%= product.product.price %>
+                                </span>
+                            </div>
+                            <div class="col-8 col-md-4 col-lg-3 pd-quantity">
+                                <div class="pd-quantity-input">
+                                    <div class="input-group">
+                                        <div class="input-group-btn">
+                                            <button type="button" class="btn btn-default btn-number"
+                                                onclick="editQuantity('<%= product.product._id %>', 'remove', 1)">
+                                                <i class="bi bi-dash"></i>
+                                            </button>
+                                        </div>
+                                        <input type="number" step="any" name="quant[1]"
+                                            class="form-control input-number pd-quantity-input-box-<%= product.product._id %>"
+                                            value="<%= product.quantity %>" min="1"
+                                            onfocus="this.oldvalue = this.value;"
+                                            onchange="editQuantity('<%= product.product._id %>', 'edit');this.oldvalue = this.value;">
+                                        <div class="input-group-btn">
+                                            <button type="button" class="btn btn-default btn-number"
+                                                onclick="editQuantity('<%= product.product._id %>', 'add', 1)">
+                                                <i class="bi bi-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col pd-total-price d-none d-lg-block text-center">
+                                $
+                                <span class="pd-total-price-<%= product.product._id %>">
+                                    <%= (product.quantity * product.product.price).toFixed(2) %>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-1 pd-remove d-none d-lg-flex justify-content-center align-items-center mb-3">
+                            <button class="btn anm-btn pd-remove-btn">Remove</button>
+                        </div>
+                        <hr>
+                    </div>
+                    <% }) %>
+            </div>
+            <% })} else { %>
+                <div class="row rounded cart-container empty-cart text-center">
+                    <h1>You haven't add any products to your cart yet.</h1>
+                </div>
+                <% } %>
+    </div>
+
+    <div class="container-fluid place-order-container fixed-bottom">
+        <div class="row place-order-wrapper">
+            <div class="col"></div>
+            <div class="col d-flex justify-content-center align-items-center gap-4">
+                <% if (data.cart.length> 0); var totalPrice = 0; { data.cart.forEach(function(vendor) {
+                    vendor.products.forEach(function(product) {
+                    totalPrice = totalPrice + (product.quantity * product.product.price)
+                    })})} %>
+                    <span class="cart-total-price">
+                        Total: <span class="dolar">$</span>
+                        <span class="total-price">
+                            <%= totalPrice.toFixed(2) %>
+                        </span>
+                    </span>
+
+                    <div class="place-order">
+                        <form action="/order" method="POST">
+                            <% if (data.cart.length==0) {%>
+                                <button class="btn btn-primary anm-btn place-order-btn" disabled>
+                                    <% } else { %>
+                                        <button class="btn btn-primary anm-btn place-order-btn">
+                                            <% } %>
+                                                <span>Place Order</span>
+                                        </button>
+                        </form>
+                    </div>
+            </div>
+        </div>
+    </div>
+
     <%- include('../partials/footer.ejs') %>

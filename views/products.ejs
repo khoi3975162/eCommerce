@@ -57,11 +57,11 @@
                                             data-bs-target="#cf-modal"><span>Delete</span></button>
                                     </div>
                                     <% } else { %>
-                                        <form action="/cart/<%= data.username %>/add/<%= product._id %>" method="POST"
-                                            class="text-center display-customer">
-                                            <button type="submit" class="btn btn-primary add-cart-btn anm-btn w-50">
+                                        <div class="text-center display-customer">
+                                            <button onclick="addToCart('<%= product._id %>')"
+                                                class="btn btn-primary add-cart-btn anm-btn w-50">
                                                 <span>Add to Cart</span></button>
-                                        </form>
+                                        </div>
                                         <% } %>
                             </div>
                         </div>

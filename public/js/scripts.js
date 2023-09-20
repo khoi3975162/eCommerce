@@ -314,13 +314,75 @@ function editOrderStatus() {
 
 }
 
+function addToCart(productid) {
+    fetch('/cart/add/' + productid + '/quantity/' + 1, {
+        method: 'POST'
+    });
+    var quantity = document.querySelector('.cart-count');
+    quantity.innerHTML = parseInt(quantity.innerHTML.trim()) + 1;
+}
+
+function editQuantity(productid, action, _quantity) {
+    var quantity = document.querySelector('.pd-quantity-input-box-' + productid);
+    if (action == 'add') {
+        fetch('/cart/add/' + productid + '/quantity/' + _quantity, {
+            method: 'POST'
+        });
+        quantity.value = parseInt(quantity.value) + parseInt(_quantity);
+    }
+    else if (action == 'remove') {
+        fetch('/cart/remove/' + productid + '/quantity/' + _quantity, {
+            method: 'POST'
+        });
+        if (quantity.value == '1') {
+            var cartQuantity = document.querySelector('.cart-count');
+            cartQuantity.innerHTML = parseInt(cartQuantity.innerHTML.trim()) - 1;
+            location.reload();
+        }
+        quantity.value = parseInt(quantity.value) - parseInt(_quantity);
+    }
+    else if (action == 'edit') {
+        if (parseInt(quantity.value) > parseInt(quantity.oldvalue)) {
+            const calcQuantity = (parseInt(quantity.value) - parseInt(quantity.oldvalue))
+            fetch('/cart/add/' + productid + '/quantity/' + calcQuantity, {
+                method: 'POST'
+            });
+            action = 'add';
+        }
+        else if (parseInt(quantity.value) < parseInt(quantity.oldvalue)) {
+            const calcQuantity = (parseInt(quantity.oldvalue) - parseInt(quantity.value))
+            fetch('/cart/remove/' + productid + '/quantity/' + calcQuantity, {
+                method: 'POST'
+            });
+            action = 'remove';
+            if (calcQuantity <= 0) {
+                var cartQuantity = document.querySelector('.cart-count');
+                cartQuantity.innerHTML = parseInt(cartQuantity.innerHTML.trim()) - 1;
+                location.reload();
+            }
+        }
+    }
+
+    const pdPrice = parseFloat(document.querySelector('.pd-price-' + productid).innerHTML.trim());
+    const totalPrice = parseFloat(quantity.value) * pdPrice;
+    document.querySelector('.pd-total-price-' + productid).innerHTML = totalPrice.toFixed(2);
+
+    var cartPrice = document.querySelector('.total-price');
+    if (action == 'add') {
+        cartPrice.innerHTML = (parseFloat(cartPrice.innerHTML.trim()) + _quantity * pdPrice).toFixed(2);
+    }
+    else if (action == 'remove') {
+        cartPrice.innerHTML = (parseFloat(cartPrice.innerHTML.trim()) - _quantity * pdPrice).toFixed(2);
+    }
+}
+
 // ========== Listener ==========
 
 /**
  * The code is adding an event listener to the `DOMContentLoaded` event to set the height of the
  * dummy div except the signup page for pushing the footer down
  */
-document.addEventListener("DOMContentLoaded", function pushFooter() {
+window.onload = function () {
     if (window.location.pathname != "/signup") {
         const viewportHeight = window.innerHeight;
         const documentHeight = document.body.offsetHeight;
@@ -328,7 +390,7 @@ document.addEventListener("DOMContentLoaded", function pushFooter() {
             document.querySelector('.dummy').style.height = (viewportHeight - documentHeight) + 'px';
         }
     }
-})
+}
 
 /**
  * The code is adding an event listener to the `DOMContentLoaded` event to set the height of the
@@ -409,11 +471,16 @@ document.addEventListener("DOMContentLoaded", function setAccountTypeDisplay() {
         massDisplayEdit(displayVendor, 'none');
         massDisplayEdit(displayCustomer, 'none');
     }
+    else {
+        massDisplayEdit(displayCustomer, 'none');
+        massDisplayEdit(displayVendor, 'none');
+        massDisplayEdit(displayShipper, 'none');
+    }
 })
 
 /**
  * Retrieves the value of the "order-count" in order page and display no
- * orders if value is 0.
+ * orders message if value is 0.
  */
 document.addEventListener("DOMContentLoaded", function setOrdersCount() {
     if (window.location.pathname == "/orders") {
@@ -448,7 +515,7 @@ document.addEventListener("DOMContentLoaded", function viewProducts() {
  * Workaround for setting value of product description because setting value of textarea
  * in html not showing the content.
  */
-document.addEventListener("DOMContentLoaded", function viewProducts() {
+document.addEventListener("DOMContentLoaded", function viewProductDescription() {
     if (window.location.pathname.includes("/product") & window.location.pathname.includes("/update")) {
         const productDescription = document.querySelector('.product-desciption-value').innerHTML.trim()
         document.querySelector('.product-desciption').value = productDescription;
