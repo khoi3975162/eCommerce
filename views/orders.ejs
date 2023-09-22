@@ -21,10 +21,16 @@
         <div class="row display-orders">
             <% if (data.orderCount !=0) {data.orders.forEach(function(order) { %>
                 <div class="order-container mb-4 rounded shadow-sm">
+                    <div class="row order-id">
+                        <a href="/order/<%= order._id %>" class="text-decoration-none text-reset">
+                            <span>
+                                Order ID: <%= order._id %>
+                                    <i class="bi bi-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                    <hr>
                     <div class="row d-flex flex-column">
-                        <div class="col">
-                            Order ID: <%= order._id %>
-                        </div>
                         <div class="col">
                             Customer Name: <%= order.customerName %>
                         </div>
@@ -35,27 +41,38 @@
                             Hub: <%= order.hub %>
                         </div>
                     </div>
+
                     <div class="vendorname mb-3 border-bottom">
-                        <span class="text">
-                            <i class="bi bi-shop-window"></i>
-                            <%= order.vendors[0].vendorName %>
-                        </span>
-                    </div>
-                    <div class="row">
-                        <div class="col order-img d-flex justify-content-start">
-                            <img class="img-fluid"
-                                src="/images/products/<%= order.vendors[0].id %>/<%= order.vendors[0].products[0].product._id %>/<%= order.vendors[0].products[0].product.images[0] %>"
-                                alt="pd-img">
-                        </div>
-                        <div class="col-6 col-md-7 col-lg-8 order-info d-flex flex-column">
-                            <span class="pd-name">
-                                <%= order.vendors[0].products[0].product.name %>
+                        <a href="/products/<%= order.vendors[0].username %>" class="text-decoration-none text-reset">
+                            <span class="text">
+                                <i class="bi bi-shop-window"></i>
+                                <%= order.vendors[0].vendorName %>
+                                    <i class="bi bi-chevron-right"></i>
                             </span>
+                        </a>
+                    </div>
+
+                    <div class="row pd-info d-flex flex-row">
+                        <div class="col order-img d-flex justify-content-start align-items-center">
+                            <a href="/product/<%= order.vendors[0].products[0].product._id %>"
+                                class="text-decoration-none text-reset">
+                                <img class="img-fluid"
+                                    src="/images/products/<%= order.vendors[0].id %>/<%= order.vendors[0].products[0].product._id %>/<%= order.vendors[0].products[0].product.images[0] %>"
+                                    alt="pd-img">
+                            </a>
+                        </div>
+                        <div class="col order-info d-flex flex-column">
+                            <a href="/product/<%= order.vendors[0].products[0].product._id %>"
+                                class="text-decoration-none text-reset">
+                                <span class="pd-name">
+                                    <%= order.vendors[0].products[0].product.name %>
+                                </span>
+                            </a>
                             <span>
                                 x<%= order.vendors[0].products[0].quantity %>
                             </span>
                         </div>
-                        <div class="col-2 order-price d-flex justify-content-end align-items-center">
+                        <div class="col order-price d-flex justify-content-end align-items-center">
                             $ <%= order.vendors[0].products[0].product.price * order.vendors[0].products[0].quantity %>
                         </div>
                     </div>
@@ -66,14 +83,18 @@
                         vendor.products.forEach(function(product) { products+=1; }) }) %>
                         <% if (products-1> 0) { %>
                             <div class="row">
-                                <div class="col d-flex justify-content-center">
-                                    <i>and <%= products-1 %> more</i>
-                                </div>
+                                <a href="/order/<%= order._id %>" class="text-decoration-none text-reset">
+                                    <div class="col d-flex justify-content-center">
+                                        <i>and <%= products-1 %> more</i>
+                                        &nbsp;
+                                        <i class="bi bi-chevron-right"></i>
+                                    </div>
+                                </a>
                             </div>
                             <hr>
                             <% } %>
 
-                                <div class="row">
+                                <div class="row order-status">
                                     <div class="col d-flex align-items-center gap-3">
                                         <div class="order-status">
                                             Status:

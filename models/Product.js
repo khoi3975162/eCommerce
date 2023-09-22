@@ -37,6 +37,7 @@ productSchema.statics.getProductsfromVendor = async (username) => {
         return [{
             id: owner._id,
             username: owner.username,
+            profile: owner.profile,
             vendorName: owner.vendor.vendorName,
             products: products
         }]
@@ -60,6 +61,7 @@ productSchema.statics.getProductsbyVendors = async () => {
         groupedProducts.push({
             id: vendors[i]._id.toString(),
             username: vendors[i].username,
+            profile: vendors[i].profile,
             vendorName: vendors[i].vendor.vendorName,
             products: filteredProducts.sort(() => Math.random() - 0.5)
         })

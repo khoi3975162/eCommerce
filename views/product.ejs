@@ -1,75 +1,37 @@
 <%- include('./partials/header.ejs') %>
-<body>
-    <div class="container product-page shadow-sm">
+
+    <div class="container product-page mt-4 mb-4">
         <div class="row product-row rounded">
             <div class="col-sm-6">
                 <img src="/images/test/01.png" class="img-fluid">
                 <div class="row">
                     <div class="col-sm-4">
                         <img src="/images/test/02.png" class="img-fluid">
-                    </div> 
+                    </div>
                     <div class="col-sm-4">
                         <img src="/images/test/03.png" class="img-fluid">
-                    </div> 
+                    </div>
                     <div class="col-sm-4">
                         <img src="/images/test/04.png" class="img-fluid">
-                    </div> 
+                    </div>
                 </div>
             </div>
             <div class="col-sm-6">
                 <h1>Razer Gaming Basilisk Wireless</h1>
                 <h1>Price: $79.98 </h1>
                 <h2>Brand: Razer</h2>
-                <style>
-                    #buy-amount{
-                        display: flex;
-                    }
-
-                    #buy-amount button{
-                        width: 35px;
-                        height:35px;
-                        outline: none;
-                        background: none;
-                        border: 1px solid #ececed;
-                        cursor: pointer;
-                    }
-
-                    #buy-amount button:hover{
-                        background-color: #ececed;
-                    }
-                    
-                    #buy-amount button svg{
-                        color: #909090;
-                    }
-
-                    #buy-amount button:hover svg{
-                        color: #909090;
-                    }
-
-                    #buy-amount #amount{
-                        width: 40px;
-                        text-align: center;
-                        border: 1px solid #ececed;
-                    }
-                </style>
                 <div id="buy-amount">
-                    <button class="minus-btn" onclick="handleMinus()"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                        <path 
-                            stroke-linecap="round" 
-                            stroke-linejoin="round" 
-                            d="M19.5 12h-15" 
-                        />
-                      </svg>
-                      </button>
+                    <button class="minus-btn" onclick="handleMinus()"><svg xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15" />
+                        </svg>
+                    </button>
                     <input type="text" name="amount" id="amount" value="1">
-                    <button class="plus-btn" onclick="handlePlus()"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                        <path 
-                            stroke-linecap="round" 
-                            stroke-linejoin="round" 
-                            d="M12 4.5v15m7.5-7.5h-15" 
-                        />
-                      </svg>
-                      </button>
+                    <button class="plus-btn" onclick="handlePlus()"><svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                    </button>
                 </div>
                 <script>
                     let amountElement = document.getElementById('amount')
@@ -81,15 +43,15 @@
                     }
 
                     // Handle Plus
-                    let handlePlus = () =>{
+                    let handlePlus = () => {
                         amount++
                         render(amount);
                     }
 
                     // Handle Minus
-                    let handleMinus = () =>{
-                        if(amount > 1)
-                            amount --;
+                    let handleMinus = () => {
+                        if (amount > 1)
+                            amount--;
                         render(amount);
                     }
 
@@ -97,15 +59,21 @@
                         amount = amountElement.value;
                         // console.log(amount);
                         amount = parseInt(amount);
-                        amount = (isNaN(amount)||amount==0)?1:amount;
+                        amount = (isNaN(amount) || amount == 0) ? 1 : amount;
                         render(amount);
                         console.log(amount);
                     });
                 </script>
                 <button type="button" class="btn btn-primary btn-lg btn-block">Add to cart</button>
                 <h2>Description:</h2>
-                <p>For those looking for a product with a variety of features and programmable settings, Razer's Basilisk Ultimate Wireless gaming mouse is ideal. The device boasts a 20,000 DPI sensitivity, an IPS speed of up to 650, 11 keys for macro assignment, and 14 places where the weight and brightness can be flexibly adjusted. The Razer Basilisk Ultimate Wireless features a flexible operating system, a moderate amount of button bounce, and a pleasant grip. Stable connectivity is provided by RazerTM Hyperspeed Wireless Technology. Despite being wireless, the product's battery life can last up to 100 hours, allowing you to play your game without interruptions due to the mouse's battery life.
-                </p> 
+                <p>For those looking for a product with a variety of features and programmable settings, Razer's
+                    Basilisk Ultimate Wireless gaming mouse is ideal. The device boasts a 20,000 DPI sensitivity, an IPS
+                    speed of up to 650, 11 keys for macro assignment, and 14 places where the weight and brightness can
+                    be flexibly adjusted. The Razer Basilisk Ultimate Wireless features a flexible operating system, a
+                    moderate amount of button bounce, and a pleasant grip. Stable connectivity is provided by RazerTM
+                    Hyperspeed Wireless Technology. Despite being wireless, the product's battery life can last up to
+                    100 hours, allowing you to play your game without interruptions due to the mouse's battery life.
+                </p>
             </div>
         </div>
     </div>
@@ -115,8 +83,9 @@
                 <h1>Related Product</h1>
             </div>
             <div class="col-sm-6">
-                
+
             </div>
+        </div>
     </div>
-</body>
+
     <%- include('./partials/footer.ejs') %>

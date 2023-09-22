@@ -1,71 +1,84 @@
 <%- include('./partials/header.ejs') %>
 
-    <div class="container products-page shadow-sm mb-4 mt-4">
-        <div class="row products-container rounded d-flex justify-content-center">
-            <% if (data.products.length> 0) {data.products.forEach(function(productData) { if
-                (productData.products.length> 0) { %>
-                <h1 class="vendor-name">
-                    <%= productData.vendorName %>
-                </h1>
-                <div class="row mb-4 d-flex justify-content-center">
-                    <% productData.products.forEach(function(product) { %>
-                        <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4 card product-card product-card-ctrl">
-                            <div class="h-100 d-flex align-items-center justify-content-center pd-card">
-                                <a href="/product/<%= product._id %>" class="h-100">
-                                    <img src="/images/products/<%= productData.id %>/<%= product._id %>/<%= product.images[0] %>"
-                                        class="card-img-top img-fluid" alt="pd-img">
-                                </a>
-                            </div>
-                            <div class="card-body d-flex flex-column justify-content-end">
-                                <a href="/product/<%= product._id %>" class="product-name">
-                                    <h5 class="card-title">
-                                        <%= product.name %>
-                                    </h5>
-                                </a>
-                                <p class="card-text">
-                                    $<%= product.price %>
-                                </p>
-                                <% if (data.isOwner) { %>
-                                    <div class="d-flex gap-2 display-vendor">
-                                        <a href="/product/<%= product._id %>/update"
-                                            class="btn btn-primary edit-btn w-50 anm-btn"><span>Edit</span></a>
-                                        <div class="modal cf-modal fade" id="cf-modal" tabindex="-1" role="dialog">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Confirm
-                                                        </h1>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                            aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        Are you sure you want to delete this product?
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn w-25 cancel-btn anm-btn"
-                                                            data-bs-dismiss="modal"><span>Cancel</span></button>
-                                                        <form action="/product/<%= product._id %>/delete" method="POST"
-                                                            class="w-25">
-                                                            <button type="submit"
-                                                                class="btn w-100 confirm-btn anm-btn"><span>Confirm</span></button>
-                                                        </form>
+    <div class="container products-page mb-4 mt-4">
+        <div class="row products-container d-flex justify-content-center">
+            <% if (data.products.length> 0) {data.products.forEach(function(vendor) { if
+                (vendor.products.length> 0) { %>
+                <div class="row mb-4 vendor-pd-wrapper rounded shadow-sm">
+                    <div class="row border-bottom">
+                        <a href="/products/<%= vendor.username %>"
+                            class="text-decoration-none text-reset mb-4 d-flex align-items-center">
+                            <img class="img-fluid rounded vendor-profile" src="/images/profiles/<%= vendor.profile %>"
+                                alt="vendor-profile">
+                            <span class="vendor-name">
+                                &nbsp;
+                                <%= vendor.vendorName %>
+                                    <i class="bi bi-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                    <div class="row mb-4 d-flex justify-content-center mt-4">
+                        <% vendor.products.forEach(function(product) { %>
+                            <div
+                                class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4 card product-card product-card-ctrl">
+                                <div class="h-100 d-flex align-items-center justify-content-center pd-card">
+                                    <a href="/product/<%= product._id %>" class="h-100">
+                                        <img src="/images/products/<%= vendor.id %>/<%= product._id %>/<%= product.images[0] %>"
+                                            class="card-img-top img-fluid" alt="pd-img">
+                                    </a>
+                                </div>
+                                <div class="card-body d-flex flex-column justify-content-end">
+                                    <a href="/product/<%= product._id %>" class="product-name">
+                                        <h5 class="card-title">
+                                            <%= product.name %>
+                                        </h5>
+                                    </a>
+                                    <p class="card-text">
+                                        $<%= product.price %>
+                                    </p>
+                                    <% if (data.isOwner) { %>
+                                        <div class="d-flex gap-2 display-vendor">
+                                            <a href="/product/<%= product._id %>/update"
+                                                class="btn btn-primary edit-btn w-50 anm-btn"><span>Edit</span></a>
+                                            <div class="modal cf-modal fade" id="cf-modal" tabindex="-1" role="dialog">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Confirm
+                                                            </h1>
+                                                            <button type="button" class="btn-close"
+                                                                data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            Are you sure you want to delete this product?
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn w-25 cancel-btn anm-btn"
+                                                                data-bs-dismiss="modal"><span>Cancel</span></button>
+                                                            <form action="/product/<%= product._id %>/delete"
+                                                                method="POST" class="w-25">
+                                                                <button type="submit"
+                                                                    class="btn w-100 confirm-btn anm-btn"><span>Confirm</span></button>
+                                                            </form>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
+                                            <button type="button" class="btn delete-btn w-50 anm-btn"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#cf-modal"><span>Delete</span></button>
                                         </div>
-                                        <button type="button" class="btn delete-btn w-50 anm-btn" data-bs-toggle="modal"
-                                            data-bs-target="#cf-modal"><span>Delete</span></button>
-                                    </div>
-                                    <% } else { %>
-                                        <div class="text-center display-customer">
-                                            <button onclick="addToCart('<%= product._id %>')"
-                                                class="btn btn-primary add-cart-btn anm-btn w-50">
-                                                <span>Add to Cart</span></button>
-                                        </div>
-                                        <% } %>
+                                        <% } else { %>
+                                            <div class="text-center display-customer">
+                                                <button onclick="addToCart('<%= product._id %>')"
+                                                    class="btn btn-primary add-cart-btn anm-btn w-50">
+                                                    <span>Add to Cart</span></button>
+                                            </div>
+                                            <% } %>
+                                </div>
                             </div>
-                        </div>
-                        <% }); %>
+                            <% }); %>
+                    </div>
                 </div>
                 <% }})} else { %>
                     <h1>This shop haven't added any products yet</h1>

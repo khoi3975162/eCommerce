@@ -1,56 +1,117 @@
 <%- include('./partials/header.ejs') %>
 
-    <div class="container order-page">
-        <div class="order-container">
-            <div class="row">
+    <div class="container order-page mt-4">
+        <div class="order-container mb-4 rounded">
+            <div class="row order-info d-flex flex-column mb-4 rounded shadow-sm">
                 <div class="col">
                     Order ID: <%= data.order._id %>
                 </div>
-                <div class="col order-status">
-                    Status: <%= data.order.status %>
+                <div class="col">
+                    Customer Name: <%= data.order.customerName %>
                 </div>
-                <div class="col set-order-status">
-                    <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            Set status
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" onclick="editOrderStatus('Delivered')">Delivered</a>
-                            </li>
-                            <li><a class="dropdown-item" onclick="editOrderStatus('Canceled')">Canceled</a>
-                            </li>
-                        </ul>
-                    </div>
+                <div class="col">
+                    Customer Address: <%= data.order.customerAddress %>
+                </div>
+                <div class="col">
+                    Hub: <%= data.order.hub %>
                 </div>
             </div>
-            <% data.order.products.forEach(function(product) { %>
-                <div class="row">
-                    <div class="col order-img-col">
-                        <img class="img-fluid" scr="<%= order.products[0].product.images[0] %>" alt="pd-img">
+
+            <div class="row order-status mb-4 rounded shadow-sm align-items-center">
+                <div class="col d-flex gap-3">
+                    <div class="order-status">
+                        Status:
+                        <% if (data.order.status=="Active" ) { %>
+                            <span class="status-active">
+                                <%= data.order.status %>
+                            </span>
+                            <% } else if (data.order.status=="Delivered" ) { %>
+                                <span class="status-delivered">
+                                    <%= data.order.status %>
+                                </span>
+                                <% } else if (data.order.status=="Canceled" ) { %>
+                                    <span class="status-canceled">
+                                        <%= data.order.status %>
+                                    </span>
+                                    <% } %>
                     </div>
-                    <div class="col order-info-col">
-                        <span class="pd-name">
-                            <%= product.product.name %>
-                        </span>
-                        <span>
-                            <i>from </i>
-                            <%= product.product.owner %>
-                        </span>
-                        <span>
-                            x<%= product.product.quantity %>
-                        </span>
-                    </div>
-                    <div class="col order-price-col d-flex justify-content-end">
-                        <%= product.product.product.price * product.product.quantity %>
-                    </div>
-                </div>
-                <% }); %>
-                    <div class="row">
-                        <div class="col d-flex justify-content-end">
-                            Total price: <%= data.order.totalPrice %>
+
+                    <div class="set-order-status display-shipper">
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                Set status
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <form action="/order/<%= data.order._id %>/status/Delivered" method="POST">
+                                        <button type="submit" class="dropdown-item">Delivered</button>
+                                    </form>
+                                </li>
+                                <li>
+                                    <form action="/order/<%= data.order._id %>/status/Canceled" method="POST">
+                                        <button type="submit" class="dropdown-item">Canceled</button>
+                                    </form>
+                                </li>
+                            </ul>
                         </div>
                     </div>
+                </div>
+
+                <div class="col order-total-price d-flex justify-content-end">
+                    Total: &nbsp; <span class="total-price">
+                        $<%= data.order.totalPrice %>
+                    </span>
+                </div>
+            </div>
+
+            <% data.order.vendors.forEach(function(vendor) { %>
+                <div class="row vendor-products mb-4 rounded shadow-sm">
+                    <div class="vendorname mb-3 border-bottom">
+                        <a href="/products/<%= vendor.username %>" class="text-decoration-none text-reset">
+                            <span class="text">
+                                <i class="bi bi-shop-window"></i>
+                                <%= vendor.vendorName %>
+                                    <i class="bi bi-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+
+                    <% vendor.products.forEach(function(product) { %>
+                        <div class="row products">
+                            <div class="row mb-3">
+                                <div class="col order-img d-flex align-items-center justify-content-start">
+                                    <a href="/product/<%= product.product._id %>"
+                                        class="text-decoration-none text-reset">
+                                        <img class="img-fluid"
+                                            src="/images/products/<%= vendor.id %>/<%= product.product._id %>/<%= product.product.images[0] %>"
+                                            alt="pd-img">
+                                    </a>
+                                </div>
+
+                                <div class="col order-info d-flex flex-column">
+                                    <a href="/product/<%= product.product._id %>"
+                                        class="text-decoration-none text-reset">
+                                        <span class="pd-name">
+                                            <%= product.product.name %>
+                                        </span>
+                                    </a>
+                                    <span>
+                                        x<%= product.quantity %>
+                                    </span>
+                                </div>
+
+                                <div class="col order-price d-flex justify-content-end align-items-center">
+                                    $ <%= product.product.price * product.quantity %>
+                                </div>
+                            </div>
+
+                            <hr>
+                        </div>
+                        <% }) %>
+                </div>
+                <% }) %>
+
         </div>
     </div>
 

@@ -498,7 +498,7 @@ app.post('/order', auth, async (req, res) => {
         return resSignIn(res);
     }
     else if (await User.getAccountType(req.user) == 'customer') {
-        const order = await Order.createOrder(req.user);
+        const order = await Order.createOrder(req.user, req.body['hub']);
         return res.redirect('/order/' + order._id);
     }
     return res.send("The account you are logged in is not a customer account.");
@@ -512,7 +512,7 @@ app.get('/order/:id', auth, async (req, res) => {
     }
     else if (accountType == 'customer' || accountType == 'shipper') {
         try {
-            const order = await Order.findById(req.params.id);
+            var order = await Order.findById(req.params.id);
             var valid = false;
             if (accountType == 'customer' & order.owner.toString() == req.user._id.toString()) {
                 valid = true;
@@ -520,11 +520,12 @@ app.get('/order/:id', auth, async (req, res) => {
             else if (accountType == 'shipper' & order.hub == req.user.shipper.hub) {
                 valid = true;
             }
+
             if (valid) {
                 return res.render('order', {
                     data: {
                         ...await getData(req),
-                        order: order
+                        order: await Order.getOrder(order)
                     }
                 });
             }

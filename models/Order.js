@@ -54,42 +54,47 @@ function compareStatus(a, b) {
     return 0;
 }
 
+async function parseOrder(order) {
+    var products = [];
+    for (y = 0; y < order.products.length; y++) {
+        products.push({
+            product: await Product.findById(order.products[y].product),
+            quantity: order.products[y].quantity
+        })
+    }
+
+    var vendors = []
+    for (y = 0; y < products.length; y++) {
+        const vendor = await User.findById(products[y].product.owner);
+        if (!vendors.some(_vendor => _vendor._id.toString() == vendor._id.toString())) {
+            vendors.push(vendor);
+        }
+    }
+
+    var groupedProducts = [];
+    for (y = 0; y < vendors.length; y++) {
+        var filteredProducts = [];
+        products.forEach(function (product) {
+            if (product.product.owner._id.toString() == vendors[y]._id.toString()) {
+                filteredProducts.push(product)
+            }
+        })
+        groupedProducts.push({
+            id: vendors[y]._id.toString(),
+            username: vendors[y].username,
+            vendorName: vendors[y].vendor.vendorName,
+            products: filteredProducts
+        })
+    }
+    return groupedProducts;
+}
+
 async function parseOrders(orders) {
     var newOrders = [];
     for (i = 0; i < orders.length; i++) {
         const order = orders[i];
 
-        var products = [];
-        for (y = 0; y < order.products.length; y++) {
-            products.push({
-                product: await Product.findById(order.products[y].product),
-                quantity: order.products[y].quantity
-            })
-        }
-
-        var vendors = []
-        for (y = 0; y < products.length; y++) {
-            const vendor = await User.findById(products[y].product.owner);
-            if (!vendors.some(_vendor => _vendor._id.toString() == vendor._id.toString())) {
-                vendors.push(vendor);
-            }
-        }
-
-        var groupedProducts = [];
-        for (y = 0; y < vendors.length; y++) {
-            var filteredProducts = [];
-            products.forEach(function (product) {
-                if (product.product.owner._id.toString() == vendors[y]._id.toString()) {
-                    filteredProducts.push(product)
-                }
-            })
-            groupedProducts.push({
-                id: vendors[y]._id.toString(),
-                username: vendors[y].username,
-                vendorName: vendors[y].vendor.vendorName,
-                products: filteredProducts
-            })
-        }
+        const groupedProducts = await parseOrder(order);
 
         const owner = await User.findById(order.owner)
         newOrders.push({
@@ -106,6 +111,20 @@ async function parseOrders(orders) {
     return newOrders.sort(compareStatus);
 }
 
+orderSchema.statics.getOrder = async (order) => {
+    const owner = await User.findById(order.owner)
+    return {
+        _id: order._id.toString(),
+        username: owner.username,
+        customerName: owner.customer.customerName,
+        customerAddress: owner.customer.customerAddress,
+        vendors: await parseOrder(order),
+        hub: order.hub,
+        totalPrice: order.totalPrice,
+        status: order.status
+    }
+}
+
 orderSchema.statics.getOrdersfromUser = async (user) => {
     const orders = await Order.find({ owner: user });
     return parseOrders(orders);
@@ -116,7 +135,7 @@ orderSchema.statics.getOrdersfromHub = async (hub) => {
     return parseOrders(orders);
 }
 
-orderSchema.statics.createOrder = async (user) => {
+orderSchema.statics.createOrder = async (user, _hub) => {
     const cart = await Cart.findOne({ owner: user });
     if (cart.products.length == 0) {
         return "Cart has no products";
@@ -126,11 +145,19 @@ orderSchema.statics.createOrder = async (user) => {
         const product = await Product.findById(cart.products[i].product)
         totalPrice = totalPrice + (product.price * cart.products[i].quantity)
     }
+
     const hubs = ["Ho Chi Minh", "Hanoi", "Da Nang"];
+    var hub = null;
+    if (_hub & hubs.includes(_hub)) {
+        hub = _hub;
+    }
+    else {
+        hub = hubs[Math.floor(Math.random() * hubs.length)]
+    }
     const orderData = {
         owner: user,
         products: cart.products,
-        hub: hubs[Math.floor(Math.random() * hubs.length)],
+        hub: hub,
         totalPrice: totalPrice.toFixed(2),
         status: "Active"
     }
