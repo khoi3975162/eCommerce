@@ -55,12 +55,17 @@ cartSchema.statics.removeFromCart = async (user, productid, quantity) => {
     var cart = await Cart.findOne({ owner: user });
     if (cart.products.some(_product => _product.product._id.toString() == product._id.toString())) {
         var cartProduct = cart.products.find((_product) => _product.product._id.toString() == product._id.toString());
-        tempQuantity = parseInt(cartProduct.quantity) - parseInt(quantity);
-        if (tempQuantity <= 0) {
+        if (quantity == 'all') {
             cart.products = cart.products.filter(function (_product) { return _product.product._id.toString() != product._id.toString(); });
         }
         else {
-            cartProduct.quantity = tempQuantity;
+            tempQuantity = parseInt(cartProduct.quantity) - parseInt(quantity);
+            if (tempQuantity <= 0) {
+                cart.products = cart.products.filter(function (_product) { return _product.product._id.toString() != product._id.toString(); });
+            }
+            else {
+                cartProduct.quantity = tempQuantity;
+            }
         }
     }
     await cart.save();

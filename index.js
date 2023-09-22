@@ -142,7 +142,7 @@ app.post('/signup', profile_upload.single('profile'), async (req, res, next) => 
             return resRedirect(res, token, '/dashboard');
         }
         else if (req.body['accounttype'] == 'customer') {
-            return resRedirect(res, token, '/');
+            return resRedirect(res, token, '/products');
         }
         else if (req.body['accounttype'] == 'shipper') {
             return resRedirect(res, token, '/orders');
@@ -187,7 +187,7 @@ app.post('/signin', async (req, res) => {
             return resRedirect(res, token, '/dashboard');
         }
         else if (accountType == 'customer') {
-            return resRedirect(res, token, '/');
+            return resRedirect(res, token, '/products');
         }
         else if (accountType == 'shipper') {
             return resRedirect(res, token, '/orders');
@@ -209,15 +209,15 @@ app.get('/me', auth, async (req, res) => {
             profile: req.user.profile
         }
         if (data.accountType == "customer") {
-            user[customerName] = req.user.customer.customerName;
-            user[customerAddress] = req.user.customer.customerAddress;
+            user.customerName = req.user.customer.customerName;
+            user.customerAddress = req.user.customer.customerAddress;
         }
         else if (data.accountType == "vendor") {
-            user[vendorName] = req.user.customer.vendorName;
-            user[vendorAddress] = req.user.customer.vendorAddress;
+            user.vendorName = req.user.vendor.vendorName;
+            user.vendorAddress = req.user.vendor.vendorAddress;
         }
         else if (data.accountType == "shipper") {
-            user[hub] = req.user.shipper.hub;
+            user.hub = req.user.shipper.hub;
         }
         return res.render('me', {
             data: {
@@ -344,11 +344,11 @@ app.post('/product/new', product_upload.array('product-imgs', 4), auth, async (r
 /* specific product page, available for all user */
 app.get('/product/:id', auth, async (req, res) => {
     try {
-        const productData = await Product.findById(req.params.id);
+        const product = await Product.findById(req.params.id);
         return res.render('product', {
             data: {
                 ...await getData(req),
-                product: productData.toObject()
+                product: product.toObject()
             }
         });
     }

@@ -4,7 +4,12 @@
         <div class="row rounded display-for d-flex justify-content-between heading shadow-sm mb-4">
             <div class="col">
                 <span class="display-customer">My orders</span>
-                <span class="display-shipper">Orders at hub: <%= data.hub %></span>
+                <span class="display-shipper">
+                    Orders at hub: &nbsp;
+                    <span class="shipper-hub">
+                        <%= data.hub %>
+                    </span>
+                </span>
             </div>
             <div class="col order-total d-flex justify-content-end">
                 <span>

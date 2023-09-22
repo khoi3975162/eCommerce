@@ -415,18 +415,49 @@ body {
 }
 
 .me-page {
-    .me-container {
-        background-color: white;
+    max-width: 50%;
+    background-color: white;
+
+    @media (max-width: 1200px) {
+        max-width: 70%;
+    }
+
+    @media (max-width: 992px) {
+        max-width: 80%;
+    }
+
+    @media (max-width: 768px) {
+        max-width: 90%;
+    }
+
+    .title {
         padding: 30px;
+        font-weight: 500;
+        font-size: 32px;
+    }
+
+    .me-container {
+        padding: 30px;
+        padding-top: 0px;
+    }
+
+    .note {
+        font-size: small;
     }
 }
 
-.products-container {
+.products-page {
     .vendor-pd-wrapper {
         background-color: white;
         padding: 20px;
         padding-top: 30px;
         padding-bottom: 30px;
+    }
+
+    .no-products {
+        background-color: white;
+        font-size: 42px;
+        padding: 100px;
     }
 
     .product-card {
@@ -459,7 +490,9 @@ body {
     }
 
     .add-cart-btn,
-    .edit-btn {
+    .edit-btn,
+    .filter-submit {
+        color: white;
         background-color: #564d4a;
         border-color: #564d4a;
     }
@@ -471,7 +504,8 @@ body {
     }
 
     .add-cart-btn:hover,
-    .edit-btn:hover {
+    .edit-btn:hover,
+    .filter-submit:hover {
         background-color: #5b2333;
         border-color: #5b2333;
     }
@@ -483,20 +517,23 @@ body {
 
     .add-cart-btn:hover span:after,
     .edit-btn:hover span:after,
-    .delete-btn:hover span:after {
+    .delete-btn:hover span:after,
+    .filter-submit:hover span:after {
         opacity: 1;
         right: 0;
     }
 
     .add-cart-btn:hover span,
     .edit-btn:hover span,
-    .delete-btn:hover span {
+    .delete-btn:hover span,
+    .filter-submit:hover span {
         padding-right: 20px;
     }
 
     .add-cart-btn span:after,
     .edit-btn span:after,
-    .delete-btn span:after {
+    .delete-btn span:after,
+    .filter-submit span:after {
         right: -20px;
         font-family: "bootstrap-icons";
     }
@@ -511,6 +548,19 @@ body {
 
     .delete-btn span:after {
         content: '\F659';
+    }
+
+    .filter-submit span:after {
+        content: '\F286';
+    }
+
+    .price-filter {
+        background-color: white;
+        padding: 10px;
+    }
+
+    .filter-text {
+        font-size: 22px;
     }
 }
 
@@ -569,10 +619,6 @@ body {
         padding: 30px;
     }
 
-    #buy-amount {
-        display: flex;
-    }
-
     #buy-amount button {
         width: 35px;
         height: 35px;
@@ -598,6 +644,70 @@ body {
         width: 40px;
         text-align: center;
         border: 1px solid #ececed;
+    }
+
+    .pd-info {
+        .pd-name {
+            font-weight: 500;
+            font-size: 32px;
+        }
+
+        .pd-price {
+            font-size: 28px;
+        }
+
+        .pd-brand {
+            font-size: 18px;
+        }
+    }
+
+    .pd-quantity-input {
+        .btn-number {
+            border: 1px solid #5b2333 !important;
+        }
+    }
+
+    .pd-img {
+        border: 2px solid #5b2333;
+        border-radius: 0.375rem;
+    }
+
+    .pd-img-main {
+        border: 2px solid #5b2333;
+        border-radius: 0.375rem;
+    }
+
+    .add-cart-btn {
+        background-color: #564d4a;
+        border-color: #564d4a;
+    }
+
+    .add-cart-btn:hover {
+        background-color: #5b2333;
+        border-color: #5b2333;
+    }
+
+    .add-cart-btn:hover span:after {
+        opacity: 1;
+        right: 0;
+    }
+
+    .add-cart-btn:hover span {
+        padding-right: 20px;
+    }
+
+    .add-cart-btn span:after {
+        right: -20px;
+        font-family: "bootstrap-icons";
+        content: '\F64D';
+    }
+
+    .pd-dcs {
+        font-size: 18px;
+    }
+
+    .pd-info-wrapper {
+        padding: 20px;
     }
 }
 
@@ -717,6 +827,11 @@ body {
 
     .heading {
         font-size: 20px;
+    }
+
+    .order-count,
+    .shipper-hub {
+        color: #ba1b1d;
     }
 
     .no-order {
@@ -877,6 +992,5 @@ body {
 
     .pd-info {
         flex-direction: column;
-        align-items: start !important;
     }
 }

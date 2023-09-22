@@ -1,6 +1,30 @@
 <%- include('./partials/header.ejs') %>
 
     <div class="container products-page mb-4 mt-4">
+        <div class="price-filter mb-4 rounded shadow-sm">
+            <form id="price-range-form" class="row d-flex align-items-center" action="/products/filter" method="GET">
+                <div class="col filter-text d-flex justify-content-center">
+                    <span>Filter by price:</span>
+                </div>
+                <div class="col">
+                    <label for="min-price" class="form-label">Min price: </label>
+                    <span id="min-price-txt">$0</span>
+                    <input type="range" class="form-range" min="0" max="99" id="min-price" step="1" value="0">
+                </div>
+
+                <div class="col">
+                    <label for="max-price" class="form-label">Max price: </label>
+                    <span id="max-price-txt">$100</span>
+                    <input type="range" class="form-range" min="1" max="100" id="max-price" step="1" value="100">
+                </div>
+
+                <div class="col d-flex justify-content-center">
+                    <button type="submit" class="btn anm-btn w-50 filter-submit">
+                        <span>Submit</span>
+                    </button>
+                </div>
+            </form>
+        </div>
         <div class="row products-container d-flex justify-content-center">
             <% if (data.products.length> 0) {data.products.forEach(function(vendor) { if
                 (vendor.products.length> 0) { %>
@@ -39,7 +63,7 @@
                                     <% if (data.isOwner) { %>
                                         <div class="d-flex gap-2 display-vendor">
                                             <a href="/product/<%= product._id %>/update"
-                                                class="btn btn-primary edit-btn w-50 anm-btn"><span>Edit</span></a>
+                                                class="btn edit-btn w-50 anm-btn"><span>Edit</span></a>
                                             <div class="modal cf-modal fade" id="cf-modal" tabindex="-1" role="dialog">
                                                 <div class="modal-dialog">
                                                     <div class="modal-content">
@@ -71,7 +95,7 @@
                                         <% } else { %>
                                             <div class="text-center display-customer">
                                                 <button onclick="addToCart('<%= product._id %>')"
-                                                    class="btn btn-primary add-cart-btn anm-btn w-50">
+                                                    class="btn add-cart-btn anm-btn w-50">
                                                     <span>Add to Cart</span></button>
                                             </div>
                                             <% } %>
@@ -81,7 +105,9 @@
                     </div>
                 </div>
                 <% }})} else { %>
-                    <h1>This shop haven't added any products yet</h1>
+                    <div class="no-products text-center">
+                        This shop haven't added any products yet
+                    </div>
                     <% }; %>
         </div>
     </div>
