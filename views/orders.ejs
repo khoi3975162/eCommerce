@@ -31,6 +31,9 @@
                         <div class="col">
                             Customer Address: <%= order.customerAddress %>
                         </div>
+                        <div class="col">
+                            Hub: <%= order.hub %>
+                        </div>
                     </div>
                     <div class="vendorname mb-3 border-bottom">
                         <span class="text">
@@ -58,43 +61,69 @@
                     </div>
 
                     <hr>
-                    <div class="row">
-                        <div class="col d-flex justify-content-center">
-                            <% var products=0; order.vendors.forEach(function(vendor) {
-                                vendor.products.forEach(function(product) { products+=1; }) }) %>
-                                <i>and <%= products-1 %> more</i>
-                        </div>
-                    </div>
-                    <hr>
 
-                    <div class="row">
-                        <div class="col align-items-center gap-3 display-shipper">
-                            <div class="order-status">
-                                Status: <%= order.status %>
-                            </div>
-                            <div class="set-order-status">
-                                <div class="dropdown">
-                                    <button class="btn btn-secondary dropdown-toggle" type="button"
-                                        data-bs-toggle="dropdown" aria-expanded="false">
-                                        Set status
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item"
-                                                onclick="editOrderStatus('Delivered')">Delivered</a>
-                                        </li>
-                                        <li><a class="dropdown-item" onclick="editOrderStatus('Canceled')">Canceled</a>
-                                        </li>
-                                    </ul>
+                    <% var products=0; order.vendors.forEach(function(vendor) {
+                        vendor.products.forEach(function(product) { products+=1; }) }) %>
+                        <% if (products-1> 0) { %>
+                            <div class="row">
+                                <div class="col d-flex justify-content-center">
+                                    <i>and <%= products-1 %> more</i>
                                 </div>
                             </div>
-                        </div>
+                            <hr>
+                            <% } %>
 
-                        <div class="col order-total-price d-flex justify-content-end">
-                            Total: &nbsp; <span class="total-price">
-                                $<%= order.totalPrice %>
-                            </span>
-                        </div>
-                    </div>
+                                <div class="row">
+                                    <div class="col d-flex align-items-center gap-3">
+                                        <div class="order-status">
+                                            Status:
+                                            <% if (order.status=="Active" ) { %>
+                                                <span class="status-active">
+                                                    <%= order.status %>
+                                                </span>
+                                                <% } else if (order.status=="Delivered" ) { %>
+                                                    <span class="status-delivered">
+                                                        <%= order.status %>
+                                                    </span>
+                                                    <% } else if (order.status=="Canceled" ) { %>
+                                                        <span class="status-canceled">
+                                                            <%= order.status %>
+                                                        </span>
+                                                        <% } %>
+                                        </div>
+
+                                        <div class="set-order-status display-shipper">
+                                            <div class="dropdown">
+                                                <button class="btn btn-secondary dropdown-toggle" type="button"
+                                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                                    Set status
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li>
+                                                        <form action="/order/<%= order._id %>/status/Delivered"
+                                                            method="POST">
+                                                            <button type="submit"
+                                                                class="dropdown-item">Delivered</button>
+                                                        </form>
+                                                    </li>
+                                                    <li>
+                                                        <form action="/order/<%= order._id %>/status/Canceled"
+                                                            method="POST">
+                                                            <button type="submit"
+                                                                class="dropdown-item">Canceled</button>
+                                                        </form>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col order-total-price d-flex justify-content-end">
+                                        Total: &nbsp; <span class="total-price">
+                                            $<%= order.totalPrice %>
+                                        </span>
+                                    </div>
+                                </div>
                 </div>
                 <% })}; %>
         </div>

@@ -310,10 +310,6 @@ function clearProductInfo() {
     clearImages();
 }
 
-function editOrderStatus() {
-
-}
-
 function addToCart(productid) {
     fetch('/cart/add/' + productid + '/quantity/' + 1, {
         method: 'POST'
@@ -375,6 +371,7 @@ function editQuantity(productid, action, _quantity) {
         cartPrice.innerHTML = (parseFloat(cartPrice.innerHTML.trim()) - _quantity * pdPrice).toFixed(2);
     }
 }
+
 
 // ========== Listener ==========
 

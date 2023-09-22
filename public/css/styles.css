@@ -702,6 +702,18 @@ body {
     .display-shipper {
         display: flex;
     }
+
+    .status-active {
+        color: green;
+    }
+
+    .status-delivered {
+        color: blue;
+    }
+
+    .status-canceled {
+        color: red;
+    }
 }
 
 @media (min-width: 991px) {

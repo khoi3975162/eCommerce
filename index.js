@@ -93,9 +93,7 @@ app.get('/signup', auth, (req, res) => {
     if (req.guest) {
         return res.render('signup');
     }
-    else {
-        return res.send("You have already signed in, please sign out first.")
-    }
+    return res.send("You have already signed in, please sign out first.")
 })
 
 /* The below code is handling a POST request to the '/signup' endpoint. It is used for user
@@ -162,9 +160,7 @@ app.get('/signin', auth, (req, res) => {
     if (req.guest) {
         return res.render('signin');
     }
-    else {
-        return res.send("You have already signed in, please sign out first.")
-    }
+    return res.send("You have already signed in, please sign out first.")
 })
 
 /* The below code is a route handler for the "/signin" endpoint. It handles the user login
@@ -292,9 +288,7 @@ app.get('/dashboard', auth, async (req, res) => {
     else if (await User.getAccountType(req.user) == 'vendor') {
         return res.render('vendor/dashboard', { data: await getData(req) });
     }
-    else {
-        return res.send("The account you are logged in is not a vendor account.");
-    }
+    return res.send("The account you are logged in is not a vendor account.");
 })
 
 /* add new product page for vendor only */
@@ -305,9 +299,7 @@ app.get('/product/new', auth, async (req, res) => {
     else if (await User.getAccountType(req.user) == 'vendor') {
         return res.render('vendor/create-product', { data: await getData(req) });
     }
-    else {
-        return res.send("The account you are logged in is not a vendor account.");
-    }
+    return res.send("The account you are logged in is not a vendor account.");
 })
 
 /* post endpoint for adding new product, for vendor only */
@@ -364,9 +356,7 @@ app.get('/product/:id', auth, async (req, res) => {
         if (error.name == "CastError") {
             return res.send("The product is not exist.");
         }
-        else {
-            console.log(error);
-        }
+        console.log(error);
     }
 })
 
@@ -387,22 +377,16 @@ app.get('/product/:id/update', auth, async (req, res) => {
                     }
                 });
             }
-            else {
-                return res.send("You are not the owner of this product.");
-            }
+            return res.send("You are not the owner of this product.");
         }
         catch (error) {
             if (error.name == "CastError") {
                 return res.send("The product is not exist.");
             }
-            else {
-                console.log(error);
-            }
+            console.log(error);
         }
     }
-    else {
-        return res.send("The account you are logged in is not a vendor account.");
-    }
+    return res.send("The account you are logged in is not a vendor account.");
 })
 
 /* post endpoint for updating product */
@@ -463,9 +447,7 @@ app.post('/product/:id/delete', auth, async (req, res) => {
         if (error.name == "CastError") {
             return res.send("The product is not exist.");
         }
-        else {
-            console.log(error);
-        }
+        console.log(error);
     }
 })
 
@@ -483,9 +465,7 @@ app.get('/cart', auth, async (req, res) => {
             }
         });
     }
-    else {
-        return res.send("The account you are logged in is not a customer account.");
-    }
+    return res.send("The account you are logged in is not a customer account.");
 })
 
 /* add to cart for customer only */
@@ -497,9 +477,7 @@ app.post('/cart/add/:productid/quantity/:quantity', auth, async (req, res) => {
         await Cart.addToCart(req.user, req.params.productid, req.params.quantity);
         return res.redirect('back');
     }
-    else {
-        return res.send("The account you are logged in is not a customer account.");
-    }
+    return res.send("The account you are logged in is not a customer account.");
 })
 
 /* update items in cart for customer only */
@@ -511,9 +489,7 @@ app.post('/cart/remove/:productid/quantity/:quantity', auth, async (req, res) =>
         await Cart.removeFromCart(req.user, req.params.productid, req.params.quantity);
         return res.redirect('back');
     }
-    else {
-        return res.send("The account you are logged in is not a customer account.");
-    }
+    return res.send("The account you are logged in is not a customer account.");
 })
 
 /* place order for customer only */
@@ -525,9 +501,7 @@ app.post('/order', auth, async (req, res) => {
         const order = await Order.createOrder(req.user);
         return res.redirect('/order/' + order._id);
     }
-    else {
-        return res.send("The account you are logged in is not a customer account.");
-    }
+    return res.send("The account you are logged in is not a customer account.");
 })
 
 /* specific order page for customer and shipper only */
@@ -539,25 +513,59 @@ app.get('/order/:id', auth, async (req, res) => {
     else if (accountType == 'customer' || accountType == 'shipper') {
         try {
             const order = await Order.findById(req.params.id);
-            return res.render('order', {
-                data: {
-                    ...await getData(req),
-                    order: await Order.findById(req.params.id)
-                }
-            });
+            var valid = false;
+            if (accountType == 'customer' & order.owner.toString() == req.user._id.toString()) {
+                valid = true;
+            }
+            else if (accountType == 'shipper' & order.hub == req.user.shipper.hub) {
+                valid = true;
+            }
+            if (valid) {
+                return res.render('order', {
+                    data: {
+                        ...await getData(req),
+                        order: order
+                    }
+                });
+            }
+            return res.send("You are not authorized to view to view this order.")
         }
         catch (error) {
             if (error.name == "CastError") {
                 return res.send("The order is not exist.");
             }
-            else {
-                console.log(error);
-            }
+            console.log(error);
         }
     }
-    else {
-        return res.send("The account you are logged in is not a customer or shipper account.");
+    return res.send("The account you are logged in is not a customer or shipper account.");
+})
+
+/* edit order status endpoint for shipper only */
+app.post('/order/:id/status/:status', auth, async (req, res) => {
+    const accountType = await User.getAccountType(req.user);
+    if (req.guest) {
+        return resSignIn(res);
     }
+    else if (accountType == 'shipper') {
+        try {
+            const order = await Order.findById(req.params.id);
+            if (order.hub == req.user.shipper.hub) {
+                if (["Delivered", "Canceled"].includes(req.params.status)) {
+                    order.status = req.params.status;
+                }
+                await order.save();
+                return res.redirect('back');
+            }
+            return res.send("You are not authorized to view to view this order.");
+        }
+        catch (error) {
+            if (error.name == "CastError") {
+                return res.send("The order is not exist.");
+            }
+            console.log(error);
+        }
+    }
+    return res.send("The account you are logged in is not a shipper account.");
 })
 
 /* view all orders page for customer and shipper only */
@@ -582,9 +590,7 @@ app.get('/orders', auth, async (req, res) => {
             }
         })
     }
-    else {
-        return res.send("The account you are logged in is not a customer or shipper account.");
-    }
+    return res.send("The account you are logged in is not a customer or shipper account.");
 })
 
 // for checking if username is already exist in database during sign up
@@ -604,9 +610,7 @@ app.get('/check/vendorname/:vendorname', async (req, res) => {
     if (exist) {
         return res.send('true');
     }
-    else {
-        return res.send('false');
-    }
+    return res.send('false');
 })
 
 // for checking if vendor address is already exist in database during sign up
@@ -615,9 +619,7 @@ app.get('/check/vendoraddress/:vendoraddress', async (req, res) => {
     if (exist) {
         return res.send('true');
     }
-    else {
-        return res.send('false');
-    }
+    return res.send('false');
 })
 
 // check if credentials exist in the database during sign in
@@ -627,9 +629,7 @@ app.post('/check/signin', async (req, res) => {
     if (user) {
         return res.send('true');
     }
-    else {
-        return res.send('false');
-    }
+    return res.send('false');
 })
 
 // Start the server and listen on port 3000

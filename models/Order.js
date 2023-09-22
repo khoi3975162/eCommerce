@@ -41,6 +41,19 @@ const orderSchema = mongoose.Schema({
     }
 })
 
+function compareStatus(a, b) {
+    if (a.status == "Active") {
+        return -1;
+    }
+    else if (b.status == "Delivered") {
+        return -1;
+    }
+    else if (b.status == "Canceled") {
+        return 1;
+    }
+    return 0;
+}
+
 async function parseOrders(orders) {
     var newOrders = [];
     for (i = 0; i < orders.length; i++) {
@@ -90,7 +103,7 @@ async function parseOrders(orders) {
             status: order.status
         })
     }
-    return newOrders;
+    return newOrders.sort(compareStatus);
 }
 
 orderSchema.statics.getOrdersfromUser = async (user) => {
