@@ -41,7 +41,7 @@ Acknowledgement: Acknowledge the resources that you use here. -->
                         <label for="vendorname">Business Name</label>
                         <input type="vendorname" class="form-control" id="vendorname" aria-describedby="vendorname"
                             value="<%= data.user.vendorName %>" disabled>
-                        <p class="note text-muted">Your Business Name will appear above your products on the product
+                        <p class="note text-muted">Your business name will appear above your products on the product
                             page.</p>
                     </div>
 
@@ -62,14 +62,14 @@ Acknowledgement: Acknowledge the resources that you use here. -->
                             <label for="customername">Customer Name</label>
                             <input type="customername" class="form-control" id="customername"
                                 aria-describedby="customername" value="<%= data.user.customerName %>" disabled>
-                            <p class="note text-muted">Your Name will appear on every order you placed.</p>
+                            <p class="note text-muted">Your name will appear on every order you placed.</p>
                         </div>
 
                         <div class="form-group mb-4">
                             <label for="customeraddress">Customer Address</label>
                             <input type="customeraddress" class="form-control" id="customeraddress"
                                 aria-describedby="customeraddress" value="<%= data.user.customerAddress %>" disabled>
-                            <p class="note text-muted">Your Address will appear on every order you placed.</p>
+                            <p class="note text-muted">Your address will appear on every order you placed.</p>
                         </div>
 
                         <% } else if (data.accountType=="shipper" ) { %>
@@ -83,7 +83,7 @@ Acknowledgement: Acknowledge the resources that you use here. -->
                                 <label for="hub">Registered Hub</label>
                                 <input type="hub" class="form-control" id="hub" aria-describedby="hub"
                                     value="<%= data.user.hub %>" disabled>
-                                <p class="note text-muted">Registered Hub will be used to display orders on that hub.
+                                <p class="note text-muted">Registered hub will be used to display orders on that hub.
                                 </p>
                             </div>
                             <% } %>
@@ -97,17 +97,16 @@ Acknowledgement: Acknowledge the resources that you use here. -->
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col d-flex justify-content-center">
-                        <div class="dropdown profile-edit">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                                ✏️ Edit
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                <li><a class="dropdown-item" href="#">Upload a photo</a></li>
-                                <li><a class="dropdown-item" href="#">Delete photo</a></li>
-                            </ul>
-                        </div>
+                    <div class="col d-flex flex-column align-items-center">
+                        <form action="/me/update" method="POST" enctype="multipart/form-data"
+                            class="upload-profile-img mb-2 mt-2">
+                            <label for="profile" class="form-label">Choose your profile image</label>
+                            <input class="form-control profile" type="file" id="profile" name="profile" accept='image/*'
+                                onchange="submitForm()">
+                        </form>
+                        <form action="/me/remove" method="POST" class="w-100">
+                            <button type="submit" class="btn remove-btn w-100">Remove profile</button>
+                        </form>
                     </div>
                 </div>
             </div>

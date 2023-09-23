@@ -80,6 +80,8 @@ const userSchema = mongoose.Schema({
 Mongoose. It is executed before saving a user document to the database. */
 userSchema.pre('save', async function (next) {
     const user = this;
+
+    // valid password before hasing and saving to db
     if (user.isModified('password')) {
         if (! /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,20}$/.test(user.password)) {
             throw new Error({ error: `${user.password} is not a valid password. It should contain at least one uppercase letter, one lowercase letter, one digit, one special character (!@#$%^&*), and be 8-20 characters long.` });

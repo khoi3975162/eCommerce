@@ -398,7 +398,6 @@ function editQuantity(productid, action, _quantity, noUpdate = false, limit = fa
     }
 }
 
-
 function editMinPrice() {
     const min_price = parseInt(document.querySelector('.min-price').value);
     document.querySelector(".min-price-txt").innerHTML = "$" + min_price;
@@ -407,6 +406,11 @@ function editMinPrice() {
 function editMaxPrice() {
     const max_price = parseInt(document.querySelector('.max-price').value);
     document.querySelector(".max-price-txt").innerHTML = "$" + max_price;
+}
+
+function submitForm() {
+    console.log(document.querySelector('.profile').value)
+    document.querySelector('.upload-profile-img').submit()
 }
 
 // ========== Listener ==========

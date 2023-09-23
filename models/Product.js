@@ -39,9 +39,15 @@ const productSchema = mongoose.Schema({
     }
 })
 
-productSchema.statics.getProductsfromVendor = async (username) => {
+/* The `productSchema.statics.getProductsfromVendor` function is a static method defined on the
+`productSchema` object. It is used to retrieve products from a specific vendor based on the provided
+username. */
+productSchema.statics.getProductsfromVendor = async (username, random = false) => {
     const owner = await User.findOne({ username: username });
-    const products = await Product.find({ owner: owner })
+    var products = await Product.find({ owner: owner })
+    if (random) {
+        products = products.sort(() => Math.random() - 0.5);
+    }
     if (products.length != 0) {
         return [{
             id: owner._id,
@@ -56,20 +62,37 @@ productSchema.statics.getProductsfromVendor = async (username) => {
     }
 }
 
+/**
+ * The function `getGroupedProducts` retrieves products from the database and groups them by vendor,
+ * optionally randomizing the order of the products.
+ * @param [random=false] - The "random" parameter is a boolean value that determines whether the
+ * products within each vendor group and the vendor groups themselves should be randomly sorted. If
+ * "random" is set to true, the products within each vendor group and the vendor groups themselves will
+ * be randomly sorted. If "random" is set to
+ * @returns an array of grouped products. Each grouped product object contains the following
+ * properties: id (vendor's ID), username (vendor's username), profile (vendor's profile), vendorName
+ * (vendor's name), and products (an array of products owned by the vendor).
+ */
 async function getGroupedProducts(random = false) {
     const vendors = await User.find({ "vendor.accountType": true });
     const products = await Product.find({});
+
+    // group products by vendors
     var groupedProducts = [];
     for (i = 0; i < vendors.length; i++) {
+        // check if product belong to the current looping vendor
         var filteredProducts = []
         products.forEach(function (product) {
             if (product.owner._id.toString() == vendors[i]._id.toString()) {
-                filteredProducts.push(product)
+                filteredProducts.push(product);
             }
         })
+
+        // random products array
         if (random) {
             filteredProducts = filteredProducts.sort(() => Math.random() - 0.5);
         }
+
         groupedProducts.push({
             id: vendors[i]._id.toString(),
             username: vendors[i].username,
@@ -78,31 +101,45 @@ async function getGroupedProducts(random = false) {
             products: filteredProducts
         })
     }
+    // random vendors array
     if (random) {
         groupedProducts = groupedProducts.sort(() => Math.random() - 0.5);
     }
-    return groupedProducts
+
+    return groupedProducts;
 }
 
+/* The `productSchema.statics.getProductsbyVendors` function is a static method defined on the
+`productSchema` object. It is used to retrieve products from the database and group them by vendors,
+with the option to randomize the order of the products. */
 productSchema.statics.getProductsbyVendors = async () => {
     return await getGroupedProducts(true);
 }
 
+/* The `productSchema.statics.getFilteredProducts` function is a static method defined on the
+`productSchema` object. It is used to retrieve products from the database and filter them based on a
+minimum and maximum price range. */
 productSchema.statics.getFilteredProducts = async (min, max) => {
+    // parse to float min max price
     const minPrice = parseFloat(min);
     const maxPrice = parseFloat(max);
 
     const groupedProducts = await getGroupedProducts();
-    var filteredGroupedProducts = [];
 
+    // group products by vendors after filter with min and max price
+    var filteredGroupedProducts = [];
     for (i = 0; i < groupedProducts.length; i++) {
         const products = groupedProducts[i].products;
+
+        // filter products with min and max price
         var filteredProducts = [];
         for (y = 0; y < products.length; y++) {
             if (minPrice <= products[y].price & products[y].price <= maxPrice) {
                 filteredProducts.push(products[y]);
             }
         }
+
+        // if filtered products array not empty, group it into its vendor and push
         if (filteredProducts.length > 0) {
             filteredGroupedProducts.push({
                 id: groupedProducts[i].id,
@@ -113,11 +150,17 @@ productSchema.statics.getFilteredProducts = async (min, max) => {
             })
         }
     }
+
     return filteredGroupedProducts;
 }
 
+/* The `productSchema.statics.getSearchProducts` function is a static method defined on the
+`productSchema` object. It is used to retrieve products from the database and filter them based on a
+search query using fuzzy matching. */
 productSchema.statics.getSearchProducts = async (query) => {
     const groupedProducts = await getGroupedProducts();
+
+    // parse products' names to an array
     var productsNames = [];
     for (i = 0; i < groupedProducts.length; i++) {
         const products = groupedProducts[i].products;
@@ -126,18 +169,23 @@ productSchema.statics.getSearchProducts = async (query) => {
         }
     }
 
+    // search with fuzzy string matching
     options = { scorer: fuzz.partial_ratio };
     const fuzzResult = fuzz.extract(query, productsNames, options);
     var filteredFuzzResult = [];
     for (i = 0; i < fuzzResult.length; i++) {
+        // select results with matching ratio > 80
         if (fuzzResult[i][1] >= 80) {
             filteredFuzzResult.push(fuzzResult[i]);
         }
     }
 
+    // parse products' names back to product objects
     var matchedSeacthProducts = [];
     for (i = 0; i < groupedProducts.length; i++) {
         const products = groupedProducts[i].products;
+
+        // compare current product loop name with fuzzy result
         var filteredProducts = [];
         for (y = 0; y < products.length; y++) {
             for (z = 0; z < filteredFuzzResult.length; z++) {
@@ -147,6 +195,8 @@ productSchema.statics.getSearchProducts = async (query) => {
                 }
             }
         }
+
+        // push if not empty
         if (filteredProducts.length > 0) {
             matchedSeacthProducts.push({
                 id: groupedProducts[i].id,
@@ -157,6 +207,7 @@ productSchema.statics.getSearchProducts = async (query) => {
             })
         }
     }
+
     return matchedSeacthProducts;
 }
 
