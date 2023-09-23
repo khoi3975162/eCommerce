@@ -42,14 +42,20 @@ cartSchema.statics.createCart = async (user) => {
     await new Cart(data).save();
 }
 
+/* The `cartSchema.statics.addToCart` function is a static method defined on the `cartSchema` object.
+It is used to add a quantity of product to the cart for a specific user. */
 cartSchema.statics.addToCart = async (user, productid, quantity) => {
     const product = await Product.findById(productid);
     var cart = await Cart.findOne({ owner: user });
+
+    // check if cart already have this product, if already then plus quantity to its quantity
     if (cart.products.some(_product => _product.product._id.toString() == product._id.toString())) {
+        // get the existing product in cart and plus quantity to its
         var cartProduct = cart.products.find((_product) => _product.product._id.toString() == product._id.toString());
         cartProduct.quantity = parseInt(cartProduct.quantity) + parseInt(quantity);
     }
     else {
+        // add product to cart
         cart.products = cart.products.concat({
             product: product,
             quantity: quantity
@@ -58,15 +64,22 @@ cartSchema.statics.addToCart = async (user, productid, quantity) => {
     await cart.save();
 }
 
+/* The `cartSchema.statics.removeFromCart` function is a static method defined on the `cartSchema`
+object. It is used to remove a quantity of product from the cart for a specific user. */
 cartSchema.statics.removeFromCart = async (user, productid, quantity) => {
     const product = await Product.findById(productid);
     var cart = await Cart.findOne({ owner: user });
+
+    // check if cart have this product
     if (cart.products.some(_product => _product.product._id.toString() == product._id.toString())) {
+        // get the requested product in cart
         var cartProduct = cart.products.find((_product) => _product.product._id.toString() == product._id.toString());
+        // remove the product regarding its quantity
         if (quantity == 'all') {
             cart.products = cart.products.filter(function (_product) { return _product.product._id.toString() != product._id.toString(); });
         }
         else {
+            // remove a quantity of the requested product
             tempQuantity = parseInt(cartProduct.quantity) - parseInt(quantity);
             if (tempQuantity <= 0) {
                 cart.products = cart.products.filter(function (_product) { return _product.product._id.toString() != product._id.toString(); });
@@ -79,9 +92,12 @@ cartSchema.statics.removeFromCart = async (user, productid, quantity) => {
     await cart.save();
 }
 
+/* The `cartSchema.statics.getCartbyVendor` function is a static method defined on the `cartSchema`
+object. It is used to retrieve the cart items grouped by vendors for a specific user. */
 cartSchema.statics.getCartbyVendor = async (user) => {
     const cart = await Cart.findOne({ owner: user });
 
+    // parse product objects from cart
     var products = [];
     for (i = 0; i < cart.products.length; i++) {
         const product = await Product.findById(cart.products[i].product);
@@ -93,6 +109,7 @@ cartSchema.statics.getCartbyVendor = async (user) => {
         }
     }
 
+    // parse vendor objects from products
     var vendors = [];
     for (i = 0; i < products.length; i++) {
         const vendor = await User.findById(products[i].product.owner);
@@ -101,6 +118,7 @@ cartSchema.statics.getCartbyVendor = async (user) => {
         }
     }
 
+    // group products by vendors
     var groupedProducts = [];
     for (i = 0; i < vendors.length; i++) {
         var filteredProducts = [];

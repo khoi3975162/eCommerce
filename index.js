@@ -228,6 +228,7 @@ app.get('/me', auth, async (req, res) => {
         return resSignIn(res);
     }
     else {
+        // parse user data based on account type
         const data = await getData(req);
         var user = {
             username: req.user.username,
@@ -328,11 +329,13 @@ app.get('/product/new', auth, async (req, res) => {
 app.post('/product/new', product_upload.array('product-imgs', 4), auth, async (req, res) => {
     const vendor = await User.findOne({ _id: req.user._id, "vendor.accountType": true });
     if (vendor) {
+        // parse images names from request
         var images = [];
         for (i = 0; i < req.files.length; i++) {
             images.push(req.files[i]['filename'])
         }
 
+        // create new product
         const productData = {
             owner: vendor,
             name: req.body['product-name'],
@@ -367,10 +370,17 @@ app.post('/product/new', product_upload.array('product-imgs', 4), auth, async (r
 app.get('/product/:id', auth, async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
+        const vendor = await User.findById(product.owner);
         return res.render('product', {
             data: {
                 ...await getData(req),
-                product: product.toObject()
+                product: product.toObject(),
+                vendor: {
+                    username: vendor.username,
+                    name: vendor.vendor.vendorName,
+                    profile: vendor.profile,
+                },
+                products: await Product.getProductsfromVendor(vendor.username, true)
             }
         });
     }
@@ -391,6 +401,8 @@ app.get('/product/:id/update', auth, async (req, res) => {
     else if (await User.getAccountType(req.user) == 'vendor') {
         try {
             const productData = await Product.findById(req.params.id);
+
+            // check if the current product owner is the same of the requesting vendor
             if (productData.owner._id.toString() == req.user._id.toString()) {
                 return res.render('vendor/update-product', {
                     data: {
@@ -423,6 +435,7 @@ app.post('/product/:id/update', product_upload.array('product-imgs', 4), auth, a
 
         // check if images being edited
         if (req.files.length > 0) {
+            // parse images names from request
             var images = [];
             for (i = 0; i < req.files.length; i++) {
                 images.push(req.files[i]['filename'])
@@ -437,6 +450,7 @@ app.post('/product/:id/update', product_upload.array('product-imgs', 4), auth, a
             await fs.mkdir('./public/images/products/temp', { recursive: true });
         }
 
+        // update product in db
         await Product.findByIdAndUpdate(req.params.id, productData, {
             new: true,
             runValidators: true,
@@ -456,8 +470,12 @@ app.post('/product/:id/update', product_upload.array('product-imgs', 4), auth, a
 app.post('/product/:id/delete', auth, async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
+
+        // check if the current product owner is the same of the requesting vendor
         if (product.owner._id.toString() == req.user._id.toString()) {
+            // delete product from db
             await Product.findByIdAndDelete(req.params.id);
+            // delete product images from local
             await fs.rm('./public/images/products/' + req.user._id + '/' + req.params.id, { recursive: true, force: true });
             return res.redirect('/products/' + req.user._id);
         }
@@ -536,9 +554,11 @@ app.get('/order/:id', auth, async (req, res) => {
         try {
             var order = await Order.findById(req.params.id);
             var valid = false;
+            // check if the requested order's owner is the same with the requesting customer
             if (accountType == 'customer' & order.owner.toString() == req.user._id.toString()) {
                 valid = true;
             }
+            // check if the requested order's hub is the same with the requesting shipper hub
             else if (accountType == 'shipper' & order.hub == req.user.shipper.hub) {
                 valid = true;
             }
@@ -572,6 +592,7 @@ app.post('/order/:id/status/:status', auth, async (req, res) => {
     else if (accountType == 'shipper') {
         try {
             const order = await Order.findById(req.params.id);
+            // check if the requested order's hub is the same with the requesting shipper hub
             if (order.hub == req.user.shipper.hub) {
                 if (["Delivered", "Canceled"].includes(req.params.status)) {
                     order.status = req.params.status;
@@ -599,9 +620,14 @@ app.get('/orders', auth, async (req, res) => {
     }
     else if (accountType == 'customer' || accountType == 'shipper') {
         var orders = null;
-        orders = await Order.getOrdersfromUser(req.user);
         var hub = "none";
-        if (accountType == 'shipper') {
+
+        // get order from user requested user is customer
+        if (account == 'customer') {
+            orders = await Order.getOrdersfromUser(req.user);
+        }
+        // get order from hub requested user is shipper
+        else if (accountType == 'shipper') {
             hub = req.user.shipper.hub;
             orders = await Order.getOrdersfromHub(hub);
         }
