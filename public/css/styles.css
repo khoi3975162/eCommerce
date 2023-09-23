@@ -708,6 +708,78 @@ body {
     .pd-info-wrapper {
         padding: 20px;
     }
+
+
+    .vendor-wrapper {
+        background-color: white;
+        padding: 30px;
+    }
+
+    .vendor-name {
+        font-size: 24px;
+    }
+
+    .view-btn {
+        background-color: #5b2333;
+        color: white
+    }
+
+    .view-btn:hover {
+        background-color: #ba1b1d;
+    }
+
+    .view-btn:hover span:after {
+        opacity: 1;
+        right: 0;
+    }
+
+    .view-btn:hover span {
+        padding-right: 20px;
+    }
+
+    .view-btn span:after {
+        right: -20px;
+        font-family: "bootstrap-icons";
+        content: '\F285';
+    }
+
+    .related-pd {
+        background-color: white;
+        padding: 30px;
+    }
+
+    .product-card {
+        margin: 5px;
+    }
+
+    .pd-card {
+        max-height: 200px;
+    }
+
+    .pd-card img {
+        height: 100%;
+        width: auto;
+        padding: 10px;
+    }
+
+    .product-name {
+        text-decoration: none;
+        color: black;
+    }
+
+    .vendor-profile {
+        max-height: 90px;
+    }
+
+    @media (max-width: 992px) {
+        .pd-info-wrapper {
+            text-align: center;
+        }
+
+        .pd-action {
+            align-items: center;
+        }
+    }
 }
 
 .cart-page {

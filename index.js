@@ -657,7 +657,12 @@ app.get('/orders', auth, async (req, res) => {
     else if (accountType == 'customer' || accountType == 'shipper') {
         var orders = null;
         var hub = "none";
-        if (accountType == 'shipper') {
+        // get order from user requested user is customer
+        if (accountType == 'customer') {
+            orders = await Order.getOrdersfromUser(req.user);
+        }
+        // get order from hub requested user is shipper
+        else if (accountType == 'shipper') {
             hub = req.user.shipper.hub;
             orders = await Order.getOrdersfromHub(hub);
         }
