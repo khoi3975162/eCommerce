@@ -161,7 +161,7 @@ orderSchema.statics.createOrder = async (user, _hub) => {
 
     const hubs = ["Ho Chi Minh", "Hanoi", "Da Nang"];
     var hub = null;
-    if (_hub & hubs.includes(_hub)) {
+    if (hubs.includes(_hub)) {
         hub = _hub;
     }
     else {

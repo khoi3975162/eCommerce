@@ -412,6 +412,18 @@ function editMaxPrice() {
 // ========== Listener ==========
 
 /**
+ * Handle page reload when user uses browser's back and forward button
+ */
+window.addEventListener("pageshow", function (event) {
+    var historyTraversal = event.persisted ||
+        (typeof window.performance != "undefined" &&
+            window.performance.navigation.type === 2);
+    if (historyTraversal) {
+        window.location.reload();
+    }
+})
+
+/**
  * The code is adding an event listener to the `DOMContentLoaded` event to set the height of the
  * dummy div except the signup page for pushing the footer down
  */
