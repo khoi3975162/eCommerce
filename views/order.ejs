@@ -68,7 +68,7 @@
             <% data.order.vendors.forEach(function(vendor) { %>
                 <div class="row vendor-products mb-4 rounded shadow-sm">
                     <div class="vendorname mb-3 border-bottom">
-                        <a href="/products/<%= vendor.username %>" class="text-decoration-none text-reset">
+                        <a href="/products/vendor/<%= vendor.username %>" class="text-decoration-none text-reset">
                             <span class="text">
                                 <i class="bi bi-shop-window"></i>
                                 <%= vendor.vendorName %>

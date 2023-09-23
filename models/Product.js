@@ -1,3 +1,4 @@
+fuzz = require('fuzzball');
 const mongoose = require('mongoose');
 const User = require('./User');
 
@@ -47,7 +48,7 @@ productSchema.statics.getProductsfromVendor = async (username) => {
     }
 }
 
-productSchema.statics.getProductsbyVendors = async () => {
+async function getGroupedProducts(random = false) {
     const vendors = await User.find({ "vendor.accountType": true });
     const products = await Product.find({});
     var groupedProducts = [];
@@ -58,15 +59,97 @@ productSchema.statics.getProductsbyVendors = async () => {
                 filteredProducts.push(product)
             }
         })
+        if (random) {
+            filteredProducts = filteredProducts.sort(() => Math.random() - 0.5);
+        }
         groupedProducts.push({
             id: vendors[i]._id.toString(),
             username: vendors[i].username,
             profile: vendors[i].profile,
             vendorName: vendors[i].vendor.vendorName,
-            products: filteredProducts.sort(() => Math.random() - 0.5)
+            products: filteredProducts
         })
     }
-    return groupedProducts.sort(() => Math.random() - 0.5);
+    if (random) {
+        groupedProducts = groupedProducts.sort(() => Math.random() - 0.5);
+    }
+    return groupedProducts
+}
+
+productSchema.statics.getProductsbyVendors = async () => {
+    return await getGroupedProducts(true);
+}
+
+productSchema.statics.getFilteredProducts = async (min, max) => {
+    const minPrice = parseFloat(min);
+    const maxPrice = parseFloat(max);
+
+    const groupedProducts = await getGroupedProducts();
+    var filteredGroupedProducts = [];
+
+    for (i = 0; i < groupedProducts.length; i++) {
+        const products = groupedProducts[i].products;
+        var filteredProducts = [];
+        for (y = 0; y < products.length; y++) {
+            if (minPrice <= products[y].price & products[y].price <= maxPrice) {
+                filteredProducts.push(products[y]);
+            }
+        }
+        if (filteredProducts.length > 0) {
+            filteredGroupedProducts.push({
+                id: groupedProducts[i].id,
+                username: groupedProducts[i].username,
+                profile: groupedProducts[i].profile,
+                vendorName: groupedProducts[i].vendorName,
+                products: filteredProducts
+            })
+        }
+    }
+    return filteredGroupedProducts;
+}
+
+productSchema.statics.getSearchProducts = async (query) => {
+    const groupedProducts = await getGroupedProducts();
+    var productsNames = [];
+    for (i = 0; i < groupedProducts.length; i++) {
+        const products = groupedProducts[i].products;
+        for (y = 0; y < products.length; y++) {
+            productsNames.push(products[y].name);
+        }
+    }
+
+    options = { scorer: fuzz.partial_ratio };
+    const fuzzResult = fuzz.extract(query, productsNames, options);
+    var filteredFuzzResult = [];
+    for (i = 0; i < fuzzResult.length; i++) {
+        if (fuzzResult[i][1] >= 80) {
+            filteredFuzzResult.push(fuzzResult[i]);
+        }
+    }
+
+    var matchedSeacthProducts = [];
+    for (i = 0; i < groupedProducts.length; i++) {
+        const products = groupedProducts[i].products;
+        var filteredProducts = [];
+        for (y = 0; y < products.length; y++) {
+            for (z = 0; z < filteredFuzzResult.length; z++) {
+                if (products[y].name == filteredFuzzResult[z][0]) {
+                    filteredProducts.push(products[y]);
+                    break;
+                }
+            }
+        }
+        if (filteredProducts.length > 0) {
+            matchedSeacthProducts.push({
+                id: groupedProducts[i].id,
+                username: groupedProducts[i].username,
+                profile: groupedProducts[i].profile,
+                vendorName: groupedProducts[i].vendorName,
+                products: filteredProducts
+            })
+        }
+    }
+    return matchedSeacthProducts;
 }
 
 

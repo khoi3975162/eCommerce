@@ -1,21 +1,26 @@
 <%- include('./partials/header.ejs') %>
+    <div class="display-all d-none">
+        <%= data.all %>
+    </div>
 
     <div class="container products-page mb-4 mt-4">
         <div class="price-filter mb-4 rounded shadow-sm">
-            <form id="price-range-form" class="row d-flex align-items-center" action="/products/filter" method="GET">
+            <form id="price-range-form" class="row d-flex align-items-center" action="/products/filter" method="POST">
                 <div class="col filter-text d-flex justify-content-center">
                     <span>Filter by price:</span>
                 </div>
                 <div class="col">
                     <label for="min-price" class="form-label">Min price: </label>
-                    <span id="min-price-txt">$0</span>
-                    <input type="range" class="form-range" min="0" max="99" id="min-price" step="1" value="0">
+                    <span class="min-price-txt">$0</span>
+                    <input type="range" class="form-range min-price" id="min-price" name="min-price" min="0" max="3599"
+                        step="1" value="0" onmousemove="editMinPrice()">
                 </div>
 
                 <div class="col">
                     <label for="max-price" class="form-label">Max price: </label>
-                    <span id="max-price-txt">$100</span>
-                    <input type="range" class="form-range" min="1" max="100" id="max-price" step="1" value="100">
+                    <span class="max-price-txt">$0</span>
+                    <input type="range" class="form-range max-price" id="max-price" name="max-price" min="1" max="3600"
+                        step="1" value="1" onmousemove="editMaxPrice()">
                 </div>
 
                 <div class="col d-flex justify-content-center">
@@ -25,12 +30,13 @@
                 </div>
             </form>
         </div>
+
         <div class="row products-container d-flex justify-content-center">
             <% if (data.products.length> 0) {data.products.forEach(function(vendor) { if
                 (vendor.products.length> 0) { %>
                 <div class="row mb-4 vendor-pd-wrapper rounded shadow-sm">
                     <div class="row border-bottom">
-                        <a href="/products/<%= vendor.username %>"
+                        <a href="/products/vendor/<%= vendor.username %>"
                             class="text-decoration-none text-reset mb-4 d-flex align-items-center">
                             <img class="img-fluid rounded vendor-profile" src="/images/profiles/<%= vendor.profile %>"
                                 alt="vendor-profile">
@@ -105,8 +111,8 @@
                     </div>
                 </div>
                 <% }})} else { %>
-                    <div class="no-products text-center">
-                        This shop haven't added any products yet
+                    <div class="no-products text-center rounded shadow-sm">
+                        There is no product matching the query.
                     </div>
                     <% }; %>
         </div>

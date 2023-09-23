@@ -391,6 +391,16 @@ function editQuantity(productid, action, _quantity, noUpdate = false, limit = fa
 }
 
 
+function editMinPrice() {
+    const min_price = parseInt(document.querySelector('.min-price').value);
+    document.querySelector(".min-price-txt").innerHTML = "$" + min_price;
+}
+
+function editMaxPrice() {
+    const max_price = parseInt(document.querySelector('.max-price').value);
+    document.querySelector(".max-price-txt").innerHTML = "$" + max_price;
+}
+
 // ========== Listener ==========
 
 /**
@@ -517,8 +527,14 @@ document.addEventListener("DOMContentLoaded", function setOrdersCount() {
 document.addEventListener("DOMContentLoaded", function viewProducts() {
     if (window.location.pathname.includes("/products")) {
         const vendorName = document.querySelectorAll('.vendor-name');
+        const productCards = document.querySelectorAll('.product-card');
         if (vendorName.length == 1) {
-            const productCards = document.querySelectorAll('.product-card');
+            for (i = 0; i < productCards.length; i++) {
+                productCards[i].classList.remove("product-card-ctrl");
+            }
+        }
+        const displayAll = document.querySelector('.display-all').innerHTML.trim();
+        if (displayAll == "true") {
             for (i = 0; i < productCards.length; i++) {
                 productCards[i].classList.remove("product-card-ctrl");
             }
@@ -536,4 +552,3 @@ document.addEventListener("DOMContentLoaded", function viewProductDescription() 
         document.querySelector('.product-desciption').value = productDescription;
     }
 })
-

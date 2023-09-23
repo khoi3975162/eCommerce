@@ -28,12 +28,12 @@
 
             <ul class="nav nav-pills">
                 <li class="nav-item search-box">
-                    <form class="input-group" method="POST" action="/search">
+                    <form class="input-group" method="POST" action="/products/search">
                         <button type="submit" class="input-group-text" id="basic-addon1">
                             <i class="bi bi-search"></i>
                         </button>
-                        <input type="text" class="form-control" placeholder="Search" aria-label="Search"
-                            aria-describedby="basic-addon1">
+                        <input type="text" class="form-control" placeholder="Search" aria-label="Search" id="search"
+                            name="search" required>
                     </form>
                 </li>
 
@@ -61,7 +61,7 @@
 
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item nav-vendor" href="/dashboard">Dashboard</a></li>
-                            <li><a class="dropdown-item nav-vendor" href="/products/<%= data.username %>">View My
+                            <li><a class="dropdown-item nav-vendor" href="/products/vendor/<%= data.username %>">View My
                                     Products</a></li>
                             <li><a class="dropdown-item nav-vendor" href="/product/new">Add New Product</a></li>
 

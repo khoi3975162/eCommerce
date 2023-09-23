@@ -260,13 +260,14 @@ app.get('/products', auth, async (req, res) => {
     return res.render('products', {
         data: {
             ...await getData(req),
-            products: await Product.getProductsbyVendors()
+            products: await Product.getProductsbyVendors(),
+            all: false
         }
     })
 })
 
 /* view products of a vendor, available for all user */
-app.get('/products/:vendorusername', auth, async (req, res) => {
+app.get('/products/vendor/:vendorusername', auth, async (req, res) => {
     var isOwner = false;
     if (req.user.username == req.params.vendorusername) {
         isOwner = true;
@@ -275,7 +276,30 @@ app.get('/products/:vendorusername', auth, async (req, res) => {
         data: {
             ...await getData(req),
             isOwner: isOwner,
-            products: await Product.getProductsfromVendor(req.params.vendorusername)
+            products: await Product.getProductsfromVendor(req.params.vendorusername),
+            all: true
+        }
+    })
+})
+
+/* view price filtered products */
+app.post('/products/filter', auth, async (req, res) => {
+    return res.render('products', {
+        data: {
+            ...await getData(req),
+            products: await Product.getFilteredProducts(req.body['min-price'], req.body['max-price']),
+            all: true
+        }
+    })
+})
+
+/* view searched products */
+app.post('/products/search', auth, async (req, res) => {
+    return res.render('products', {
+        data: {
+            ...await getData(req),
+            products: await Product.getSearchProducts(req.body['search']),
+            all: true
         }
     })
 })
