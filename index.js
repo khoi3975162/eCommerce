@@ -1,19 +1,29 @@
+// RMIT University Vietnam
+// Course: COSC2430 Web Programming
+// Semester: 2023A
+// Assessment: Assignment 2
+// Author and ID: Le Nguyen Khoi(3975162), Nguyen Thanh Dat(3975867), Tran Anh Tuan(3974799), Le Chanh Tri(3924585)
+// ID: Your student ids (e.g. 1234567)
+// Acknowledgement: Acknowledge the resources that you use here.
+
 // Import libraries
 const express = require('express');
 const cookieParser = require("cookie-parser");
 const multer = require('multer');
 const fs = require('fs/promises');
-
-const profile_upload = multer({ dest: 'public/images/profiles/' });
-const product_upload = multer({ dest: 'public/images/products/temp' });
-
-require('./modules/database');
 const auth = require('./modules/auth');
+const { existsSync } = require('fs');
+require('./modules/database');
+
+// import mongoose models
 const User = require('./models/User');
 const Product = require('./models/Product');
 const Cart = require('./models/Cart');
 const Order = require('./models/Order');
-const { existsSync } = require('fs');
+
+// multer image upload destination
+const profile_upload = multer({ dest: 'public/images/profiles/' });
+const product_upload = multer({ dest: 'public/images/products/temp' });
 
 // Create instances of the express application
 const app = express();
