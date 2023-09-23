@@ -78,17 +78,18 @@ function resSignIn(res) {
     return res.redirect('/signin');
 }
 
-/* The below code is defining a route handler for the root URL ("/") using the Express.js framework. It
-is using the `app.get()` method to handle GET requests to the root URL. The `auth` middleware
-function is being used to authenticate the request before executing the route handler. */
+// home route
 app.get('/', auth, async (req, res) => {
-    return res.render('index', { data: await getData(req) });
+    const products = await Product.find({});
+    return res.render('index', {
+        data: {
+            ...await getData(req),
+            products: products.sort(() => Math.random() - 0.5)
+        }
+    });
 })
 
-/* The below code is defining a route for the "/signup" endpoint. It uses the "auth" middleware to
-check if the user is a guest or not. If the user is a guest, it renders the "signup" view. If the
-user is not a guest (i.e., already signed in), it sends a 403 Forbidden status code with a message
-indicating that the user needs to sign out first. */
+// signup get route
 app.get('/signup', auth, (req, res) => {
     if (req.guest) {
         return res.render('signup');
@@ -96,8 +97,7 @@ app.get('/signup', auth, (req, res) => {
     return res.send("You have already signed in, please sign out first.")
 })
 
-/* The below code is handling a POST request to the '/signup' endpoint. It is used for user
-registration and account creation. */
+// sign up post route
 app.post('/signup', profile_upload.single('profile'), async (req, res, next) => {
     try {
         // parse userData
@@ -152,10 +152,7 @@ app.post('/signup', profile_upload.single('profile'), async (req, res, next) => 
     }
 })
 
-/* The below code is defining a route for the "/signin" endpoint. It uses the "auth" middleware
-function to check if the user is a guest or not. If the user is a guest, it renders the "signin"
-view. If the user is not a guest (i.e., already signed in), it sends a 403 Forbidden status code
-with the message "You have already signed in, please sign out first." */
+// singin get route
 app.get('/signin', auth, (req, res) => {
     if (req.guest) {
         return res.render('signin');
@@ -163,8 +160,7 @@ app.get('/signin', auth, (req, res) => {
     return res.send("You have already signed in, please sign out first.")
 })
 
-/* The below code is a route handler for the "/signin" endpoint. It handles the user login
-functionality. */
+// signin post route
 app.post('/signin', async (req, res) => {
     try {
         // find user then generate token for login session
@@ -197,7 +193,26 @@ app.post('/signin', async (req, res) => {
     }
 })
 
-/* view my account page */
+// signout route
+app.get('/signout', auth, (req, res) => {
+    if (req.guest) {
+        return res.redirect('/');
+    }
+    else {
+        try {
+            // remove token from db then clear token on client
+            req.user.tokens = req.user.tokens.filter((token) => {
+                return token.token != req.token;
+            })
+            req.user.save();
+            return res.clearCookie("access_token").redirect('/');
+        } catch (error) {
+            console.log(error);
+        }
+    }
+})
+
+// my account route
 app.get('/me', auth, async (req, res) => {
     if (req.guest) {
         return resSignIn(res);
@@ -228,27 +243,7 @@ app.get('/me', auth, async (req, res) => {
     }
 })
 
-/* The below code is defining a route handler for the "/signout" endpoint. It is using the "auth"
-middleware to authenticate the request. */
-app.get('/signout', auth, (req, res) => {
-    if (req.guest) {
-        return res.redirect('/');
-    }
-    else {
-        try {
-            // remove token from db then clear token on client
-            req.user.tokens = req.user.tokens.filter((token) => {
-                return token.token != req.token;
-            })
-            req.user.save();
-            return res.clearCookie("access_token").redirect('/');
-        } catch (error) {
-            console.log(error);
-        }
-    }
-})
-
-/* view all products on the db, available for all user  */
+// view all products on the db, available for all users
 app.get('/products', auth, async (req, res) => {
     return res.render('products', {
         data: {
@@ -259,7 +254,7 @@ app.get('/products', auth, async (req, res) => {
     })
 })
 
-/* view products of a vendor, available for all user */
+// view products of a vendor, available for all users
 app.get('/products/vendor/:vendorusername', auth, async (req, res) => {
     var isOwner = false;
     if (req.user.username == req.params.vendorusername) {
@@ -275,7 +270,7 @@ app.get('/products/vendor/:vendorusername', auth, async (req, res) => {
     })
 })
 
-/* view price filtered products */
+// view price filtered products
 app.post('/products/filter', auth, async (req, res) => {
     return res.render('products', {
         data: {
@@ -286,7 +281,7 @@ app.post('/products/filter', auth, async (req, res) => {
     })
 })
 
-/* view searched products */
+// view searched products
 app.post('/products/search', auth, async (req, res) => {
     return res.render('products', {
         data: {
@@ -297,7 +292,7 @@ app.post('/products/search', auth, async (req, res) => {
     })
 })
 
-/* add new product page for vendor only */
+// dashboard page for vendor only
 app.get('/dashboard', auth, async (req, res) => {
     if (req.guest) {
         return resSignIn(res);
@@ -308,7 +303,7 @@ app.get('/dashboard', auth, async (req, res) => {
     return res.send("The account you are logged in is not a vendor account.");
 })
 
-/* add new product page for vendor only */
+// add new product page for vendor only
 app.get('/product/new', auth, async (req, res) => {
     if (req.guest) {
         return resSignIn(res);
@@ -319,7 +314,7 @@ app.get('/product/new', auth, async (req, res) => {
     return res.send("The account you are logged in is not a vendor account.");
 })
 
-/* post endpoint for adding new product, for vendor only */
+// add new product post route for vendor only
 app.post('/product/new', product_upload.array('product-imgs', 4), auth, async (req, res) => {
     const vendor = await User.findOne({ _id: req.user._id, "vendor.accountType": true });
     if (vendor) {
@@ -358,7 +353,7 @@ app.post('/product/new', product_upload.array('product-imgs', 4), auth, async (r
     }
 })
 
-/* specific product page, available for all user */
+// view specific product, available for all users
 app.get('/product/:id', auth, async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
@@ -378,7 +373,7 @@ app.get('/product/:id', auth, async (req, res) => {
 })
 
 
-/* update specific product page for vendor only */
+// update specific product page for vendor only
 app.get('/product/:id/update', auth, async (req, res) => {
     if (req.guest) {
         return resSignIn(res);
@@ -406,7 +401,7 @@ app.get('/product/:id/update', auth, async (req, res) => {
     return res.send("The account you are logged in is not a vendor account.");
 })
 
-/* post endpoint for updating product */
+// product update post route
 app.post('/product/:id/update', product_upload.array('product-imgs', 4), auth, async (req, res) => {
     const productData = await Product.findById(req.params.id);
     if (productData.owner._id.toString() == req.user._id.toString()) {
@@ -447,7 +442,7 @@ app.post('/product/:id/update', product_upload.array('product-imgs', 4), auth, a
     }
 })
 
-/* post endpoint for deleting a product */
+// product delete route
 app.post('/product/:id/delete', auth, async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
@@ -469,7 +464,7 @@ app.post('/product/:id/delete', auth, async (req, res) => {
 })
 
 
-/* cart page for customer only */
+// cart page for customer only
 app.get('/cart', auth, async (req, res) => {
     if (req.guest) {
         return resSignIn(res);
@@ -485,7 +480,7 @@ app.get('/cart', auth, async (req, res) => {
     return res.send("The account you are logged in is not a customer account.");
 })
 
-/* add to cart for customer only */
+// add to cart post route for customer only
 app.post('/cart/add/:productid/quantity/:quantity', auth, async (req, res) => {
     if (req.guest) {
         return resSignIn(res);
@@ -497,7 +492,7 @@ app.post('/cart/add/:productid/quantity/:quantity', auth, async (req, res) => {
     return res.send("The account you are logged in is not a customer account.");
 })
 
-/* update items in cart for customer only */
+// remove an item/quantity in cart route for customer only
 app.post('/cart/remove/:productid/quantity/:quantity', auth, async (req, res) => {
     if (req.guest) {
         return resSignIn(res);
@@ -509,7 +504,7 @@ app.post('/cart/remove/:productid/quantity/:quantity', auth, async (req, res) =>
     return res.send("The account you are logged in is not a customer account.");
 })
 
-/* place order for customer only */
+// place order post route for customer only
 app.post('/order', auth, async (req, res) => {
     if (req.guest) {
         return resSignIn(res);
@@ -521,7 +516,7 @@ app.post('/order', auth, async (req, res) => {
     return res.send("The account you are logged in is not a customer account.");
 })
 
-/* specific order page for customer and shipper only */
+// view specific order for customer and shipper
 app.get('/order/:id', auth, async (req, res) => {
     const accountType = await User.getAccountType(req.user);
     if (req.guest) {
@@ -558,7 +553,7 @@ app.get('/order/:id', auth, async (req, res) => {
     return res.send("The account you are logged in is not a customer or shipper account.");
 })
 
-/* edit order status endpoint for shipper only */
+// edit status post route for shipper only
 app.post('/order/:id/status/:status', auth, async (req, res) => {
     const accountType = await User.getAccountType(req.user);
     if (req.guest) {
@@ -586,7 +581,7 @@ app.post('/order/:id/status/:status', auth, async (req, res) => {
     return res.send("The account you are logged in is not a shipper account.");
 })
 
-/* view all orders page for customer and shipper only */
+// view all products from customer or hub for customer and shipper
 app.get('/orders', auth, async (req, res) => {
     const accountType = await User.getAccountType(req.user);
     if (req.guest) {
@@ -611,21 +606,21 @@ app.get('/orders', auth, async (req, res) => {
     return res.send("The account you are logged in is not a customer or shipper account.");
 })
 
-/* about us page */
+// about us page route
 app.get('/about', auth, async (req, res) => {
     return res.render('about', {
         data: await getData(req)
     })
 })
 
-/* privacy page */
+// privacy page route
 app.get('/privacy', auth, async (req, res) => {
     return res.render('privacy', {
         data: await getData(req)
     })
 })
 
-/* terms page */
+// terms page route
 app.get('/terms', auth, async (req, res) => {
     return res.render('terms', {
         data: await getData(req)
@@ -676,4 +671,3 @@ app.listen(3000, () => {
     console.log('Server is running on http://localhost:3000')
 })
 
-// app.listen(3000, ('0.0.0.0'

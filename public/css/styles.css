@@ -5,6 +5,19 @@ body {
     overflow-x: hidden;
 }
 
+/* Hide scrollbar for Chrome, Safari and Opera */
+body::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+body {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
 /* animation */
 @keyframes flyin {
     0% {
@@ -995,6 +1008,58 @@ body {
     .terms-wrapper {
         background-color: white;
         padding: 30px;
+    }
+}
+
+.home-landing {
+    background-color: #5b2333;
+
+    .landing-wrapper {
+        padding: 30px;
+    }
+
+    .landing-name {
+        color: #f7f4f3;
+    }
+
+    .landing-text {
+        color: #f7f4f3;
+        font-size: 18px;
+    }
+}
+
+.home-products {
+    .pd-card {
+        height: 400px;
+    }
+
+    .pd-img img {
+        max-height: 250px;
+        object-fit: contain;
+        padding: 10px;
+    }
+
+    .pd-img {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .pd-info {
+        padding: 30px;
+    }
+
+    .pd-price {
+        font-size: 24px;
+    }
+
+    .carousel-btn {
+        color: white;
+        background-color: #5b2333;
+    }
+
+    .carousel-btn:hover {
+        background-color: #ba1b1d;
     }
 }
 
