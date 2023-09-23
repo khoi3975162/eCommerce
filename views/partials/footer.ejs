@@ -2,21 +2,34 @@
 <!--==========Footer Area==========-->
 <div class="container-fluid footer-container">
   <div class="footer-wrapper">
-    <hr class="hr">
-    <footer class="footer-wrap d-flex flex-wrap justify-content-between align-items-center">
-      <p class="col-md-4 mb-0 copyright">© 2023 Confuse eCommerce, Inc</p>
+    <footer class="row py-5 border-top">
+      <div class="col d-flex gap-2 justify-content-center align-items-center flex-column">
+        <a href="/" class="link-body-emphasis text-decoration-none">
+          <img class="logo img-fluid footer-logo" src="/images/logo-no-text.png" alt="logo">
+        </a>
+        <p class="copyright">© 2023 Confuse eCommerce, Inc</p>
+      </div>
 
-      <a href="/"
-        class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
-        <img class="logo img-fluid footer-logo" src="/images/logo-no-text.png" alt="logo">
-      </a>
+      <div class="col d-none d-md-block"></div>
+      <div class="col d-none d-lg-block"></div>
 
-      <ul class="nav col-md-4 justify-content-end">
-        <li class="nav-item"><a href="/" class="nav-link">Home</a></li>
-        <li class="nav-item"><a href="/products" class="nav-link">Products</a></li>
-        <li class="nav-item"><a href="/me" class="nav-link">My Account</a></li>
-        <li class="nav-item"><a href="/about" class="nav-link">About Us</a></li>
-      </ul>
+      <div class="col">
+        <h5 class="heading">About</h5>
+        <ul class="nav flex-column">
+          <li class="nav-item mb-2"><a href="/about" class="nav-link p-0">About Us</a></li>
+          <li class="nav-item mb-2"><a href="/privacy" class="nav-link p-0">Privacy</a></li>
+          <li class="nav-item"><a href="/terms" class="nav-link p-0">Terms</a></li>
+        </ul>
+      </div>
+
+      <div class="col">
+        <h5 class="heading">Useful URLs</h5>
+        <ul class="nav flex-column">
+          <li class="nav-item mb-2"><a href="/" class="nav-link p-0">Home</a></li>
+          <li class="nav-item mb-2"><a href="/products" class="nav-link p-0">Products</a></li>
+          <li class="nav-item"><a href="/me" class="nav-link p-0">My Account</a></li>
+        </ul>
+      </div>
     </footer>
   </div>
 </div>

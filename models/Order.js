@@ -65,9 +65,12 @@ async function parseOrder(order) {
 
     var vendors = []
     for (y = 0; y < products.length; y++) {
-        const vendor = await User.findById(products[y].product.owner);
-        if (!vendors.some(_vendor => _vendor._id.toString() == vendor._id.toString())) {
-            vendors.push(vendor);
+        const product = products[y].product;
+        if (product) {
+            const vendor = await User.findById(product.owner);
+            if (!vendors.some(_vendor => _vendor._id.toString() == vendor._id.toString())) {
+                vendors.push(vendor);
+            }
         }
     }
 
@@ -75,8 +78,10 @@ async function parseOrder(order) {
     for (y = 0; y < vendors.length; y++) {
         var filteredProducts = [];
         products.forEach(function (product) {
-            if (product.product.owner._id.toString() == vendors[y]._id.toString()) {
-                filteredProducts.push(product)
+            if (product.product) {
+                if (product.product.owner._id.toString() == vendors[y]._id.toString()) {
+                    filteredProducts.push(product)
+                }
             }
         })
         groupedProducts.push({

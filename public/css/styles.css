@@ -73,14 +73,14 @@ body {
 .footer-container {
     background-color: #564d4a;
 
-    font-weight: bold;
+    color: #f7f4f3;
 
-    .copyright {
-        color: #f7f4f3;
+    .heading {
+        font-weight: 500;
     }
 
     .nav-item a {
-        color: #f7f4f3;
+        color: rgba(222, 226, 230, 0.75);
     }
 
     .nav-item a:hover {
@@ -91,18 +91,9 @@ body {
         max-width: 75px;
     }
 
-    .footer-wrap {
-        padding-bottom: 20px;
-    }
-
     .footer-wrapper {
-        padding: 15px;
-        padding-left: 40px;
-        padding-right: 40px;
-    }
-
-    .hr {
-        color: white;
+        padding: 40px;
+        padding-bottom: 0px;
     }
 }
 
@@ -962,6 +953,48 @@ body {
 
     .status-canceled {
         color: red;
+    }
+}
+
+.about-page {
+    .text-col {
+        background-color: white;
+    }
+
+    .about-wrapper {
+        padding: 30px;
+    }
+
+    .about-text {
+        font-size: 18px;
+    }
+
+    .text-col {
+        border-radius: 0 0.375rem 0.375rem 0;
+    }
+
+    .about-page-img {
+        border-radius: 0.375rem 0 0 0.375rem;
+    }
+
+    @media (max-width: 992px) {
+        .text-col {
+            border-radius: 0.375rem;
+        }
+    }
+}
+
+.privacy-page {
+    .privacy-wrapper {
+        background-color: white;
+        padding: 30px;
+    }
+}
+
+.terms-page {
+    .terms-wrapper {
+        background-color: white;
+        padding: 30px;
     }
 }
 

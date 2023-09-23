@@ -228,13 +228,6 @@ app.get('/me', auth, async (req, res) => {
     }
 })
 
-/* about us page */
-app.get('/about', auth, async (req, res) => {
-    return res.render('aboutus', {
-        data: await getData(req)
-    })
-})
-
 /* The below code is defining a route handler for the "/signout" endpoint. It is using the "auth"
 middleware to authenticate the request. */
 app.get('/signout', auth, (req, res) => {
@@ -616,6 +609,27 @@ app.get('/orders', auth, async (req, res) => {
         })
     }
     return res.send("The account you are logged in is not a customer or shipper account.");
+})
+
+/* about us page */
+app.get('/about', auth, async (req, res) => {
+    return res.render('about', {
+        data: await getData(req)
+    })
+})
+
+/* privacy page */
+app.get('/privacy', auth, async (req, res) => {
+    return res.render('privacy', {
+        data: await getData(req)
+    })
+})
+
+/* terms page */
+app.get('/terms', auth, async (req, res) => {
+    return res.render('terms', {
+        data: await getData(req)
+    })
 })
 
 // for checking if username is already exist in database during sign up
