@@ -15,12 +15,12 @@ Acknowledgement: Acknowledge the resources that you use here. -->
 
                     <!-- Image Modal -->
                     <div class="modal fade" id="imageModal-<%= data.product.images[0] %>" tabindex="-1"
-                        aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <img src="/images/products/<%= data.product.owner %>/<%= data.product._id %>/<%= data.product.images[0] %>"
-                                        class="img-fluid img-modal">
+                                        class="img-fluid img-modal" alt="product-modal-img">
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
@@ -33,7 +33,7 @@ Acknowledgement: Acknowledge the resources that you use here. -->
                     <a data-bs-toggle="modal" data-bs-target="#imageModal-<%= data.product.images[0] %>"
                         class="open-modal">
                         <img src="/images/products/<%= data.product.owner %>/<%= data.product._id %>/<%= data.product.images[0] %>"
-                            class="img-fluid">
+                            class="img-fluid" alt="product-main-img">
                     </a>
 
                 </div>
@@ -43,12 +43,12 @@ Acknowledgement: Acknowledge the resources that you use here. -->
 
                             <!-- Image Modal -->
                             <div class="modal fade" id="imageModal-<%= data.product.images[i] %>" tabindex="-1"
-                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <img src="/images/products/<%= data.product.owner %>/<%= data.product._id %>/<%= data.product.images[i] %>"
-                                                class="img-fluid img-modal">
+                                                class="img-fluid img-modal" alt="product-modal-img">
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary"
@@ -61,7 +61,7 @@ Acknowledgement: Acknowledge the resources that you use here. -->
                             <a data-bs-toggle="modal" data-bs-target="#imageModal-<%= data.product.images[i] %>"
                                 class="open-modal">
                                 <img src="/images/products/<%= data.product.owner %>/<%= data.product._id %>/<%= data.product.images[i] %>"
-                                    class="img-fluid">
+                                    class="img-fluid" alt="product-sub-img">
                             </a>
                         </div>
                         <% } %>
