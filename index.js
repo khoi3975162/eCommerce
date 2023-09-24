@@ -582,12 +582,12 @@ app.post('/order', auth, async (req, res) => {
 
 // view specific order for customer and shipper
 app.get('/order/:id', auth, async (req, res) => {
-    const accountType = await User.getAccountType(req.user);
     if (req.guest) {
         return resSignIn(res);
     }
-    else if (accountType == 'customer' || accountType == 'shipper') {
+    else if (await User.getAccountType(req.user) == 'customer' || await User.getAccountType(req.user) == 'shipper') {
         try {
+            const accountType = await Order.getAccountType(req.user);
             var order = await Order.findById(req.params.id);
             var valid = false;
             // check if the requested order's owner is the same with the requesting customer
@@ -621,11 +621,10 @@ app.get('/order/:id', auth, async (req, res) => {
 
 // edit status post route for shipper only
 app.post('/order/:id/status/:status', auth, async (req, res) => {
-    const accountType = await User.getAccountType(req.user);
     if (req.guest) {
         return resSignIn(res);
     }
-    else if (accountType == 'shipper') {
+    else if (await User.getAccountType(req.user) == 'shipper') {
         try {
             const order = await Order.findById(req.params.id);
             // check if the requested order's hub is the same with the requesting shipper hub
@@ -650,11 +649,11 @@ app.post('/order/:id/status/:status', auth, async (req, res) => {
 
 // view all products from customer or hub for customer and shipper
 app.get('/orders', auth, async (req, res) => {
-    const accountType = await User.getAccountType(req.user);
     if (req.guest) {
         return resSignIn(res);
     }
-    else if (accountType == 'customer' || accountType == 'shipper') {
+    else if (await User.getAccountType(req.user) == 'customer' || await User.getAccountType(req.user) == 'shipper') {
+        const accountType = await User.getAccountType(req.user);
         var orders = null;
         var hub = "none";
         // get order from user requested user is customer
