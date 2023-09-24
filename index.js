@@ -304,8 +304,10 @@ app.get('/products', auth, async (req, res) => {
 // view products of a vendor, available for all users
 app.get('/products/vendor/:vendorusername', auth, async (req, res) => {
     var isOwner = false;
-    if (req.user.username == req.params.vendorusername) {
-        isOwner = true;
+    if (!req.guest) {
+        if (req.user.username == req.params.vendorusername) {
+            isOwner = true;
+        }
     }
     return res.render('products', {
         data: {
@@ -587,7 +589,7 @@ app.get('/order/:id', auth, async (req, res) => {
     }
     else if (await User.getAccountType(req.user) == 'customer' || await User.getAccountType(req.user) == 'shipper') {
         try {
-            const accountType = await Order.getAccountType(req.user);
+            const accountType = await User.getAccountType(req.user);
             var order = await Order.findById(req.params.id);
             var valid = false;
             // check if the requested order's owner is the same with the requesting customer
